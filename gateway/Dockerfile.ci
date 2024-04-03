@@ -1,0 +1,25 @@
+# Start a new stage from scratch
+FROM alpine:latest  
+
+# Add ca-certificates
+RUN apk --no-cache add ca-certificates
+
+# Create a dedicated user and group to run the service
+# Avoid running as root for security
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+WORKDIR /home/appuser
+
+# Copy the Pre-built binary file from the previous stage
+COPY gateway .
+
+# Change ownership of the work directory to the appuser
+RUN chown -R appuser:appgroup /home/appuser
+
+# Use the created user to run the service
+USER appuser
+
+EXPOSE 7777
+
+# Command to run the executable
+CMD ["/home/appuser/gateway"]

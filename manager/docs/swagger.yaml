@@ -1,0 +1,1096 @@
+definitions:
+  balancer.LoadBalancerStrategy:
+    enum:
+    - weight-round-robin
+    - least-load
+    - failover-priority
+    type: string
+    x-enum-varnames:
+    - BalancerWeightRoundRobin
+    - BalancerLeastLoad
+    - BalancerPriority
+  circuitbreaker.Settings:
+    properties:
+      enabled:
+        type: boolean
+      interval:
+        type: integer
+      max_consecutive_failures:
+        type: integer
+      max_requests:
+        type: integer
+      name:
+        type: string
+      timeout:
+        type: integer
+    type: object
+  CreateNetworkRes:
+    properties:
+      chain_id:
+        type: integer
+    type: object
+  DeleteNetworkRes:
+    properties:
+      name:
+        type: string
+    type: object
+  ListNetworkRes:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/Network'
+        type: array
+    type: object
+  Network:
+    properties:
+      blockchain:
+        example: ethereum
+        type: string
+      chain_id:
+        example: 1
+        type: integer
+      name:
+        example: eth-mainnet
+        type: string
+    required:
+    - blockchain
+    - chain_id
+    - name
+    type: object
+  CreateRouteRes:
+    properties:
+      uuid:
+        type: string
+    type: object
+  HealthCheckConfig:
+    properties:
+      combined_with_circuit_breaker:
+        type: boolean
+      enabled:
+        type: boolean
+      interval:
+        type: integer
+      timeout:
+        type: integer
+      type:
+        $ref: '#/definitions/healthcheck.HealthCheckType'
+    type: object
+  ListRouteRes:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/Route'
+        type: array
+    type: object
+  Route:
+    properties:
+      circuit_breaker:
+        $ref: '#/definitions/circuitbreaker.Settings'
+      health_check:
+        $ref: '#/definitions/HealthCheckConfig'
+      host:
+        type: string
+      load_balancer_strategy:
+        $ref: '#/definitions/balancer.LoadBalancerStrategy'
+      path:
+        type: string
+      uuid:
+        type: string
+    required:
+    - host
+    - load_balancer_strategy
+    type: object
+  ListUpstreamRes:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/Upstream'
+        type: array
+    type: object
+  Upstream:
+    properties:
+      host:
+        type: string
+      path:
+        type: string
+      port:
+        maximum: 65535
+        minimum: 0
+        type: integer
+      rpc_uuid:
+        type: string
+      scheme:
+        type: string
+      uuid:
+        type: string
+      weight:
+        maximum: 100
+        minimum: 0
+        type: number
+    required:
+    - weight
+    type: object
+  UpstreamUpsertRes:
+    properties:
+      uuid:
+        type: string
+    type: object
+  CreateRecommendationReq:
+    properties:
+      network_name:
+        type: string
+      route_uuid:
+        type: string
+      schedule:
+        type: string
+      strategy:
+        $ref: '#/definitions/StrategyName'
+    required:
+    - network_name
+    - route_uuid
+    - schedule
+    - strategy
+    type: object
+  CreateRecommendationRes:
+    properties:
+      route_uuid:
+        type: string
+    type: object
+  ListRecommendationRes:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/Recommendation'
+        type: array
+    type: object
+  Recommendation:
+    properties:
+      network_name:
+        type: string
+      route_uuid:
+        type: string
+      schedule:
+        type: string
+      strategy:
+        $ref: '#/definitions/StrategyName'
+    type: object
+  StrategyName:
+    enum:
+    - STRATEGY_CUSTOM
+    - STRATEGY_HIGHEST_BLOCK
+    - STRATEGY_AIR_UNDER_THE_CURVE
+    type: string
+    x-enum-varnames:
+    - StrategyCustom
+    - StrategyHighestBlock
+    - StrategyAirUnderTheCurve
+  UpdateRecommendationReq:
+    properties:
+      network_name:
+        type: string
+      route_uuid:
+        type: string
+      schedule:
+        type: string
+      strategy:
+        $ref: '#/definitions/StrategyName'
+    required:
+    - network_name
+    - route_uuid
+    - schedule
+    - strategy
+    type: object
+  CreateRpcReq:
+    properties:
+      collectors:
+        items:
+          type: string
+        minItems: 1
+        type: array
+      network_name:
+        type: string
+      provider:
+        type: string
+      type:
+        $ref: '#/definitions/RPCType'
+      url:
+        type: string
+      uuid:
+        type: string
+    required:
+    - network_name
+    - provider
+    - type
+    - url
+    type: object
+  CreateRpcRes:
+    properties:
+      uuid:
+        type: string
+    type: object
+  DeleteRpcOptReq:
+    properties:
+      cascade_delete_upstream:
+        type: boolean
+    type: object
+  ListRpcRes:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/Rpc'
+        type: array
+    type: object
+  RPCType:
+    enum:
+    - private
+    - public
+    type: string
+    x-enum-varnames:
+    - RPCTypePrivate
+    - RPCTypePublic
+  Rpc:
+    properties:
+      chain_id:
+        type: integer
+      collectors:
+        items:
+          type: string
+        minItems: 1
+        type: array
+      network_name:
+        type: string
+      provider:
+        type: string
+      type:
+        $ref: '#/definitions/RPCType'
+      url:
+        type: string
+      uuid:
+        type: string
+    required:
+    - network_name
+    - provider
+    - type
+    - url
+    type: object
+  healthcheck.HealthCheckType:
+    enum:
+    - eth_block_number
+    type: string
+    x-enum-varnames:
+    - EthBlockNumberType
+  responses.BadRequestResponse:
+    properties:
+      code:
+        example: 3
+        type: integer
+      message:
+        example: Invalid input parameters
+        type: string
+      status:
+        example: 400
+        type: integer
+    type: object
+  responses.ConflictResponse:
+    properties:
+      code:
+        example: 5
+        type: integer
+      message:
+        example: Conflict
+        type: string
+      status:
+        example: 409
+        type: integer
+    type: object
+  responses.CreatedSuccessResponse-CreateNetworkRes:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        $ref: '#/definitions/CreateNetworkRes'
+      message:
+        example: Created Success
+        type: string
+      status:
+        example: 201
+        type: integer
+    type: object
+  responses.CreatedSuccessResponse-CreateRouteRes:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        $ref: '#/definitions/CreateRouteRes'
+      message:
+        example: Created Success
+        type: string
+      status:
+        example: 201
+        type: integer
+    type: object
+  responses.CreatedSuccessResponse-UpstreamUpsertRes:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        $ref: '#/definitions/UpstreamUpsertRes'
+      message:
+        example: Created Success
+        type: string
+      status:
+        example: 201
+        type: integer
+    type: object
+  responses.CreatedSuccessResponse-CreateRecommendationRes:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        $ref: '#/definitions/CreateRecommendationRes'
+      message:
+        example: Created Success
+        type: string
+      status:
+        example: 201
+        type: integer
+    type: object
+  responses.CreatedSuccessResponse-CreateRpcRes:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        $ref: '#/definitions/CreateRpcRes'
+      message:
+        example: Created Success
+        type: string
+      status:
+        example: 201
+        type: integer
+    type: object
+  responses.DefaultSuccessResponse-DeleteNetworkRes:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        $ref: '#/definitions/DeleteNetworkRes'
+      message:
+        example: Created Success
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  responses.DefaultSuccessResponse-ListNetworkRes:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        $ref: '#/definitions/ListNetworkRes'
+      message:
+        example: Created Success
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  responses.DefaultSuccessResponse-ListRouteRes:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        $ref: '#/definitions/ListRouteRes'
+      message:
+        example: Created Success
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  responses.DefaultSuccessResponse-ListUpstreamRes:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        $ref: '#/definitions/ListUpstreamRes'
+      message:
+        example: Created Success
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  responses.DefaultSuccessResponse-UpstreamUpsertRes:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        $ref: '#/definitions/UpstreamUpsertRes'
+      message:
+        example: Created Success
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  responses.DefaultSuccessResponse-ListRecommendationRes:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        $ref: '#/definitions/ListRecommendationRes'
+      message:
+        example: Created Success
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  responses.DefaultSuccessResponse-ListRpcRes:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        $ref: '#/definitions/ListRpcRes'
+      message:
+        example: Created Success
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  responses.DefaultSuccessResponseWithoutData:
+    properties:
+      code:
+        example: 0
+        type: integer
+      message:
+        example: Success
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
+  responses.InternalServerErrorResponse:
+    properties:
+      code:
+        example: 13
+        type: integer
+      message:
+        example: Internal server error
+        type: string
+      status:
+        example: 500
+        type: integer
+    type: object
+  responses.NotFoundResponse:
+    properties:
+      code:
+        example: 6
+        type: integer
+      message:
+        example: Not found
+        type: string
+      status:
+        example: 404
+        type: integer
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+info:
+  contact:
+    email: support@starton.io
+    name: API Support
+    url: https://starton.io
+  description: This is the manager service for Tyrscale
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Tyrscale Manager API
+  version: "1.0"
+paths:
+  /networks:
+    get:
+      consumes:
+      - application/json
+      description: Get list networks
+      operationId: listNetworks
+      parameters:
+      - in: query
+        name: blockchain
+        type: string
+      - in: query
+        name: chainId
+        type: string
+      - in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.DefaultSuccessResponse-ListNetworkRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Get list networks
+      tags:
+      - networks
+    post:
+      consumes:
+      - application/json
+      description: Create a network
+      operationId: createNetwork
+      parameters:
+      - description: Network request
+        in: body
+        name: network
+        required: true
+        schema:
+          $ref: '#/definitions/Network'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/responses.CreatedSuccessResponse-CreateNetworkRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Create a network
+      tags:
+      - networks
+  /networks/{name}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a network
+      operationId: deleteNetwork
+      parameters:
+      - description: Network Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.DefaultSuccessResponse-DeleteNetworkRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Delete a network
+      tags:
+      - networks
+  /recommendations:
+    get:
+      consumes:
+      - application/json
+      description: List recommendation
+      operationId: listRecommendations
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.DefaultSuccessResponse-ListRecommendationRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: List recommendation
+      tags:
+      - recommendation
+    post:
+      consumes:
+      - application/json
+      description: Create a recommendation
+      operationId: createRecommendation
+      parameters:
+      - description: Recommendation Object request
+        in: body
+        name: recommendation
+        required: true
+        schema:
+          $ref: '#/definitions/CreateRecommendationReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/responses.CreatedSuccessResponse-CreateRecommendationRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Create a recommendation
+      tags:
+      - recommendation
+    put:
+      consumes:
+      - application/json
+      description: Update a recommendation
+      operationId: updateRecommendation
+      parameters:
+      - description: Recommendation Object request
+        in: body
+        name: recommendation
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateRecommendationReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.DefaultSuccessResponseWithoutData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.NotFoundResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Update a recommendation
+      tags:
+      - recommendation
+  /recommendations/{route_uuid}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a recommendation
+      operationId: deleteRecommendation
+      parameters:
+      - description: Route UUID
+        in: path
+        name: route_uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.DefaultSuccessResponseWithoutData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.NotFoundResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responses.ConflictResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Delete a recommendation
+      tags:
+      - recommendation
+  /routes:
+    get:
+      consumes:
+      - application/json
+      description: Get list routes
+      operationId: listRoutes
+      parameters:
+      - in: query
+        name: host
+        type: string
+      - enum:
+        - weight-round-robin
+        - least-load
+        - failover-priority
+        in: query
+        name: loadBalancerStrategy
+        type: string
+        x-enum-varnames:
+        - BalancerWeightRoundRobin
+        - BalancerLeastLoad
+        - BalancerPriority
+      - in: query
+        name: path
+        type: string
+      - in: query
+        name: uuid
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.DefaultSuccessResponse-ListRouteRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Get list routes
+      tags:
+      - routes
+    post:
+      consumes:
+      - application/json
+      description: Create a route
+      operationId: createRoute
+      parameters:
+      - description: Route request
+        in: body
+        name: route
+        required: true
+        schema:
+          $ref: '#/definitions/Route'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/responses.CreatedSuccessResponse-CreateRouteRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Create a route
+      tags:
+      - routes
+  /routes/{route_uuid}/upstreams:
+    get:
+      consumes:
+      - application/json
+      description: Get list upstreams
+      operationId: listUpstreams
+      parameters:
+      - description: Route UUID
+        in: path
+        name: route_uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.DefaultSuccessResponse-ListUpstreamRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Get list upstreams
+      tags:
+      - upstreams
+    put:
+      consumes:
+      - application/json
+      description: Create or update a upstream
+      operationId: upsertUpstream
+      parameters:
+      - description: Upstream request
+        in: body
+        name: upstream
+        required: true
+        schema:
+          $ref: '#/definitions/Upstream'
+      - description: Route UUID
+        in: path
+        name: route_uuid
+        required: true
+        type: string
+      - description: Upstream UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/responses.CreatedSuccessResponse-UpstreamUpsertRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Create or update a upstream
+      tags:
+      - upstreams
+  /routes/{route_uuid}/upstreams/{uuid}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a upstream
+      operationId: deleteUpstream
+      parameters:
+      - description: Route UUID
+        in: path
+        name: route_uuid
+        required: true
+        type: string
+      - description: Upstream UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.DefaultSuccessResponse-UpstreamUpsertRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Delete a upstream
+      tags:
+      - upstreams
+  /routes/{uuid}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a route
+      operationId: deleteRoute
+      parameters:
+      - description: Route UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.DefaultSuccessResponseWithoutData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Delete a route
+      tags:
+      - routes
+  /rpcs:
+    get:
+      consumes:
+      - application/json
+      description: List RPCs
+      operationId: listRPCs
+      parameters:
+      - description: UUID
+        in: query
+        name: uuid
+        type: string
+      - description: Chain ID
+        in: query
+        name: chain_id
+        type: string
+      - description: provider
+        in: query
+        name: provider
+        type: string
+      - description: type
+        in: query
+        name: type
+        type: string
+      - description: network_name
+        in: query
+        name: network_name
+        type: string
+      - description: sort_by
+        in: query
+        name: sort_by
+        type: string
+      - description: sort_ascending
+        in: query
+        name: sort_ascending
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.DefaultSuccessResponse-ListRpcRes'
+      summary: List RPCs
+      tags:
+      - rpcs
+    post:
+      consumes:
+      - application/json
+      description: Create a new Rpc
+      operationId: createRpc
+      parameters:
+      - description: Rpc request
+        in: body
+        name: rpc
+        required: true
+        schema:
+          $ref: '#/definitions/CreateRpcReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/responses.CreatedSuccessResponse-CreateRpcRes'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Create a new Rpc
+      tags:
+      - rpcs
+    put:
+      consumes:
+      - application/json
+      description: Update a RPC
+      operationId: updateRPC
+      parameters:
+      - description: RPC Object request
+        in: body
+        name: rpc
+        required: true
+        schema:
+          $ref: '#/definitions/Rpc'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.DefaultSuccessResponseWithoutData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Update a RPC
+      tags:
+      - rpcs
+  /rpcs/{uuid}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a RPC
+      operationId: deleteRPC
+      parameters:
+      - description: UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: Delete Rpc request
+        in: body
+        name: rpc
+        required: true
+        schema:
+          $ref: '#/definitions/DeleteRpcOptReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.DefaultSuccessResponseWithoutData'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.NotFoundResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Delete a RPC
+      tags:
+      - rpcs
+swagger: "2.0"

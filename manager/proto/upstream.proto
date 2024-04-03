@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package upstream;
+
+option go_package = "./;upstream";
+
+message UpstreamModel {
+  string uuid = 1;
+  optional string rpc_uuid = 2;
+  string host = 3;
+  string path = 4;
+  string scheme = 5;
+  int32 port = 6;
+  optional double weight = 7;
+}
+
+message UpstreamPublishUpsertModel {
+  string uuid = 1;
+  string route_host = 2;
+  string route_path = 3;
+  string host = 4;
+  string path = 5;
+  string scheme = 6;
+  int32 port = 7;
+  double weight = 8;
+}
+
+
+message UpstreamPublishDeleteModel {
+  string uuid = 1;
+  string route_host = 2;
+  string route_path = 3;
+}
+
+
+message UpstreamRPCRouteAssociation {
+  string uuid = 1;
+  string rpc_uuid = 2;
+  string route_uuid = 3;
+}

@@ -1,0 +1,6 @@
+environment: production
+http_port: 8888
+
+redis_uri: localhost:6379
+redis_password:
+redis_db: 0

@@ -1,0 +1,12 @@
+# generate .gitignore for go project
+_*
+.DS_Store
+.idea/
+coverage.out
+cover.out
+profile.cov
+
+# Folders
+bin/
+dist/
+

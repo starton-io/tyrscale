@@ -1,0 +1,8 @@
+go 1.21.6
+
+use (
+	./manager
+	./go-kit
+	./sdk/tyrscale-sdk-go
+	./gateway
+)

@@ -1,0 +1,54 @@
+# docker-compose.yaml with redis
+version: "3.9"
+
+
+services:
+  manager:
+    build:
+      context: ../
+      dockerfile: ./manager/Dockerfile
+    container_name: manager
+    restart: always
+    ports:
+    - 8888:8888
+    environment:
+    - redis_uri=redis:6379
+    depends_on:
+    - redis
+  gateway:
+    build:
+      context: ../
+      dockerfile: ./gateway/Dockerfile
+    container_name: gateway
+    restart: always
+    depends_on:
+    - manager
+    ports:
+    - 7777:7777
+    environment:
+    - redis_uri=redis:6379
+    - tyrscale_api_url=http://manager:8888/api/v1
+  #recommender:
+  #  build:
+  #    context: ../
+  #    dockerfile: ./recommender/Dockerfile
+  #  container_name: recommender
+  #  restart: always
+  #  depends_on:
+  #  - redis
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+    - 6380:6379
+  #jaeger:
+  #  image: jaegertracing/all-in-one:latest
+  #  container_name: jaeger
+  #  restart: always
+  #  ports:
+  #  - 4318:4318
+  #  - 6831:6831
+  #  - 6832:6832
+  #  - 16686:16686
+  #  - 14268:14268

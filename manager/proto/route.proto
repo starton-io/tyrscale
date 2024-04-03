@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package route;
+
+option go_package = "./;route";
+
+message RouteModel {
+  string uuid = 1;
+  string host = 2;
+  string path = 3;
+  string load_balancer_strategy = 5;
+  CircuitBreaker circuit_breaker = 6;
+  HealthCheck health_check = 7;
+}
+
+
+message CircuitBreaker {
+  bool enabled = 1;
+  uint32 max_requests = 2;
+  uint32 max_consecutive_failures = 3;
+  uint32 interval = 4;
+  uint32 timeout = 5;
+}
+
+message HealthCheck {
+  bool enabled = 1;
+  bool combined_with_circuit_breaker = 2;
+  string type = 3;
+  uint32 interval = 4;
+  uint32 timeout = 5;
+}

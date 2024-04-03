@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package recommendation;
+
+option go_package = "./;recommendation";
+
+message RecommendationModel {
+  string uuid = 1;
+  string route_uuid = 2;
+  string network_name = 3;
+  string schedule = 4;
+  string strategy = 5;
+}
+

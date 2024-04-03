@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package rpc;
+
+option go_package = "./;rpc";
+
+message RpcModel {
+  // @gotags: yaml:"collectors"
+  repeated string collectors = 1;
+  // @gotags: yaml:"network_name"
+  string network_name = 2;
+  // @gotags: yaml:"provider"
+  string provider = 3;
+  // @gotags: yaml:"url"
+  string url = 4;
+  // @gotags: yaml:"uuid"
+  string uuid = 5;
+  // @gotags: yaml:"chain_id"
+  int64 chain_id = 6;
+  // @gotags: yaml:"type"
+  string type = 7;
+}

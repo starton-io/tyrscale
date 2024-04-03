@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package network;
+
+option go_package = "./;network";
+
+message NetworkModel {
+  string blockchain = 1;
+  int64  chain_id = 2;
+  string name = 3;
+  string fqdn = 4;
+}
+
+message NetworksModel {
+  repeated NetworkModel networks = 1;
+}
+
+// optional fields
+message ListNetworkReq {
+  string blockchain = 1;
+  string name = 2;
+  int64 chain_id = 3;
+}
+
+message ListNetworkResp {
+  repeated NetworkModel items = 1;
+}
+
+service NetworkService {
+  rpc List(ListNetworkReq) returns (ListNetworkResp);
+}
