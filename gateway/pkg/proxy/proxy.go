@@ -395,14 +395,14 @@ func (m *ProxyController) GetLabelValue(key string) string {
 }
 
 func (m *ProxyController) AddUpstream(upstream *upstream.UpstreamPublishUpsertModel) {
-	chain := interceptor.InterceptorRequestChain{}
-	chain.Add(&interceptor.DefaultRequestInterceptor{
+	chainReq := interceptor.InitReqInterceptor
+	chainReq.Add(&interceptor.DefaultRequestInterceptor{
 		Host:   upstream.Host,
 		Path:   upstream.Path,
 		Scheme: upstream.Scheme,
 		Port:   upstream.Port,
 	})
-	chainRes := interceptor.InterceptorResponseChain{}
+	chainRes := interceptor.InitRespInterceptor
 	chainRes.Add(&interceptor.DefaultResponseInterceptor{})
 
 	proxy := &UpstreamClient{
@@ -418,7 +418,7 @@ func (m *ProxyController) AddUpstream(upstream *upstream.UpstreamPublishUpsertMo
 			},
 			DisablePathNormalizing: true,
 		},
-		RequestInterceptor:  chain,
+		RequestInterceptor:  chainReq,
 		ResponseInterceptor: chainRes,
 	}
 

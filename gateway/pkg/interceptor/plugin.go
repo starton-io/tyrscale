@@ -44,16 +44,16 @@ func NewInterceptorRequestChainFromFile(pluginPath string) *InterceptorRequestCh
 }
 
 func init() {
-	// get all files in ./plugins/interceptor/responses
-	interceptorRespFiles, err := filepath.Glob("./plugins/interceptor/responses/*")
+	// get all files in ./plugins/interceptor/response
+	interceptorRespFiles, err := filepath.Glob("./plugins/interceptor/response/*")
 	if err != nil {
 		log.Fatalf("Error opening plugin: %v", err)
 	}
 	for _, file := range interceptorRespFiles {
 		InitRespInterceptor.Add(NewInterceptorResponseChainFromFile(file))
 	}
-	// get all files in ./plugins/interceptor/requests
-	interceptorReqFiles, err := filepath.Glob("./plugins/interceptor/requests/*")
+	// get all files in ./plugins/interceptor/request
+	interceptorReqFiles, err := filepath.Glob("./plugins/interceptor/request/*")
 	if err != nil {
 		log.Fatalf("Error opening plugin: %v", err)
 	}

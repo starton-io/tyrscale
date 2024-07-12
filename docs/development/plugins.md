@@ -17,11 +17,11 @@ type IRequestInterceptor interface {
 ```
 3. Build the plugin
 ```bash
-go build -buildmode=plugin -o ./plugins/interceptor/requests/my_request_interceptor.so
+go build -buildmode=plugin -o ./plugins/interceptor/request/my_request_interceptor.so
 ```
-4. Add the plugin.so to the plugins folder
+4. move the my_request_interceptor.so to the plugins folder
 ```bash
-mv my_request_interceptor.so ./plugins/interceptor/requests/
+mv my_request_interceptor.so ./plugins/interceptor/request/
 ```
 
 ### Response Interceptors
@@ -37,11 +37,11 @@ type IResponseInterceptor interface {
 ```
 3. Build the plugin
 ```bash
-go build -buildmode=plugin -o ./plugins/interceptor/responses/my_response_interceptor.so
+go build -buildmode=plugin -o ./plugins/interceptor/response/my_response_interceptor.so
 ```
-4. Add the plugin.so to the plugins folder
+4. move the my_response_interceptor.so to the plugins folder
 ```bash
-mv my_responsoe_interceptor.so ./plugins/interceptor/rsponspses/
+mv my_responsoe_interceptor.so ./plugins/interceptor/response/
 ```
 
 ### Plugin Loader
