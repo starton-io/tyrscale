@@ -1,0 +1,163 @@
+#Release v0.1.0
+
+env:
+  - DOCKERFILE_MANAGER=./manager/Dockerfile.ci
+  - DOCKERFILE_GATEWAY=./gateway/Dockerfile.ci
+
+archives:
+  - id: archive
+    binary: [manager, gateway]
+    name_template: '{{ .Binary }}-{{ .Tag }}-{{ .Os }}-{{ .Arch }}'
+before:
+  hooks:
+    - make install-deps SERVICE=manager
+    - make install-deps SERVICE=gateway
+builds:
+  - binary: manager
+    id: manager
+    dir: ./manager
+    env:
+      - CGO_ENABLED=0
+    goarch:
+      - amd64
+      - arm64
+    goos:
+      - darwin
+      - linux
+    ldflags:
+      # The line below MUST align with the module in current provider/go.mod
+      - -X main.buildVersion={{ .Tag }}
+    main: ./cmd
+  - binary: gateway
+    id: gateway
+    dir: ./gateway
+    env:
+      - CGO_ENABLED=0
+    goarch:
+      - amd64
+      - arm64
+    goos:
+      - darwin
+      - linux
+    ldflags:
+      # The line below MUST align with the module in current provider/go.mod
+      - -X main.buildVersion={{ .Tag }}
+    main: ./cmd
+
+dockers:
+  ##############
+  #  Manager API
+  ##############
+  - goos: linux
+    ids:
+      - manager
+    goarch: amd64
+    image_templates:
+      - "ghcr.io/starton-io/tyrscale-manager:{{ .Tag }}-amd64"
+    use: buildx
+    dockerfile: "{{ .Env.DOCKERFILE_MANAGER }}"
+    build_flag_templates:
+      - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.description={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+
+      
+  - goos: linux
+    goarch: arm64
+    ids:
+      - manager
+    image_templates:
+      - "ghcr.io/starton-io/tyrscale-manager:{{ .Tag }}-arm64"
+    use: buildx
+    dockerfile: "{{ .Env.DOCKERFILE_MANAGER }}"
+    build_flag_templates:
+      - "--platform=linux/arm64"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.description={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+
+
+  ##############
+  #  Gateway 
+  ##############
+  - goos: linux
+    goarch: amd64
+    ids:
+      - gateway
+ 
+ 
+    image_templates:
+      - "ghcr.io/starton-io/tyrscale-gateway:{{ .Tag }}-amd64"
+    use: buildx
+    dockerfile: "{{ .Env.DOCKERFILE_GATEWAY }}" 
+    build_flag_templates:
+      - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.description={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+
+
+  - goos: linux
+    goarch: arm64
+    ids:
+      - gateway
+ 
+    image_templates:
+      - "ghcr.io/starton-io/tyrscale-gateway:{{ .Tag }}-arm64"
+    use: buildx
+    dockerfile: "{{ .Env.DOCKERFILE_GATEWAY }}" 
+    build_flag_templates:
+      - "--platform=linux/arm64"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.description={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+  
+
+checksum:
+  extra_files:
+    ##############
+    #  Manager
+    ##############
+    - glob: dist/manager_linux_arm64/manager
+      name_template: manager_linux_arm64
+    - glob: dist/manager_linux_amd64_v1/manager
+      name_template: manager_linux_amd64_v1
+    - glob: dist/manager_darwin_arm64/manager
+      name_template: manager_darwin_arm64 
+    - glob: dist/manager_darwin_amd64_v1/manager
+      name_template: manager_darwin_amd64_v1
+
+    ##############
+    #  Gateway
+    ##############
+    - glob: dist/gateway_linux_arm64/gateway
+      name_template: gateway_linux_arm64
+    - glob: dist/gateway_linux_amd64_v1/gateway
+      name_template: gateway_linux_amd64_v1
+    - glob: dist/gateway_darwin_arm64/gateway
+      name_template: gateway_darwin_arm64 
+    - glob: dist/gateway_darwin_amd64_v1/gateway
+      name_template: gateway_darwin_amd64_v1
+
+changelog:
+  groups:
+    - title: Features
+      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
+      order: 0
+    - title: "Bug fixes"
+      regexp: '^.*?bug(\([[:word:]]+\))??!?:.+$'
+      order: 1
+  #filters:
+  #  include:
+  #    - "^feat:"
+  #    - "^chore:"
+release:
+  disable: false
+  prerelease: auto
+snapshot:
+  name_template: '{{ .Tag }}-SNAPSHOT'

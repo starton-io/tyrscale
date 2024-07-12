@@ -3,6 +3,7 @@
         "module": "commonjs",
         "noImplicitAny": false,
         "suppressImplicitAnyIndexErrors": true,
+        "ignoreDeprecations": "5.0", // Added to silence the deprecation warning
         "target": "ES6",
         "allowSyntheticDefaultImports": true,
         "esModuleInterop": true,
@@ -12,7 +13,13 @@
         "sourceMap": true,
         "noLib": false,
         "declaration": true,
-        "lib": ["dom", "es6", "es5", "dom.iterable", "scripthost"],
+        "lib": [
+            "dom",
+            "es6",
+            "es5",
+            "dom.iterable",
+            "scripthost"
+        ],
         "outDir": "dist",
         "typeRoots": [
             "node_modules/@types"

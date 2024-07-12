@@ -1,5 +1,5 @@
 {
-    "name": "tyrscale-sdk-typescript",
+    "name": "@starton/tyrscale-sdk-typescript",
     "version": "0.0.1",
     "description": "NodeJS client for tyrscale-sdk-typescript",
     "repository": {
