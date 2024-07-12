@@ -6,8 +6,11 @@ env:
   - DOCKERFILE_GATEWAY=./gateway/Dockerfile.ci
 
 archives:
-  - id: archive
-    builds: [ manager, gateway ]
+  - id: archive1
+    builds: [ manager ]
+    name_template: '{{ .Binary }}-{{ .Tag }}-{{ .Os }}-{{ .Arch }}'
+  - id: archive2
+    builds: [ gateway ]
     name_template: '{{ .Binary }}-{{ .Tag }}-{{ .Os }}-{{ .Arch }}'
 before:
   hooks:
