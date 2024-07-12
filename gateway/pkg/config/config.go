@@ -48,6 +48,9 @@ type Schema struct {
 	// otlp
 	OtlpEnabled  bool   `env:"otlp_enabled" envDefault:"false"`
 	OtlpEndpoint string `env:"otlp_endpoint" envDefault:"http://localhost:4318/v1/traces"`
+
+	// plugin
+	PluginPath string `env:"plugin_path" envDefault:"./plugins"`
 }
 
 var (

@@ -1,6 +1,8 @@
 package interceptor
 
-import "github.com/valyala/fasthttp"
+import (
+	"github.com/valyala/fasthttp"
+)
 
 type InterceptorRequestChain struct {
 	interceptors []IRequestInterceptor
