@@ -39,7 +39,6 @@ jobs:
 
   publish-sdk-typescript:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: build-sdk-typescript
     runs-on: ubuntu-latest
     permissions:
       packages: write

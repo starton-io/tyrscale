@@ -1,5 +1,6 @@
 #Release v0.1.0
 
+version: 2
 env:
   - DOCKERFILE_MANAGER=./manager/Dockerfile.ci
   - DOCKERFILE_GATEWAY=./gateway/Dockerfile.ci
