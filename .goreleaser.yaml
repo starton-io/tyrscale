@@ -7,7 +7,7 @@ env:
 
 archives:
   - id: archive
-    binary: [manager, gateway]
+    builds: [ manager, gateway ]
     name_template: '{{ .Binary }}-{{ .Tag }}-{{ .Os }}-{{ .Arch }}'
 before:
   hooks:
