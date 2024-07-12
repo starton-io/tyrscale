@@ -1,25 +1,7 @@
-# Start a new stage from scratch
-FROM alpine:latest  
+FROM gcr.io/distroless/static-debian11  
 
-# Add ca-certificates
-RUN apk add --no-cache ca-certificates
-
-# Create a dedicated user and group to run the service
-# Avoid running as root for security
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
-WORKDIR /home/appuser
-
-# Copy the Pre-built binary file from the previous stage
 COPY manager .
 
-# Change ownership of the work directory to the appuser
-RUN chown -R appuser:appgroup /home/appuser
+EXPOSE 7777
 
-# Use the created user to run the service
-USER appuser
-
-EXPOSE 8080
-
-# Command to run the executable
-CMD ["/home/appuser/manager"]
+CMD ["/manager"]
