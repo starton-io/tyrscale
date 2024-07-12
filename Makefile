@@ -71,7 +71,7 @@ generate-sdk-go:
 	cd ./sdk/tyrscale-sdk-go && openapi-generator generate -i ../../manager/docs/v3/openapi.yaml -g go --additional-properties packageName=tyrscalesdkgo,packageVersion=$(VERSION),useTags=true,generateInterfaces=true --git-user-id starton-io --git-repo-id tyrscale/sdk/tyrscale-sdk-go
 
 generate-sdk-typescript:
-	cd ./sdk/tyrscale-sdk-typescript && openapi-generator generate -i ../../manager/docs/v3/openapi.yaml -g typescript-node --additional-properties=supportsES6=true,npmName=tyrscale-sdk-typescript,npmVersion=$(VERSION) --openapi-normalizer REFACTOR_ALLOF_WITH_PROPERTIES_ONLY=true --git-user-id starton-io --git-repo-id tyrscale/sdk/tyrscale-sdk-typescript
+	cd ./sdk/tyrscale-sdk-typescript && openapi-generator generate -i ../../manager/docs/v3/openapi.yaml -g typescript-fetch --additional-properties=supportsES6=true,npmName="@starton/tyrscale-sdk-typescript",npmVersion=$(VERSION) --openapi-normalizer REFACTOR_ALLOF_WITH_PROPERTIES_ONLY=true --git-user-id starton-io --git-repo-id tyrscale/sdk/tyrscale-sdk-typescript
 
 install:
 	go install github.com/swaggo/swag/cmd/swag@latest
