@@ -2,7 +2,7 @@
 FROM alpine:latest  
 
 # Add ca-certificates
-RUN apk --no-cache add ca-certificates
+RUN apk add --no-cache ca-certificates
 
 # Create a dedicated user and group to run the service
 # Avoid running as root for security
