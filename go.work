@@ -5,4 +5,5 @@ use (
 	./go-kit
 	./sdk/tyrscale-sdk-go
 	./gateway
+	./plugins/interceptor/response
 )

@@ -29,10 +29,11 @@ The Gateway is a service that is responsible for routing the request to the avai
 
 [Gateway Documentations](./docs/architectures/gateway.md)
 
-#### 4.1 Gateway Performance [ref](./docs/monitoring/monitoring.md)
+#### 4.1 Gateway Performance 
 
 The Gateway expose prometheus metrics in /metrics handler.
 
+[Metrics Documentations](./docs/monitoring/monitoring.md)
 
 ## Getting Started
 

@@ -3,9 +3,11 @@ package config
 import (
 	"flag"
 	"log"
+	"os"
 
 	"github.com/caarlos0/env"
 	"github.com/joho/godotenv"
+	"gopkg.in/yaml.v2"
 )
 
 const (
@@ -48,11 +50,28 @@ type Schema struct {
 	// otlp
 	OtlpEnabled  bool   `env:"otlp_enabled" envDefault:"false"`
 	OtlpEndpoint string `env:"otlp_endpoint" envDefault:"http://localhost:4318/v1/traces"`
+
+	// plugin
+	PluginPath string `env:"plugin_path" envDefault:"./plugins"`
+
+	// grpc
+	GrpcPort int `env:"grpc_port" envDefault:"7778"`
+}
+
+type PluginConfig struct {
+	Plugins []*Plugin `yaml:"plugins"`
+}
+
+type Plugin struct {
+	Name      string `yaml:"name"`
+	Path      string `yaml:"path"`
+	Sha256sum string `yaml:"sha256sum"`
 }
 
 var (
-	cfg     Schema
-	cfgPath = flag.String("config", "./config/config.yaml", "path to the configuration file")
+	cfg              Schema
+	cfgPath          = flag.String("gatewayConfig", "./config/config.yaml", "path to the gateway configuration file")
+	pluginConfigPath = flag.String("pluginConfig", "./plugin.yaml", "path to the plugin configuration file")
 )
 
 func LoadConfig() (*Schema, error) {
@@ -70,6 +89,30 @@ func LoadConfig() (*Schema, error) {
 	}
 
 	return &cfg, nil
+}
+
+func LoadPluginConfig() (*PluginConfig, error) {
+	flag.Parse()
+	pluginConfig := &PluginConfig{}
+
+	// Check if the plugin configuration file exists
+	if _, err := os.Stat(*pluginConfigPath); os.IsNotExist(err) {
+		log.Printf("Plugin configuration file does not exist: %v", *pluginConfigPath)
+		return pluginConfig, nil // Return an empty PluginConfig
+	}
+	log.Printf("Plugin configuration file exists: %v", *pluginConfigPath)
+
+	yamlData, err := os.ReadFile(*pluginConfigPath)
+	if err != nil {
+		return nil, err
+	}
+
+	err = yaml.Unmarshal(yamlData, pluginConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	return pluginConfig, nil
 }
 
 func GetConfig() *Schema {

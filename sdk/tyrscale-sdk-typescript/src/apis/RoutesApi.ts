@@ -15,14 +15,17 @@
 
 import * as runtime from '../runtime';
 import type {
+  CreateRouteReq,
   ResponsesBadRequestResponse,
   ResponsesCreatedSuccessResponseCreateRouteRes,
   ResponsesDefaultSuccessResponseListRouteRes,
   ResponsesDefaultSuccessResponseWithoutData,
   ResponsesInternalServerErrorResponse,
-  Route,
+  UpdateRouteReq,
 } from '../models/index';
 import {
+    CreateRouteReqFromJSON,
+    CreateRouteReqToJSON,
     ResponsesBadRequestResponseFromJSON,
     ResponsesBadRequestResponseToJSON,
     ResponsesCreatedSuccessResponseCreateRouteResFromJSON,
@@ -33,12 +36,12 @@ import {
     ResponsesDefaultSuccessResponseWithoutDataToJSON,
     ResponsesInternalServerErrorResponseFromJSON,
     ResponsesInternalServerErrorResponseToJSON,
-    RouteFromJSON,
-    RouteToJSON,
+    UpdateRouteReqFromJSON,
+    UpdateRouteReqToJSON,
 } from '../models/index';
 
 export interface CreateRouteRequest {
-    route: Route;
+    route: CreateRouteReq;
 }
 
 export interface DeleteRouteRequest {
@@ -50,6 +53,11 @@ export interface ListRoutesRequest {
     loadBalancerStrategy?: ListRoutesLoadBalancerStrategyEnum;
     path?: string;
     uuid?: string;
+}
+
+export interface UpdateRouteRequest {
+    uuid: string;
+    route: UpdateRouteReq;
 }
 
 /**
@@ -80,7 +88,7 @@ export class RoutesApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: RouteToJSON(requestParameters['route']),
+            body: CreateRouteReqToJSON(requestParameters['route']),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ResponsesCreatedSuccessResponseCreateRouteResFromJSON(jsonValue));
@@ -171,6 +179,51 @@ export class RoutesApi extends runtime.BaseAPI {
      */
     async listRoutes(requestParameters: ListRoutesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponsesDefaultSuccessResponseListRouteRes> {
         const response = await this.listRoutesRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Update a route
+     * Update a route
+     */
+    async updateRouteRaw(requestParameters: UpdateRouteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponsesDefaultSuccessResponseWithoutData>> {
+        if (requestParameters['uuid'] == null) {
+            throw new runtime.RequiredError(
+                'uuid',
+                'Required parameter "uuid" was null or undefined when calling updateRoute().'
+            );
+        }
+
+        if (requestParameters['route'] == null) {
+            throw new runtime.RequiredError(
+                'route',
+                'Required parameter "route" was null or undefined when calling updateRoute().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/routes/{uuid}`.replace(`{${"uuid"}}`, encodeURIComponent(String(requestParameters['uuid']))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UpdateRouteReqToJSON(requestParameters['route']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponsesDefaultSuccessResponseWithoutDataFromJSON(jsonValue));
+    }
+
+    /**
+     * Update a route
+     * Update a route
+     */
+    async updateRoute(requestParameters: UpdateRouteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponsesDefaultSuccessResponseWithoutData> {
+        const response = await this.updateRouteRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

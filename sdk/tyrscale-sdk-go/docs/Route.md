@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **CircuitBreaker** | Pointer to [**CircuitbreakerSettings**](CircuitbreakerSettings.md) |  | [optional] 
-**HealthCheck** | Pointer to [**HealthCheckConfig**](HealthCheckConfig.md) |  | [optional] 
+**HealthCheck** | Pointer to [**HealthcheckHealthCheckConfig**](HealthcheckHealthCheckConfig.md) |  | [optional] 
 **Host** | **string** |  | 
 **LoadBalancerStrategy** | [**BalancerLoadBalancerStrategy**](BalancerLoadBalancerStrategy.md) |  | 
 **Path** | Pointer to **string** |  | [optional] 
@@ -57,20 +57,20 @@ HasCircuitBreaker returns a boolean if a field has been set.
 
 ### GetHealthCheck
 
-`func (o *Route) GetHealthCheck() HealthCheckConfig`
+`func (o *Route) GetHealthCheck() HealthcheckHealthCheckConfig`
 
 GetHealthCheck returns the HealthCheck field if non-nil, zero value otherwise.
 
 ### GetHealthCheckOk
 
-`func (o *Route) GetHealthCheckOk() (*HealthCheckConfig, bool)`
+`func (o *Route) GetHealthCheckOk() (*HealthcheckHealthCheckConfig, bool)`
 
 GetHealthCheckOk returns a tuple with the HealthCheck field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
 ### SetHealthCheck
 
-`func (o *Route) SetHealthCheck(v HealthCheckConfig)`
+`func (o *Route) SetHealthCheck(v HealthcheckHealthCheckConfig)`
 
 SetHealthCheck sets HealthCheck field to given value.
 

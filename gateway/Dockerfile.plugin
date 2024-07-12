@@ -1,0 +1,8 @@
+FROM golang:1.21.6 as builder
+
+COPY ./plugin/example-plugin/ /example-plugin
+RUN cd /example-plugin && go build -buildmode=plugin -o example-plugin.so .
+
+FROM ghcr.io/starton-io/tyrscale-gateway:v0.0.1-amd64
+
+COPY --from=builder /example-plugin/example-plugin.so ./plugin/example-plugin.so

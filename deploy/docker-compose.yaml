@@ -28,6 +28,7 @@ services:
     environment:
     - redis_uri=redis:6379
     - tyrscale_api_url=http://manager:8888/api/v1
+  # enterprise feature
   #recommender:
   #  build:
   #    context: ../

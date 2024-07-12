@@ -1,12 +1,13 @@
 package middleware
 
 import (
+	"github.com/starton-io/tyrscale/gateway/pkg/middleware/types"
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 )
 
 // NewRecover recover middleware, prevent crashing when a handler paniced
-func NewRecover(logger *zap.Logger) Middleware {
+func NewRecover(logger *zap.Logger) types.MiddlewareFunc {
 	return func(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 		return func(ctx *fasthttp.RequestCtx) {
 			defer func() {

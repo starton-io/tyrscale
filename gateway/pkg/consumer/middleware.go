@@ -11,9 +11,9 @@ import (
 	"github.com/starton-io/tyrscale/go-kit/pkg/logger"
 )
 
-func logRetryAttempt(retryNum int, delay time.Duration) {
-	logger.Error("retry attempt", "retry", retryNum, "delay", delay)
-}
+//func logRetryAttempt(retryNum int, delay time.Duration) {
+//	logger.Error("retry attempt", "retry", retryNum, "delay", delay)
+//}
 
 func SetupMiddleware() []message.HandlerMiddleware {
 	return []message.HandlerMiddleware{

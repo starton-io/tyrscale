@@ -29,7 +29,7 @@ func (b LoadBalancerStrategy) String() string {
 
 func (b LoadBalancerStrategy) Validate() error {
 	for _, value := range validateBalancerValues {
-		if b == value {
+		if b.String() == value.String() {
 			return nil
 		}
 	}

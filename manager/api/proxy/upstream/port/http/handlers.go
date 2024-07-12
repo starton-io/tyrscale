@@ -37,7 +37,6 @@ func NewUpstreamHandler(service service.IUpstreamService, validator validation.V
 //	@Router			/routes/{route_uuid}/upstreams [put]
 //
 //	@Param			route_uuid	path	string	true	"Route UUID"
-//	@Param			uuid		path	string	true	"Upstream UUID"
 func (h *UpstreamHandler) UpsertUpstream(c *fiber.Ctx) error {
 	req := new(dto.Upstream)
 	routeUuid := c.Params("route_uuid")

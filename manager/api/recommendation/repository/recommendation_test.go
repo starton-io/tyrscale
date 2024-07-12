@@ -67,7 +67,7 @@ func (suite *RecommendationRepositoryTestSuite) TestList() {
 	listRecommendationsParams := &dto.ListRecommendationReq{
 		RouteUuid: "test",
 	}
-	filterParams := kv.NewParamsFilterPB[*pb.RecommendationModel](map[string]string{"route_uuid": "test"}, true, "", 0)
+	filterParams := kv.NewParamsFilterPB[*pb.RecommendationModel](map[string]string{"route_uuid": "test"}, true, "test", 0)
 
 	ctx := context.Background()
 	suite.mockDB.On("ScanHash", ctx, "recommendations", filterParams).Return(responses, nil)

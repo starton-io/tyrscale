@@ -1,8 +1,11 @@
 package interceptor
 
 import (
+	"bytes"
+	"compress/gzip"
 	"errors"
 
+	"github.com/starton-io/tyrscale/go-kit/pkg/logger"
 	"github.com/valyala/fasthttp"
 )
 
@@ -35,6 +38,14 @@ type DefaultResponseInterceptor struct {
 }
 
 func (r *DefaultResponseInterceptor) Intercept(res *fasthttp.Response) error {
+	logger.Debugf("first intercepting response")
+
+	//body, err := res.BodyGunzip()
+	//if err != nil {
+	//	return err
+	//}
+	//res.SetBody(body)
+
 	if res.StatusCode() == fasthttp.StatusTooManyRequests {
 		return errors.New("too many requests")
 	}
@@ -42,5 +53,35 @@ func (r *DefaultResponseInterceptor) Intercept(res *fasthttp.Response) error {
 		return errors.New("invalid response")
 	}
 
+	return nil
+}
+
+type DefaultLastResponseInterceptor struct {
+}
+
+func gZipData(data []byte) (compressedData []byte, err error) {
+	var b bytes.Buffer
+	gz := gzip.NewWriter(&b)
+	_, err = gz.Write(data)
+	if err != nil {
+		return
+	}
+	if err = gz.Flush(); err != nil {
+		return
+	}
+	if err = gz.Close(); err != nil {
+		return
+	}
+	compressedData = b.Bytes()
+	return
+}
+
+func (r *DefaultLastResponseInterceptor) Intercept(res *fasthttp.Response) error {
+	//gzip the body
+	body, err := gZipData(res.Body())
+	if err != nil {
+		return err
+	}
+	res.SetBody(body)
 	return nil
 }

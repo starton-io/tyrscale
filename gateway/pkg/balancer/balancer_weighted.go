@@ -55,7 +55,7 @@ func (r *roundRobinWeight) Balance() ([]string, error) {
 			if r.cw <= 0 {
 				r.cw = r.maxWeight
 				if r.cw == 0 {
-					return []string{}, errors.New("no upstreams")
+					return []string{}, nil
 				}
 			}
 		}
@@ -89,7 +89,7 @@ func (r *roundRobinWeight) AddServer(server *Server, opts ...ServerOption) {
 		}
 	}
 	r.servers = append(r.servers, server)
-	r.count += 1
+	r.count++
 }
 
 func (r *roundRobinWeight) GetStrategy() LoadBalancerStrategy {
@@ -176,11 +176,24 @@ func (r *roundRobinWeight) Reset() {
 	r.cw = 0
 }
 
-func gcd(a, b int) int {
-	for b != 0 {
-		a, b = b, a%b
+//func gcd(a, b int) int {
+//	for b != 0 {
+//		a, b = b, a%b
+//	}
+//	return a
+//}
+
+func gcd(x, y int) int {
+	var t int
+	for {
+		t = (x % y)
+		if t > 0 {
+			x = y
+			y = t
+		} else {
+			return y
+		}
 	}
-	return a
 }
 
 func max(x, y int) int {

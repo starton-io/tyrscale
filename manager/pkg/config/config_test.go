@@ -44,6 +44,7 @@ func TestLoadConfig(t *testing.T) {
 				RedisDB:                 0,
 				RedisStreamGlobalPrefix: "tyrscale:stream",
 				RedisDBGlobalPrefix:     "tyrscale:db",
+				GatewayUrl:              "localhost:7778",
 			},
 		},
 	}

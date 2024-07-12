@@ -3,12 +3,13 @@ package middleware
 import (
 	"time"
 
+	"github.com/starton-io/tyrscale/gateway/pkg/middleware/types"
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 )
 
 // NewLogger logs after a request
-func NewLogger(logger *zap.Logger) MiddlewareFunc {
+func NewLogger(logger *zap.Logger) types.MiddlewareFunc {
 	return func(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 		return func(ctx *fasthttp.RequestCtx) {
 			var startTime = time.Now()
