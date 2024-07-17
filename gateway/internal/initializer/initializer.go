@@ -87,6 +87,21 @@ func (i *ProxyInitializer) Initialize(ctx context.Context) error {
 		if err != nil {
 			return fmt.Errorf("failed to create proxy handler: %w", err)
 		}
+		if currentRoute.Path == nil {
+			currentRoute.Path = ptr.String("/")
+		}
+		listMiddleware := []middleware.MiddlewareFunc{middleware.NewPrometheus(&middleware.Prometheus{RouteUuid: currentRoute.GetUuid()})}
+		setupMiddleware := middleware.MiddlewareComposer(listMiddleware)
+
+		route := route.NewRoute(
+			currentRoute.GetUuid(),
+			currentRoute.Host,
+			currentRoute.GetPath(),
+			reverseproxy.NewReverseProxyHandler(proxyHandler),
+			proxyController,
+			route.WithHealthCheckConfig(healthCheckSettings),
+			route.WithMiddleware(setupMiddleware),
+		)
 
 		if listUpstream.Data != nil {
 			for idx, upstream := range listUpstream.Data.Items {
@@ -97,6 +112,8 @@ func (i *ProxyInitializer) Initialize(ctx context.Context) error {
 						uint32(currentRoute.HealthCheck.GetInterval()),
 						uint32(currentRoute.HealthCheck.GetTimeout()),
 					)
+					i.router.AddHealthCheck(currentRoute.GetUuid(), healthCheckRoute)
+					route.HealthCheckConfig = healthCheckSettings
 					if proxyController.CircuitBreaker != nil && currentRoute.HealthCheck.GetCombinedWithCircuitBreaker() {
 						healthCheckRoute.SetCircuitBreaker(proxyController.CircuitBreaker)
 					}
@@ -124,27 +141,6 @@ func (i *ProxyInitializer) Initialize(ctx context.Context) error {
 				}
 				proxyController.AddUpstream(upstreamModel)
 			}
-		}
-
-		if currentRoute.Path == nil {
-			currentRoute.Path = ptr.String("/")
-		}
-		listMiddleware := []middleware.MiddlewareFunc{middleware.NewPrometheus(&middleware.Prometheus{RouteUuid: currentRoute.GetUuid()})}
-		setupMiddleware := middleware.MiddlewareComposer(listMiddleware)
-
-		route := route.NewRoute(
-			currentRoute.GetUuid(),
-			currentRoute.Host,
-			currentRoute.GetPath(),
-			reverseproxy.NewReverseProxyHandler(proxyHandler),
-			proxyController,
-			route.WithHealthCheckConfig(healthCheckSettings),
-			route.WithMiddleware(setupMiddleware),
-		)
-
-		if currentRoute.HealthCheck != nil && currentRoute.HealthCheck.GetEnabled() {
-			i.router.AddHealthCheck(currentRoute.GetUuid(), healthCheckRoute)
-			route.HealthCheckConfig = healthCheckSettings
 		}
 
 		if err := i.router.Add(route); err != nil {

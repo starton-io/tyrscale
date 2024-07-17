@@ -3,6 +3,7 @@ package healthcheck
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -10,6 +11,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/starton-io/tyrscale/gateway/pkg/circuitbreaker"
 	"github.com/starton-io/tyrscale/gateway/pkg/proxy"
+	"github.com/starton-io/tyrscale/go-kit/pkg/logger"
 
 	jsonrpc "github.com/starton-io/tyrscale/gateway/pkg/jsonrpc"
 	"github.com/valyala/fasthttp"
@@ -69,26 +71,37 @@ func GetBlockNumber(c *proxy.UpstreamClient, timeout time.Duration) (uint64, err
 	req.SetBody([]byte(`{"method":"eth_blockNumber","params":[],"id":1,"jsonrpc":"2.0"}`))
 
 	if err := c.Client.DoTimeout(req, resp, timeout); err != nil {
+		logger.Errorf("error doing request: %v", err)
 		return 0, err
 	}
 
 	if resp.StatusCode() != http.StatusOK {
+		logger.Errorf("unhealthy service status code: %d", resp.StatusCode())
 		return 0, fmt.Errorf("unhealthy service status code: %d", resp.StatusCode())
 	}
 
 	var rpcResp jsonrpc.JsonrpcMessage
 	if err := json.Unmarshal(resp.Body(), &rpcResp); err != nil {
+		logger.Errorf("error unmarshalling response: %v", err)
 		return 0, err
 	}
 
 	if rpcResp.Error != nil {
+		logger.Errorf("JSON-RPC error: %s", rpcResp.Error.Message)
 		return 0, fmt.Errorf("JSON-RPC error: %s", rpcResp.Error.Message)
 	}
 
 	if rpcResp.Result == nil {
+		logger.Errorf("invalid JSON response from the service: result field is missing")
 		return 0, fmt.Errorf("invalid JSON response from the service: result field is missing")
 	}
-	return hexutil.DecodeUint64(string(rpcResp.Result[1 : len(rpcResp.Result)-1]))
+	blockNumber, err := hexutil.DecodeUint64(string(rpcResp.Result[1 : len(rpcResp.Result)-1]))
+	if err != nil {
+		logger.Errorf("error decoding block number: %v", err)
+		return 0, err
+	}
+	logger.Debugf("upstream UUID: %s, block number: %d", c.Client.Name, blockNumber)
+	return blockNumber, nil
 }
 
 func (h *EthBlockNumber) CheckHealth() error {
@@ -131,6 +144,7 @@ func (h *EthBlockNumber) CheckHealth() error {
 			if blockNumberUint > highestBlock {
 				highestBlock = blockNumberUint
 			}
+			client.Healthy = true
 		}(client)
 	}
 
@@ -140,6 +154,7 @@ func (h *EthBlockNumber) CheckHealth() error {
 
 	// Update client health status
 	for _, client := range clients {
+		log.Println(client.Client.Name, client.Healthy && mapBlockNumber[client.Client.Name] >= h.highestBlock && mapBlockNumber[client.Client.Name] != 0)
 		h.clientManager.SetHealthy(client.Client.Name, client.Healthy && mapBlockNumber[client.Client.Name] >= h.highestBlock && mapBlockNumber[client.Client.Name] != 0)
 	}
 	return nil

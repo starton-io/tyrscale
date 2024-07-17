@@ -79,17 +79,17 @@ func (r *roundRobinWeight) AddServer(server *Server, opts ...ServerOption) {
 		if r.gcd == 0 {
 			r.gcd = server.Weight
 			r.maxWeight = server.Weight
-			r.index = -1
-			r.cw = 0
 		} else {
 			r.gcd = gcd(r.gcd, server.Weight)
 			if r.maxWeight < server.Weight {
 				r.maxWeight = server.Weight
 			}
 		}
+		r.index = -1
+		r.cw = 0
 	}
 	r.servers = append(r.servers, server)
-	r.count += 1
+	r.count++
 }
 
 func (r *roundRobinWeight) GetStrategy() LoadBalancerStrategy {

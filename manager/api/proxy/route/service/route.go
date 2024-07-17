@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/uuid"
@@ -53,6 +52,15 @@ func (s *RouteService) Create(ctx context.Context, req *dto.Route) (*dto.CreateR
 	ctx, span := tracer.Start(ctx, "UpsertRouteService", trace.WithAttributes(attribute.String("app.route.uuid", routeUuid)))
 	defer tracer.SafeEndSpan(span)
 
+	// check if there is a route with the same host and path
+	routes, err := s.repo.List(ctx, &dto.ListRouteReq{Host: req.Host, Path: req.Path})
+	if err != nil {
+		return nil, err
+	}
+	if len(routes) > 0 {
+		return nil, errors.New("route already exists")
+	}
+
 	route := &pb.RouteModel{
 		Uuid:                 routeUuid,
 		Host:                 req.Host,
@@ -78,6 +86,12 @@ func (s *RouteService) Create(ctx context.Context, req *dto.Route) (*dto.CreateR
 			Timeout:                    req.HealthCheck.Timeout,
 		}
 	}
+
+	//if req.Plugins != nil {
+	//	for _, plugin := range req.Plugins {
+	//		route.Plugins = append(route.Plugins, &pb.Plugin{Name: plugin.Name, Priority: uint32(plugin.Priority)})
+	//	}
+	//}
 
 	if err := s.repo.Upsert(ctx, route); err != nil {
 		return nil, err
@@ -131,7 +145,6 @@ func (s *RouteService) List(ctx context.Context, req *dto.ListRouteReq) ([]*pb.R
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(routes)
 	return routes, nil
 }
 

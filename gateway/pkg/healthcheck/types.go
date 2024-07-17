@@ -10,6 +10,7 @@ type HealthCheckType string
 
 const (
 	EthBlockNumberType HealthCheckType = "eth_block_number"
+	EthSyncingType     HealthCheckType = "eth_syncing"
 )
 
 type HealthCheckConfig struct {

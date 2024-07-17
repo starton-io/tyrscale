@@ -56,7 +56,7 @@ func (r *RecommendationRepository) List(ctx context.Context, filterParams *dto.L
 	}
 	filter := kv.NewParamsFilterPB[*pb.RecommendationModel](matchCriteria, false, "", 0)
 	if matchCriteria["route_uuid"] != "" {
-		filter.MatchCriteria["route_uuid"] = matchCriteria["route_uuid"]
+		filter.PrefilterPattern = matchCriteria["route_uuid"]
 		filter.EnablePrefilter = true
 	}
 

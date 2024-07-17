@@ -11,6 +11,8 @@ func NewHealthCheck(healthCheckType HealthCheckType, clientManager proxy.ClientM
 	switch healthCheckType {
 	case EthBlockNumberType:
 		return NewHealthEthBlockNumber(clientManager, WithInterval(time.Duration(interval)*time.Millisecond), WithTimeout(time.Duration(timeout)*time.Millisecond)), nil
+	case EthSyncingType:
+		return NewHealthEthSyncing(clientManager, WithEthSyncingInterval(time.Duration(interval)*time.Millisecond), WithEthSyncingTimeout(time.Duration(timeout)*time.Millisecond)), nil
 	default:
 		return nil, fmt.Errorf("invalid healthcheck type: %s", healthCheckType)
 	}
