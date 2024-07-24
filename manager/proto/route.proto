@@ -4,6 +4,7 @@ package route;
 
 option go_package = "./;route";
 
+
 message RouteModel {
   string uuid = 1;
   string host = 2;
@@ -11,6 +12,28 @@ message RouteModel {
   string load_balancer_strategy = 5;
   CircuitBreaker circuit_breaker = 6;
   HealthCheck health_check = 7;
+  Plugins plugins = 8;
+}
+
+message Plugins {
+  repeated Plugin interceptor_request = 1;
+  repeated Plugin interceptor_response = 2;
+  repeated Plugin middleware = 3;
+}
+
+
+message Plugin {
+  string name = 1;
+  uint32 priority = 2;
+}
+
+
+message PublishPlugin {
+  string route_host = 1;
+  string route_path = 2;
+  string plugin_name = 3;
+  string plugin_type = 4;
+  int32 plugin_priority = 5;
 }
 
 
@@ -28,4 +51,12 @@ message HealthCheck {
   string type = 3;
   uint32 interval = 4;
   uint32 timeout = 5;
+  Request request = 6;
+}
+
+message Request {
+  string method = 1;
+  uint32 status_code = 2;
+  string body = 3;
+  map<string, string> headers = 4;
 }

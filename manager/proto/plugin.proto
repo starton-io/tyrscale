@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package plugin;
+
+
+option go_package = "./;plugin";
+
+service PluginService {
+	rpc GetPluginsByRouteUUID(GetPluginsByRouteUUIDRequest) returns (GetPluginsByRouteUUIDResponse);
+	rpc AddPluginToRoute(AddPluginToRouteRequest) returns (AddPluginToRouteResponse);
+	rpc DeletePluginFromRoute(DeletePluginFromRouteRequest) returns (DeletePluginFromRouteResponse);
+}
+
+message GetPluginsByRouteUUIDRequest {
+	string routeUUID = 1;
+}
+
+message GetPluginsByRouteUUIDResponse {
+	repeated Plugin plugins = 1;
+}
+
+
+message Plugin {
+  string name = 1;
+  uint32 priority = 2;
+  string type = 3;
+}
+
+
+message AddPluginToRouteRequest {
+	string pluginName = 1;
+	string routeUUID = 2;
+}
+
+message AddPluginToRouteResponse {}
+
+message DeletePluginFromRouteRequest {
+	string pluginName = 1;
+	string routeUUID = 2;
+}
+
+message DeletePluginFromRouteResponse {}

@@ -166,6 +166,42 @@ const docTemplate = `{
                 }
             }
         },
+        "/plugins": {
+            "get": {
+                "description": "Get list plugins",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "plugins"
+                ],
+                "summary": "Get list plugins",
+                "operationId": "listPlugins",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.DefaultSuccessResponse-plugin_ListPluginsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InternalServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/recommendations": {
             "get": {
                 "description": "List recommendation",
@@ -468,6 +504,114 @@ const docTemplate = `{
                 }
             }
         },
+        "/routes/{route_uuid}/attach-plugin": {
+            "post": {
+                "description": "Attach a plugin to a route",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "routes"
+                ],
+                "summary": "Attach a plugin to a route",
+                "operationId": "attachPlugin",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Route UUID",
+                        "name": "route_uuid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Attach Plugin request",
+                        "name": "plugin",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/AttachPluginReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.DefaultSuccessResponseWithoutData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InternalServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/routes/{route_uuid}/detach-plugin": {
+            "post": {
+                "description": "Detach a plugin from a route",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "routes"
+                ],
+                "summary": "Detach a plugin from a route",
+                "operationId": "detachPlugin",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Route UUID",
+                        "name": "route_uuid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Detach Plugin request",
+                        "name": "plugin",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/DetachPluginReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.DefaultSuccessResponseWithoutData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InternalServerErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/routes/{route_uuid}/upstreams": {
             "get": {
                 "description": "Get list upstreams",
@@ -539,13 +683,6 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Route UUID",
                         "name": "route_uuid",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Upstream UUID",
-                        "name": "uuid",
                         "in": "path",
                         "required": true
                     }
@@ -625,6 +762,58 @@ const docTemplate = `{
             }
         },
         "/routes/{uuid}": {
+            "put": {
+                "description": "Update a route",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "routes"
+                ],
+                "summary": "Update a route",
+                "operationId": "updateRoute",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Route request",
+                        "name": "route",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/UpdateRouteReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.DefaultSuccessResponseWithoutData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InternalServerErrorResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "description": "Delete a route",
                 "consumes": [
@@ -968,6 +1157,27 @@ const docTemplate = `{
                 }
             }
         },
+        "AttachPluginReq": {
+            "type": "object",
+            "required": [
+                "plugin_name",
+                "plugin_type",
+                "priority"
+            ],
+            "properties": {
+                "plugin_name": {
+                    "type": "string"
+                },
+                "plugin_type": {
+                    "$ref": "#/definitions/plugin.PluginType"
+                },
+                "priority": {
+                    "type": "integer",
+                    "maximum": 1000,
+                    "minimum": 1
+                }
+            }
+        },
         "CreateRouteRes": {
             "type": "object",
             "properties": {
@@ -976,23 +1186,18 @@ const docTemplate = `{
                 }
             }
         },
-        "HealthCheckConfig": {
+        "DetachPluginReq": {
             "type": "object",
+            "required": [
+                "plugin_name",
+                "plugin_type"
+            ],
             "properties": {
-                "combined_with_circuit_breaker": {
-                    "type": "boolean"
+                "plugin_name": {
+                    "type": "string"
                 },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "interval": {
-                    "type": "integer"
-                },
-                "timeout": {
-                    "type": "integer"
-                },
-                "type": {
-                    "$ref": "#/definitions/healthcheck.HealthCheckType"
+                "plugin_type": {
+                    "type": "string"
                 }
             }
         },
@@ -1003,6 +1208,46 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/Route"
+                    }
+                }
+            }
+        },
+        "Plugin": {
+            "type": "object",
+            "required": [
+                "name",
+                "priority"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "priority": {
+                    "type": "integer",
+                    "maximum": 1000,
+                    "minimum": 1
+                }
+            }
+        },
+        "Plugins": {
+            "type": "object",
+            "properties": {
+                "interceptor_request": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Plugin"
+                    }
+                },
+                "interceptor_response": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Plugin"
+                    }
+                },
+                "middleware": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Plugin"
                     }
                 }
             }
@@ -1018,7 +1263,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/circuitbreaker.Settings"
                 },
                 "health_check": {
-                    "$ref": "#/definitions/HealthCheckConfig"
+                    "$ref": "#/definitions/healthcheck.HealthCheckConfig"
                 },
                 "host": {
                     "type": "string"
@@ -1029,8 +1274,35 @@ const docTemplate = `{
                 "path": {
                     "type": "string"
                 },
+                "plugins": {
+                    "$ref": "#/definitions/Plugins"
+                },
                 "uuid": {
                     "type": "string"
+                }
+            }
+        },
+        "UpdateRouteReq": {
+            "type": "object",
+            "properties": {
+                "circuit_breaker": {
+                    "$ref": "#/definitions/circuitbreaker.Settings"
+                },
+                "health_check": {
+                    "$ref": "#/definitions/healthcheck.HealthCheckConfig"
+                },
+                "host": {
+                    "description": "Uuid                 string                         ` + "`" + `json:\"uuid\" validate:\"required,uuid\"` + "`" + `",
+                    "type": "string"
+                },
+                "load_balancer_strategy": {
+                    "$ref": "#/definitions/balancer.LoadBalancerStrategy"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "plugins": {
+                    "$ref": "#/definitions/Plugins"
                 }
             }
         },
@@ -1288,13 +1560,97 @@ const docTemplate = `{
                 }
             }
         },
+        "healthcheck.HealthCheckConfig": {
+            "type": "object",
+            "properties": {
+                "combined_with_circuit_breaker": {
+                    "type": "boolean"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "interval": {
+                    "type": "integer"
+                },
+                "request": {
+                    "$ref": "#/definitions/healthcheck.Request"
+                },
+                "timeout": {
+                    "type": "integer"
+                },
+                "type": {
+                    "$ref": "#/definitions/healthcheck.HealthCheckType"
+                }
+            }
+        },
         "healthcheck.HealthCheckType": {
             "type": "string",
             "enum": [
-                "eth_block_number"
+                "eth_block_number",
+                "eth_syncing",
+                "custom"
             ],
             "x-enum-varnames": [
-                "EthBlockNumberType"
+                "EthBlockNumberType",
+                "EthSyncingType",
+                "CustomType"
+            ]
+        },
+        "healthcheck.Request": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "headers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "method": {
+                    "type": "string"
+                },
+                "status_code": {
+                    "type": "integer"
+                }
+            }
+        },
+        "plugin.ListPluginsResponse": {
+            "type": "object",
+            "properties": {
+                "plugins": {
+                    "description": "Map of plugin lists, keyed by an integer ID",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/plugin.PluginList"
+                    }
+                }
+            }
+        },
+        "plugin.PluginList": {
+            "type": "object",
+            "properties": {
+                "names": {
+                    "description": "Repeated field of plugin names",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "plugin.PluginType": {
+            "type": "string",
+            "enum": [
+                "ResponseInterceptor",
+                "RequestInterceptor",
+                "Middleware"
+            ],
+            "x-enum-varnames": [
+                "PluginTypeResponseInterceptor",
+                "PluginTypeRequestInterceptor",
+                "PluginTypeMiddleware"
             ]
         },
         "responses.BadRequestResponse": {
@@ -1560,6 +1916,26 @@ const docTemplate = `{
                 },
                 "data": {
                     "$ref": "#/definitions/ListRpcRes"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Created Success"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 200
+                }
+            }
+        },
+        "responses.DefaultSuccessResponse-plugin_ListPluginsResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 0
+                },
+                "data": {
+                    "$ref": "#/definitions/plugin.ListPluginsResponse"
                 },
                 "message": {
                     "type": "string",

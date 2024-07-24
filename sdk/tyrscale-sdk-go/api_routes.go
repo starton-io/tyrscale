@@ -24,6 +24,21 @@ import (
 type RoutesAPI interface {
 
 	/*
+	AttachPlugin Attach a plugin to a route
+
+	Attach a plugin to a route
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param routeUuid Route UUID
+	@return ApiAttachPluginRequest
+	*/
+	AttachPlugin(ctx context.Context, routeUuid string) ApiAttachPluginRequest
+
+	// AttachPluginExecute executes the request
+	//  @return ResponsesDefaultSuccessResponseWithoutData
+	AttachPluginExecute(r ApiAttachPluginRequest) (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error)
+
+	/*
 	CreateRoute Create a route
 
 	Create a route
@@ -53,6 +68,21 @@ type RoutesAPI interface {
 	DeleteRouteExecute(r ApiDeleteRouteRequest) (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error)
 
 	/*
+	DetachPlugin Detach a plugin from a route
+
+	Detach a plugin from a route
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param routeUuid Route UUID
+	@return ApiDetachPluginRequest
+	*/
+	DetachPlugin(ctx context.Context, routeUuid string) ApiDetachPluginRequest
+
+	// DetachPluginExecute executes the request
+	//  @return ResponsesDefaultSuccessResponseWithoutData
+	DetachPluginExecute(r ApiDetachPluginRequest) (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error)
+
+	/*
 	ListRoutes Get list routes
 
 	Get list routes
@@ -65,10 +95,161 @@ type RoutesAPI interface {
 	// ListRoutesExecute executes the request
 	//  @return ResponsesDefaultSuccessResponseListRouteRes
 	ListRoutesExecute(r ApiListRoutesRequest) (*ResponsesDefaultSuccessResponseListRouteRes, *http.Response, error)
+
+	/*
+	UpdateRoute Update a route
+
+	Update a route
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param uuid UUID
+	@return ApiUpdateRouteRequest
+	*/
+	UpdateRoute(ctx context.Context, uuid string) ApiUpdateRouteRequest
+
+	// UpdateRouteExecute executes the request
+	//  @return ResponsesDefaultSuccessResponseWithoutData
+	UpdateRouteExecute(r ApiUpdateRouteRequest) (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error)
 }
 
 // RoutesAPIService RoutesAPI service
 type RoutesAPIService service
+
+type ApiAttachPluginRequest struct {
+	ctx context.Context
+	ApiService RoutesAPI
+	routeUuid string
+	plugin *AttachPluginReq
+}
+
+// Attach Plugin request
+func (r ApiAttachPluginRequest) Plugin(plugin AttachPluginReq) ApiAttachPluginRequest {
+	r.plugin = &plugin
+	return r
+}
+
+func (r ApiAttachPluginRequest) Execute() (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error) {
+	return r.ApiService.AttachPluginExecute(r)
+}
+
+/*
+AttachPlugin Attach a plugin to a route
+
+Attach a plugin to a route
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param routeUuid Route UUID
+ @return ApiAttachPluginRequest
+*/
+func (a *RoutesAPIService) AttachPlugin(ctx context.Context, routeUuid string) ApiAttachPluginRequest {
+	return ApiAttachPluginRequest{
+		ApiService: a,
+		ctx: ctx,
+		routeUuid: routeUuid,
+	}
+}
+
+// Execute executes the request
+//  @return ResponsesDefaultSuccessResponseWithoutData
+func (a *RoutesAPIService) AttachPluginExecute(r ApiAttachPluginRequest) (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ResponsesDefaultSuccessResponseWithoutData
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RoutesAPIService.AttachPlugin")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/routes/{route_uuid}/attach-plugin"
+	localVarPath = strings.Replace(localVarPath, "{"+"route_uuid"+"}", url.PathEscape(parameterValueToString(r.routeUuid, "routeUuid")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.plugin == nil {
+		return localVarReturnValue, nil, reportError("plugin is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.plugin
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v ResponsesBadRequestResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v ResponsesInternalServerErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
 
 type ApiCreateRouteRequest struct {
 	ctx context.Context
@@ -326,6 +507,142 @@ func (a *RoutesAPIService) DeleteRouteExecute(r ApiDeleteRouteRequest) (*Respons
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
+type ApiDetachPluginRequest struct {
+	ctx context.Context
+	ApiService RoutesAPI
+	routeUuid string
+	plugin *DetachPluginReq
+}
+
+// Detach Plugin request
+func (r ApiDetachPluginRequest) Plugin(plugin DetachPluginReq) ApiDetachPluginRequest {
+	r.plugin = &plugin
+	return r
+}
+
+func (r ApiDetachPluginRequest) Execute() (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error) {
+	return r.ApiService.DetachPluginExecute(r)
+}
+
+/*
+DetachPlugin Detach a plugin from a route
+
+Detach a plugin from a route
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param routeUuid Route UUID
+ @return ApiDetachPluginRequest
+*/
+func (a *RoutesAPIService) DetachPlugin(ctx context.Context, routeUuid string) ApiDetachPluginRequest {
+	return ApiDetachPluginRequest{
+		ApiService: a,
+		ctx: ctx,
+		routeUuid: routeUuid,
+	}
+}
+
+// Execute executes the request
+//  @return ResponsesDefaultSuccessResponseWithoutData
+func (a *RoutesAPIService) DetachPluginExecute(r ApiDetachPluginRequest) (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ResponsesDefaultSuccessResponseWithoutData
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RoutesAPIService.DetachPlugin")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/routes/{route_uuid}/detach-plugin"
+	localVarPath = strings.Replace(localVarPath, "{"+"route_uuid"+"}", url.PathEscape(parameterValueToString(r.routeUuid, "routeUuid")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.plugin == nil {
+		return localVarReturnValue, nil, reportError("plugin is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.plugin
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v ResponsesBadRequestResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v ResponsesInternalServerErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
 type ApiListRoutesRequest struct {
 	ctx context.Context
 	ApiService RoutesAPI
@@ -424,6 +741,142 @@ func (a *RoutesAPIService) ListRoutesExecute(r ApiListRoutesRequest) (*Responses
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v ResponsesBadRequestResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v ResponsesInternalServerErrorResponse
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+					newErr.model = v
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiUpdateRouteRequest struct {
+	ctx context.Context
+	ApiService RoutesAPI
+	uuid string
+	route *UpdateRouteReq
+}
+
+// Route request
+func (r ApiUpdateRouteRequest) Route(route UpdateRouteReq) ApiUpdateRouteRequest {
+	r.route = &route
+	return r
+}
+
+func (r ApiUpdateRouteRequest) Execute() (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error) {
+	return r.ApiService.UpdateRouteExecute(r)
+}
+
+/*
+UpdateRoute Update a route
+
+Update a route
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @param uuid UUID
+ @return ApiUpdateRouteRequest
+*/
+func (a *RoutesAPIService) UpdateRoute(ctx context.Context, uuid string) ApiUpdateRouteRequest {
+	return ApiUpdateRouteRequest{
+		ApiService: a,
+		ctx: ctx,
+		uuid: uuid,
+	}
+}
+
+// Execute executes the request
+//  @return ResponsesDefaultSuccessResponseWithoutData
+func (a *RoutesAPIService) UpdateRouteExecute(r ApiUpdateRouteRequest) (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPut
+		localVarPostBody     interface{}
+		formFiles            []formFile
+		localVarReturnValue  *ResponsesDefaultSuccessResponseWithoutData
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RoutesAPIService.UpdateRoute")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/routes/{uuid}"
+	localVarPath = strings.Replace(localVarPath, "{"+"uuid"+"}", url.PathEscape(parameterValueToString(r.uuid, "uuid")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.route == nil {
+		return localVarReturnValue, nil, reportError("route is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.route
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err

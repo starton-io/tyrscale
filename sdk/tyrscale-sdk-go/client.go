@@ -52,6 +52,8 @@ type APIClient struct {
 
 	NetworksAPI NetworksAPI
 
+	PluginsAPI PluginsAPI
+
 	RecommendationAPI RecommendationAPI
 
 	RoutesAPI RoutesAPI
@@ -78,6 +80,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 
 	// API Services
 	c.NetworksAPI = (*NetworksAPIService)(&c.common)
+	c.PluginsAPI = (*PluginsAPIService)(&c.common)
 	c.RecommendationAPI = (*RecommendationAPIService)(&c.common)
 	c.RoutesAPI = (*RoutesAPIService)(&c.common)
 	c.RpcsAPI = (*RpcsAPIService)(&c.common)

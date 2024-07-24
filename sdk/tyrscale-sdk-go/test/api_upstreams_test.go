@@ -56,9 +56,8 @@ func Test_tyrscalesdkgo_UpstreamsAPIService(t *testing.T) {
 		t.Skip("skip test")  // remove to run test
 
 		var routeUuid string
-		var uuid string
 
-		resp, httpRes, err := apiClient.UpstreamsAPI.UpsertUpstream(context.Background(), routeUuid, uuid).Execute()
+		resp, httpRes, err := apiClient.UpstreamsAPI.UpsertUpstream(context.Background(), routeUuid).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)

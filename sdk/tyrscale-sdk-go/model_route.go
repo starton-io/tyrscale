@@ -23,10 +23,11 @@ var _ MappedNullable = &Route{}
 // Route struct for Route
 type Route struct {
 	CircuitBreaker *CircuitbreakerSettings `json:"circuit_breaker,omitempty"`
-	HealthCheck *HealthCheckConfig `json:"health_check,omitempty"`
+	HealthCheck *HealthcheckHealthCheckConfig `json:"health_check,omitempty"`
 	Host string `json:"host"`
 	LoadBalancerStrategy BalancerLoadBalancerStrategy `json:"load_balancer_strategy"`
 	Path *string `json:"path,omitempty"`
+	Plugins *Plugins `json:"plugins,omitempty"`
 	Uuid *string `json:"uuid,omitempty"`
 }
 
@@ -84,9 +85,9 @@ func (o *Route) SetCircuitBreaker(v CircuitbreakerSettings) {
 }
 
 // GetHealthCheck returns the HealthCheck field value if set, zero value otherwise.
-func (o *Route) GetHealthCheck() HealthCheckConfig {
+func (o *Route) GetHealthCheck() HealthcheckHealthCheckConfig {
 	if o == nil || IsNil(o.HealthCheck) {
-		var ret HealthCheckConfig
+		var ret HealthcheckHealthCheckConfig
 		return ret
 	}
 	return *o.HealthCheck
@@ -94,7 +95,7 @@ func (o *Route) GetHealthCheck() HealthCheckConfig {
 
 // GetHealthCheckOk returns a tuple with the HealthCheck field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Route) GetHealthCheckOk() (*HealthCheckConfig, bool) {
+func (o *Route) GetHealthCheckOk() (*HealthcheckHealthCheckConfig, bool) {
 	if o == nil || IsNil(o.HealthCheck) {
 		return nil, false
 	}
@@ -110,8 +111,8 @@ func (o *Route) HasHealthCheck() bool {
 	return false
 }
 
-// SetHealthCheck gets a reference to the given HealthCheckConfig and assigns it to the HealthCheck field.
-func (o *Route) SetHealthCheck(v HealthCheckConfig) {
+// SetHealthCheck gets a reference to the given HealthcheckHealthCheckConfig and assigns it to the HealthCheck field.
+func (o *Route) SetHealthCheck(v HealthcheckHealthCheckConfig) {
 	o.HealthCheck = &v
 }
 
@@ -195,6 +196,38 @@ func (o *Route) SetPath(v string) {
 	o.Path = &v
 }
 
+// GetPlugins returns the Plugins field value if set, zero value otherwise.
+func (o *Route) GetPlugins() Plugins {
+	if o == nil || IsNil(o.Plugins) {
+		var ret Plugins
+		return ret
+	}
+	return *o.Plugins
+}
+
+// GetPluginsOk returns a tuple with the Plugins field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Route) GetPluginsOk() (*Plugins, bool) {
+	if o == nil || IsNil(o.Plugins) {
+		return nil, false
+	}
+	return o.Plugins, true
+}
+
+// HasPlugins returns a boolean if a field has been set.
+func (o *Route) HasPlugins() bool {
+	if o != nil && !IsNil(o.Plugins) {
+		return true
+	}
+
+	return false
+}
+
+// SetPlugins gets a reference to the given Plugins and assigns it to the Plugins field.
+func (o *Route) SetPlugins(v Plugins) {
+	o.Plugins = &v
+}
+
 // GetUuid returns the Uuid field value if set, zero value otherwise.
 func (o *Route) GetUuid() string {
 	if o == nil || IsNil(o.Uuid) {
@@ -247,6 +280,9 @@ func (o Route) ToMap() (map[string]interface{}, error) {
 	toSerialize["load_balancer_strategy"] = o.LoadBalancerStrategy
 	if !IsNil(o.Path) {
 		toSerialize["path"] = o.Path
+	}
+	if !IsNil(o.Plugins) {
+		toSerialize["plugins"] = o.Plugins
 	}
 	if !IsNil(o.Uuid) {
 		toSerialize["uuid"] = o.Uuid

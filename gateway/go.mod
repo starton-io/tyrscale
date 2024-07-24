@@ -11,6 +11,7 @@ require (
 	github.com/ethereum/go-ethereum v1.14.5
 	github.com/joho/godotenv v1.5.1
 	github.com/madflojo/tasks v1.2.0
+	github.com/prometheus/client_golang v1.19.1
 	github.com/redis/go-redis/v9 v9.5.1
 	github.com/sony/gobreaker v0.5.0
 	github.com/starton-io/tyrscale/go-kit v0.0.0-00010101000000-000000000000
@@ -18,7 +19,9 @@ require (
 	github.com/starton-io/tyrscale/sdk/tyrscale-sdk-go v0.0.0-00010101000000-000000000000
 	github.com/valyala/fasthttp v1.54.0
 	go.uber.org/zap v1.27.0
+	google.golang.org/grpc v1.64.0
 	google.golang.org/protobuf v1.34.1
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
@@ -41,7 +44,6 @@ require (
 	github.com/lithammer/shortuuid/v3 v3.0.7 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/prometheus/client_golang v1.19.1 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.53.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
@@ -67,7 +69,6 @@ require (
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240521202816-d264139d666e // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240521202816-d264139d666e // indirect
-	google.golang.org/grpc v1.64.0 // indirect
 )
 
 // TODO: remove this replace after we publish go-kit in github

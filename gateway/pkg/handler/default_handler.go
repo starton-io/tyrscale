@@ -34,17 +34,22 @@ func (h *DefaultHandler) Handle(ctx *fasthttp.RequestCtx) {
 
 		if len(upstreamUuid) == 0 {
 			setErrorResponse(res, fasthttp.StatusNotFound, "upstream not found")
-			return
+			logger.Error("upstream not found...")
+			continue
 		}
 
 		upstreamClient, ok := h.proxyController.ClientManager.GetClient(upstreamUuid[0])
 		if !ok {
 			setErrorResponse(res, fasthttp.StatusNotFound, "upstream not found")
-			return
+			logger.Error("upstream client not found...")
+			continue
 		}
 		if !upstreamClient.Healthy {
 			setErrorResponse(res, fasthttp.StatusServiceUnavailable, "upstream not healthy")
-			return
+			logger.Error("upstream not healthy")
+			continue
+		} else {
+			logger.Debugf("upstream UUID: %s, healthy: %t", upstreamUuid[0], upstreamClient.Healthy)
 		}
 		err = upstreamClient.RequestInterceptor.Intercept(req)
 		if err != nil {

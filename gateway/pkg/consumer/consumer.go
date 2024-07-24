@@ -12,9 +12,12 @@ import (
 
 const (
 	RouteCreated     = "route_created"
+	RouteUpdated     = "route_updated"
 	RouteDeleted     = "route_deleted"
 	UpstreamUpserted = "upstream_upserted"
 	UpstreamDeleted  = "upstream_deleted"
+	PluginAttached   = "plugin_attached"
+	PluginDetached   = "plugin_detached"
 )
 
 type IConsumerControl interface {
@@ -94,6 +97,24 @@ func (c *Consumer) Start(ctx context.Context) {
 				return fmt.Errorf("consumer is suspended")
 			}
 			return c.RouteHandler.HandleUpstreamDeleted(msg)
+		},
+	)
+	c.Router.AddNoPublisherHandler(PluginAttached, PluginAttached,
+		c.Subscriber,
+		func(msg *message.Message) error {
+			if c.Suspend {
+				return fmt.Errorf("consumer is suspended")
+			}
+			return c.RouteHandler.HandlePluginAttached(msg)
+		},
+	)
+	c.Router.AddNoPublisherHandler(PluginDetached, PluginDetached,
+		c.Subscriber,
+		func(msg *message.Message) error {
+			if c.Suspend {
+				return fmt.Errorf("consumer is suspended")
+			}
+			return c.RouteHandler.HandlePluginDetached(msg)
 		},
 	)
 

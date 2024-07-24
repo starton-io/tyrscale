@@ -48,7 +48,6 @@ export interface ListUpstreamsRequest {
 
 export interface UpsertUpstreamRequest {
     routeUuid: string;
-    uuid: string;
     upstream: Upstream;
 }
 
@@ -146,13 +145,6 @@ export class UpstreamsApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['uuid'] == null) {
-            throw new runtime.RequiredError(
-                'uuid',
-                'Required parameter "uuid" was null or undefined when calling upsertUpstream().'
-            );
-        }
-
         if (requestParameters['upstream'] == null) {
             throw new runtime.RequiredError(
                 'upstream',
@@ -167,7 +159,7 @@ export class UpstreamsApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/routes/{route_uuid}/upstreams`.replace(`{${"route_uuid"}}`, encodeURIComponent(String(requestParameters['routeUuid']))).replace(`{${"uuid"}}`, encodeURIComponent(String(requestParameters['uuid']))),
+            path: `/routes/{route_uuid}/upstreams`.replace(`{${"route_uuid"}}`, encodeURIComponent(String(requestParameters['routeUuid']))),
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,

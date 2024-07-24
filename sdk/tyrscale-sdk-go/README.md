@@ -82,13 +82,17 @@ Class | Method | HTTP request | Description
 *NetworksAPI* | [**CreateNetwork**](docs/NetworksAPI.md#createnetwork) | **Post** /networks | Create a network
 *NetworksAPI* | [**DeleteNetwork**](docs/NetworksAPI.md#deletenetwork) | **Delete** /networks/{name} | Delete a network
 *NetworksAPI* | [**ListNetworks**](docs/NetworksAPI.md#listnetworks) | **Get** /networks | Get list networks
+*PluginsAPI* | [**ListPlugins**](docs/PluginsAPI.md#listplugins) | **Get** /plugins | Get list plugins
 *RecommendationAPI* | [**CreateRecommendation**](docs/RecommendationAPI.md#createrecommendation) | **Post** /recommendations | Create a recommendation
 *RecommendationAPI* | [**DeleteRecommendation**](docs/RecommendationAPI.md#deleterecommendation) | **Delete** /recommendations/{route_uuid} | Delete a recommendation
 *RecommendationAPI* | [**ListRecommendations**](docs/RecommendationAPI.md#listrecommendations) | **Get** /recommendations | List recommendation
 *RecommendationAPI* | [**UpdateRecommendation**](docs/RecommendationAPI.md#updaterecommendation) | **Put** /recommendations | Update a recommendation
+*RoutesAPI* | [**AttachPlugin**](docs/RoutesAPI.md#attachplugin) | **Post** /routes/{route_uuid}/attach-plugin | Attach a plugin to a route
 *RoutesAPI* | [**CreateRoute**](docs/RoutesAPI.md#createroute) | **Post** /routes | Create a route
 *RoutesAPI* | [**DeleteRoute**](docs/RoutesAPI.md#deleteroute) | **Delete** /routes/{uuid} | Delete a route
+*RoutesAPI* | [**DetachPlugin**](docs/RoutesAPI.md#detachplugin) | **Post** /routes/{route_uuid}/detach-plugin | Detach a plugin from a route
 *RoutesAPI* | [**ListRoutes**](docs/RoutesAPI.md#listroutes) | **Get** /routes | Get list routes
+*RoutesAPI* | [**UpdateRoute**](docs/RoutesAPI.md#updateroute) | **Put** /routes/{uuid} | Update a route
 *RpcsAPI* | [**CreateRpc**](docs/RpcsAPI.md#createrpc) | **Post** /rpcs | Create a new Rpc
 *RpcsAPI* | [**DeleteRPC**](docs/RpcsAPI.md#deleterpc) | **Delete** /rpcs/{uuid} | Delete a RPC
 *RpcsAPI* | [**ListRPCs**](docs/RpcsAPI.md#listrpcs) | **Get** /rpcs | List RPCs
@@ -100,6 +104,7 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [AttachPluginReq](docs/AttachPluginReq.md)
  - [BalancerLoadBalancerStrategy](docs/BalancerLoadBalancerStrategy.md)
  - [CircuitbreakerSettings](docs/CircuitbreakerSettings.md)
  - [CreateNetworkRes](docs/CreateNetworkRes.md)
@@ -110,14 +115,21 @@ Class | Method | HTTP request | Description
  - [CreateRpcRes](docs/CreateRpcRes.md)
  - [DeleteNetworkRes](docs/DeleteNetworkRes.md)
  - [DeleteRpcOptReq](docs/DeleteRpcOptReq.md)
- - [HealthCheckConfig](docs/HealthCheckConfig.md)
+ - [DetachPluginReq](docs/DetachPluginReq.md)
+ - [HealthcheckHealthCheckConfig](docs/HealthcheckHealthCheckConfig.md)
  - [HealthcheckHealthCheckType](docs/HealthcheckHealthCheckType.md)
+ - [HealthcheckRequest](docs/HealthcheckRequest.md)
  - [ListNetworkRes](docs/ListNetworkRes.md)
  - [ListRecommendationRes](docs/ListRecommendationRes.md)
  - [ListRouteRes](docs/ListRouteRes.md)
  - [ListRpcRes](docs/ListRpcRes.md)
  - [ListUpstreamRes](docs/ListUpstreamRes.md)
  - [Network](docs/Network.md)
+ - [Plugin](docs/Plugin.md)
+ - [PluginListPluginsResponse](docs/PluginListPluginsResponse.md)
+ - [PluginPluginList](docs/PluginPluginList.md)
+ - [PluginPluginType](docs/PluginPluginType.md)
+ - [Plugins](docs/Plugins.md)
  - [RPCType](docs/RPCType.md)
  - [Recommendation](docs/Recommendation.md)
  - [ResponsesBadRequestResponse](docs/ResponsesBadRequestResponse.md)
@@ -133,6 +145,7 @@ Class | Method | HTTP request | Description
  - [ResponsesDefaultSuccessResponseListRouteRes](docs/ResponsesDefaultSuccessResponseListRouteRes.md)
  - [ResponsesDefaultSuccessResponseListRpcRes](docs/ResponsesDefaultSuccessResponseListRpcRes.md)
  - [ResponsesDefaultSuccessResponseListUpstreamRes](docs/ResponsesDefaultSuccessResponseListUpstreamRes.md)
+ - [ResponsesDefaultSuccessResponsePluginListPluginsResponse](docs/ResponsesDefaultSuccessResponsePluginListPluginsResponse.md)
  - [ResponsesDefaultSuccessResponseUpstreamUpsertRes](docs/ResponsesDefaultSuccessResponseUpstreamUpsertRes.md)
  - [ResponsesDefaultSuccessResponseWithoutData](docs/ResponsesDefaultSuccessResponseWithoutData.md)
  - [ResponsesInternalServerErrorResponse](docs/ResponsesInternalServerErrorResponse.md)
@@ -141,6 +154,7 @@ Class | Method | HTTP request | Description
  - [Rpc](docs/Rpc.md)
  - [StrategyName](docs/StrategyName.md)
  - [UpdateRecommendationReq](docs/UpdateRecommendationReq.md)
+ - [UpdateRouteReq](docs/UpdateRouteReq.md)
  - [Upstream](docs/Upstream.md)
  - [UpstreamUpsertRes](docs/UpstreamUpsertRes.md)
 

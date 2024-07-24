@@ -25,9 +25,9 @@ const (
 	uRLSchemeErrorCode = -32001
 )
 
-var (
-	null = json.RawMessage("null")
-)
+//var (
+//	null = json.RawMessage("null")
+//)
 
 // A value of this type can a JSON-RPC request, notification, successful response or
 // error response. Which one it is depends on the fields.
@@ -140,15 +140,15 @@ func (msg *JsonrpcMessage) CacheKey() (string, error) {
 func ParseMessage(raw json.RawMessage) ([]*JsonrpcMessage, bool) {
 	if !isBatch(raw) {
 		msgs := []*JsonrpcMessage{{}}
-		json.Unmarshal(raw, &msgs[0])
+		_ = json.Unmarshal(raw, &msgs[0])
 		return msgs, false
 	}
 	dec := json.NewDecoder(bytes.NewReader(raw))
-	dec.Token() // skip '['
+	_, _ = dec.Token() // skip '['
 	var msgs []*JsonrpcMessage
 	for dec.More() {
 		msgs = append(msgs, new(JsonrpcMessage))
-		dec.Decode(&msgs[len(msgs)-1])
+		_ = dec.Decode(&msgs[len(msgs)-1])
 	}
 	return msgs, true
 }

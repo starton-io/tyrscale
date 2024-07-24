@@ -23,12 +23,14 @@ type HealthcheckHealthCheckType string
 const (
 	EthBlockNumberType HealthcheckHealthCheckType = "eth_block_number"
 	EthSyncingType HealthcheckHealthCheckType = "eth_syncing"
+	CustomType HealthcheckHealthCheckType = "custom"
 )
 
 // All allowed values of HealthcheckHealthCheckType enum
 var AllowedHealthcheckHealthCheckTypeEnumValues = []HealthcheckHealthCheckType{
 	"eth_block_number",
 	"eth_syncing",
+	"custom",
 }
 
 func (v *HealthcheckHealthCheckType) UnmarshalJSON(src []byte) error {

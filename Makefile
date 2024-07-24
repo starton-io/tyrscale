@@ -9,7 +9,7 @@ TAG?=latest
 VERSION?=0.0.1
 
 # Go build environment variables
-GO_BUILD_ENV?=CGO_ENABLED=0
+GO_BUILD_ENV?=CGO_ENABLED=1
 GOOS?=darwin
 GOARCH?=arm64
 ENV?=local
@@ -48,6 +48,11 @@ generate-proto:
 	protoc --go_out ./manager/pkg/pb/route --go-grpc_out=require_unimplemented_servers=false:./manager/pkg/pb/route ./manager/proto/route.proto
 	protoc --go_out ./manager/pkg/pb/upstream --go-grpc_out=require_unimplemented_servers=false:./manager/pkg/pb/upstream ./manager/proto/upstream.proto
 	protoc-go-inject-tag -input=./manager/pkg/pb/rpc/rpc.pb.go
+#protoc --go_out ./proto/gen/go/plugin --go-grpc_out ./proto/gen/go/plugin ./proto/plugin/plugin.proto
+
+generate-proto-gateway:
+	mkdir -p ./gateway/proto/gen/go/plugin
+	protoc --go_out ./gateway/proto/gen/go/plugin --go-grpc_out=./gateway/proto/gen/go/plugin ./gateway/proto/plugin/plugin.proto
 
 
 # Generate swagger docs

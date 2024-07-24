@@ -1,8 +1,11 @@
 package middleware
 
-import "github.com/valyala/fasthttp"
+import (
+	"github.com/starton-io/tyrscale/gateway/pkg/middleware/types"
+	"github.com/valyala/fasthttp"
+)
 
-func NewCors() MiddlewareFunc {
+func NewCors() types.MiddlewareFunc {
 	return func(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 		return func(ctx *fasthttp.RequestCtx) {
 			ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")

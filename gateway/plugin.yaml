@@ -1,0 +1,7 @@
+plugins:
+  - name: MyResponseInterceptor
+    path: ../plugins/interceptor/response/response.so
+    sha256sum: 8c9b64f9bdc2f05017940a0341bdd79d4e64b1c58181cadfa9fe2afb01cbe90e
+  - name: LoggingMiddleware
+    path: ../plugins/middleware/exemple/example.so
+    sha256sum: a9321273193687b04c2d33be95022d2b027aa05d3905b1388b883b0d32433c19

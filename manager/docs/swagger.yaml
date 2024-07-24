@@ -57,23 +57,35 @@ definitions:
     - chain_id
     - name
     type: object
+  AttachPluginReq:
+    properties:
+      plugin_name:
+        type: string
+      plugin_type:
+        $ref: '#/definitions/plugin.PluginType'
+      priority:
+        maximum: 1000
+        minimum: 1
+        type: integer
+    required:
+    - plugin_name
+    - plugin_type
+    - priority
+    type: object
   CreateRouteRes:
     properties:
       uuid:
         type: string
     type: object
-  HealthCheckConfig:
+  DetachPluginReq:
     properties:
-      combined_with_circuit_breaker:
-        type: boolean
-      enabled:
-        type: boolean
-      interval:
-        type: integer
-      timeout:
-        type: integer
-      type:
-        $ref: '#/definitions/healthcheck.HealthCheckType'
+      plugin_name:
+        type: string
+      plugin_type:
+        type: string
+    required:
+    - plugin_name
+    - plugin_type
     type: object
   ListRouteRes:
     properties:
@@ -82,23 +94,69 @@ definitions:
           $ref: '#/definitions/Route'
         type: array
     type: object
+  Plugin:
+    properties:
+      name:
+        type: string
+      priority:
+        maximum: 1000
+        minimum: 1
+        type: integer
+    required:
+    - name
+    - priority
+    type: object
+  Plugins:
+    properties:
+      interceptor_request:
+        items:
+          $ref: '#/definitions/Plugin'
+        type: array
+      interceptor_response:
+        items:
+          $ref: '#/definitions/Plugin'
+        type: array
+      middleware:
+        items:
+          $ref: '#/definitions/Plugin'
+        type: array
+    type: object
   Route:
     properties:
       circuit_breaker:
         $ref: '#/definitions/circuitbreaker.Settings'
       health_check:
-        $ref: '#/definitions/HealthCheckConfig'
+        $ref: '#/definitions/healthcheck.HealthCheckConfig'
       host:
         type: string
       load_balancer_strategy:
         $ref: '#/definitions/balancer.LoadBalancerStrategy'
       path:
         type: string
+      plugins:
+        $ref: '#/definitions/Plugins'
       uuid:
         type: string
     required:
     - host
     - load_balancer_strategy
+    type: object
+  UpdateRouteReq:
+    properties:
+      circuit_breaker:
+        $ref: '#/definitions/circuitbreaker.Settings'
+      health_check:
+        $ref: '#/definitions/healthcheck.HealthCheckConfig'
+      host:
+        description: Uuid                 string                         `json:"uuid"
+          validate:"required,uuid"`
+        type: string
+      load_balancer_strategy:
+        $ref: '#/definitions/balancer.LoadBalancerStrategy'
+      path:
+        type: string
+      plugins:
+        $ref: '#/definitions/Plugins'
     type: object
   ListUpstreamRes:
     properties:
@@ -273,12 +331,70 @@ definitions:
     - type
     - url
     type: object
+  healthcheck.HealthCheckConfig:
+    properties:
+      combined_with_circuit_breaker:
+        type: boolean
+      enabled:
+        type: boolean
+      interval:
+        type: integer
+      request:
+        $ref: '#/definitions/healthcheck.Request'
+      timeout:
+        type: integer
+      type:
+        $ref: '#/definitions/healthcheck.HealthCheckType'
+    type: object
   healthcheck.HealthCheckType:
     enum:
     - eth_block_number
+    - eth_syncing
+    - custom
     type: string
     x-enum-varnames:
     - EthBlockNumberType
+    - EthSyncingType
+    - CustomType
+  healthcheck.Request:
+    properties:
+      body:
+        type: string
+      headers:
+        additionalProperties:
+          type: string
+        type: object
+      method:
+        type: string
+      status_code:
+        type: integer
+    type: object
+  plugin.ListPluginsResponse:
+    properties:
+      plugins:
+        additionalProperties:
+          $ref: '#/definitions/plugin.PluginList'
+        description: Map of plugin lists, keyed by an integer ID
+        type: object
+    type: object
+  plugin.PluginList:
+    properties:
+      names:
+        description: Repeated field of plugin names
+        items:
+          type: string
+        type: array
+    type: object
+  plugin.PluginType:
+    enum:
+    - ResponseInterceptor
+    - RequestInterceptor
+    - Middleware
+    type: string
+    x-enum-varnames:
+    - PluginTypeResponseInterceptor
+    - PluginTypeRequestInterceptor
+    - PluginTypeMiddleware
   responses.BadRequestResponse:
     properties:
       code:
@@ -471,6 +587,20 @@ definitions:
         example: 200
         type: integer
     type: object
+  responses.DefaultSuccessResponse-plugin_ListPluginsResponse:
+    properties:
+      code:
+        example: 0
+        type: integer
+      data:
+        $ref: '#/definitions/plugin.ListPluginsResponse'
+      message:
+        example: Created Success
+        type: string
+      status:
+        example: 200
+        type: integer
+    type: object
   responses.DefaultSuccessResponseWithoutData:
     properties:
       code:
@@ -616,6 +746,30 @@ paths:
       summary: Delete a network
       tags:
       - networks
+  /plugins:
+    get:
+      consumes:
+      - application/json
+      description: Get list plugins
+      operationId: listPlugins
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.DefaultSuccessResponse-plugin_ListPluginsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Get list plugins
+      tags:
+      - plugins
   /recommendations:
     get:
       consumes:
@@ -817,6 +971,78 @@ paths:
       summary: Create a route
       tags:
       - routes
+  /routes/{route_uuid}/attach-plugin:
+    post:
+      consumes:
+      - application/json
+      description: Attach a plugin to a route
+      operationId: attachPlugin
+      parameters:
+      - description: Route UUID
+        in: path
+        name: route_uuid
+        required: true
+        type: string
+      - description: Attach Plugin request
+        in: body
+        name: plugin
+        required: true
+        schema:
+          $ref: '#/definitions/AttachPluginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.DefaultSuccessResponseWithoutData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Attach a plugin to a route
+      tags:
+      - routes
+  /routes/{route_uuid}/detach-plugin:
+    post:
+      consumes:
+      - application/json
+      description: Detach a plugin from a route
+      operationId: detachPlugin
+      parameters:
+      - description: Route UUID
+        in: path
+        name: route_uuid
+        required: true
+        type: string
+      - description: Detach Plugin request
+        in: body
+        name: plugin
+        required: true
+        schema:
+          $ref: '#/definitions/DetachPluginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.DefaultSuccessResponseWithoutData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Detach a plugin from a route
+      tags:
+      - routes
   /routes/{route_uuid}/upstreams:
     get:
       consumes:
@@ -862,11 +1088,6 @@ paths:
       - description: Route UUID
         in: path
         name: route_uuid
-        required: true
-        type: string
-      - description: Upstream UUID
-        in: path
-        name: uuid
         required: true
         type: string
       produces:
@@ -950,6 +1171,41 @@ paths:
           schema:
             $ref: '#/definitions/responses.InternalServerErrorResponse'
       summary: Delete a route
+      tags:
+      - routes
+    put:
+      consumes:
+      - application/json
+      description: Update a route
+      operationId: updateRoute
+      parameters:
+      - description: UUID
+        in: path
+        name: uuid
+        required: true
+        type: string
+      - description: Route request
+        in: body
+        name: route
+        required: true
+        schema:
+          $ref: '#/definitions/UpdateRouteReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.DefaultSuccessResponseWithoutData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.BadRequestResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.InternalServerErrorResponse'
+      summary: Update a route
       tags:
       - routes
   /rpcs:

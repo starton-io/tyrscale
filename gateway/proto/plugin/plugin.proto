@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package plugin;
+
+option go_package = "./;plugin";
+
+// Service definition for PluginService
+service PluginService {
+    // RPC to list plugins
+    rpc ListPlugins(ListPluginsRequest) returns (ListPluginsResponse);
+}
+
+// Request message for ListPlugins RPC
+message ListPluginsRequest {}
+
+
+// Response message for ListPlugins RPC
+message ListPluginsResponse {
+    // Map of plugin lists, keyed by an integer ID
+    map<string, PluginList> plugins = 1;
+}
+
+// Message representing a list of plugins
+message PluginList {
+    // Repeated field of plugin names
+    repeated string names = 1;
+}

@@ -8,6 +8,7 @@ import (
 
 	"github.com/starton-io/tyrscale/gateway/pkg/healthcheck"
 	"github.com/starton-io/tyrscale/gateway/pkg/middleware"
+	"github.com/starton-io/tyrscale/gateway/pkg/middleware/types"
 	"github.com/starton-io/tyrscale/gateway/pkg/proxy"
 	"github.com/starton-io/tyrscale/gateway/pkg/reverseproxy"
 	"github.com/starton-io/tyrscale/go-kit/pkg/logger"
@@ -15,7 +16,7 @@ import (
 )
 
 type IRouter interface {
-	Add(route *Route) error
+	Upsert(route *Route) error
 	Remove(host string, path string) error
 	AddHealthCheck(id string, healthCheck healthcheck.HealthCheckInterface)
 	RemoveHealthCheck(id string)
@@ -32,9 +33,10 @@ type Route struct {
 	ReverseProxy    reverseproxy.ProxyHandler
 	ProxyController *proxy.ProxyController
 
-	Middleware middleware.MiddlewareFunc
-	Host       string
-	Path       string
+	Middleware     types.MiddlewareFunc
+	ListMiddleware []*middleware.MiddlewareWithPriority
+	Host           string
+	Path           string
 }
 
 type Router struct {
@@ -65,10 +67,22 @@ func WithHealthCheckManager(healthCheckManager healthcheck.HealthCheckManagerInt
 
 type RouteOption func(*Route)
 
-func WithMiddleware(middleware middleware.MiddlewareFunc) RouteOption {
+func WithMiddleware(middleware types.MiddlewareFunc) RouteOption {
 	return func(r *Route) {
 		r.Middleware = middleware
 	}
+}
+
+func WithListMiddleware(listMiddleware []*middleware.MiddlewareWithPriority) RouteOption {
+	return func(r *Route) {
+		r.ListMiddleware = listMiddleware
+		r.Middleware = middleware.MiddlewareWithPriorityComposer(listMiddleware...)
+	}
+}
+
+func (r *Route) SetListMiddleware(listMiddleware []*middleware.MiddlewareWithPriority) {
+	r.ListMiddleware = listMiddleware
+	r.Middleware = middleware.MiddlewareWithPriorityComposer(listMiddleware...)
 }
 
 func WithHealthCheckConfig(healthCheckConfig *healthcheck.HealthCheckConfig) RouteOption {
@@ -102,11 +116,10 @@ func (r *Router) normalizeHostURI(host string, path string) string {
 	return strings.ReplaceAll(hostURI, "//", "/")
 }
 
-func (r *Router) Add(route *Route) error {
+func (r *Router) Upsert(route *Route) error {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 	route.NormalizeHostURI = r.normalizeHostURI(route.Host, route.Path)
-
 	r.routes[route.NormalizeHostURI] = route
 	return nil
 }

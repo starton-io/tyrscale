@@ -8,7 +8,9 @@ import (
 	"github.com/starton-io/tyrscale/gateway/pkg/circuitbreaker"
 	"github.com/starton-io/tyrscale/gateway/pkg/handler"
 	"github.com/starton-io/tyrscale/gateway/pkg/healthcheck"
+	"github.com/starton-io/tyrscale/gateway/pkg/interceptor"
 	"github.com/starton-io/tyrscale/gateway/pkg/middleware"
+	"github.com/starton-io/tyrscale/gateway/pkg/plugin"
 	"github.com/starton-io/tyrscale/gateway/pkg/proxy"
 	"github.com/starton-io/tyrscale/gateway/pkg/reverseproxy"
 	"github.com/starton-io/tyrscale/gateway/pkg/route"
@@ -24,10 +26,11 @@ type Initializer interface {
 
 type ProxyInitializer struct {
 	TyrscaleClient *tyrscaleSDK.APIClient
+	pluginManager  plugin.IPluginManager
 	router         route.IRouter
 }
 
-func NewProxyInitializer(url string, router route.IRouter) *ProxyInitializer {
+func NewProxyInitializer(url string, router route.IRouter, pluginManager plugin.IPluginManager) *ProxyInitializer {
 	config := tyrscaleSDK.NewConfiguration()
 	config.Servers = tyrscaleSDK.ServerConfigurations{
 		{
@@ -35,7 +38,7 @@ func NewProxyInitializer(url string, router route.IRouter) *ProxyInitializer {
 		},
 	}
 	client := tyrscaleSDK.NewAPIClient(config)
-	return &ProxyInitializer{TyrscaleClient: client, router: router}
+	return &ProxyInitializer{TyrscaleClient: client, router: router, pluginManager: pluginManager}
 }
 
 // TODO: Optimize the initialization process
@@ -63,6 +66,36 @@ func (i *ProxyInitializer) Initialize(ctx context.Context) error {
 			"route_uuid": currentRoute.GetUuid(),
 		})
 
+		interceptorRespChain := interceptor.NewInterceptorResponseChain()
+		if currentRoute.Plugins != nil {
+			for _, p := range currentRoute.Plugins.InterceptorResponse {
+				logger.Infof("Adding Plugin Interceptor Response: %s", p.Name)
+				interceptorResp, err := i.pluginManager.GetPluginRespInterceptor(p.Name)
+				if err != nil {
+					logger.Errorf("failed to get plugin %s: %w", p.Name, err)
+					//return fmt.Errorf("failed to get plugin %s: %w", p.Name, err)
+					continue
+				}
+				interceptorRespChain.AddOrdered(interceptorResp, int(p.Priority))
+			}
+			proxyController.SetResponsesInterceptors(interceptorRespChain)
+		}
+
+		interceptorReqChain := interceptor.NewInterceptorRequestChain()
+		if currentRoute.Plugins != nil {
+			for _, p := range currentRoute.Plugins.InterceptorRequest {
+				logger.Infof("Adding Plugin Interceptor Response: %s", p.Name)
+				interceptorReq, err := i.pluginManager.GetPluginReqInterceptor(p.Name)
+				if err != nil {
+					logger.Errorf("failed to get plugin %s: %w", p.Name, err)
+					//return fmt.Errorf("failed to get plugin %s: %w", p.Name, err)
+					continue
+				}
+				interceptorReqChain.AddOrdered(interceptorReq, int(p.Priority))
+			}
+			proxyController.SetRequestsInterceptors(interceptorReqChain)
+		}
+
 		// Add circuit breaker if needed
 		if cb := currentRoute.CircuitBreaker; cb != nil && cb.GetEnabled() {
 			proxyController.CircuitBreaker = circuitbreaker.NewCircuitBreaker(circuitbreaker.Settings{
@@ -81,6 +114,14 @@ func (i *ProxyInitializer) Initialize(ctx context.Context) error {
 				Enabled:                    currentRoute.HealthCheck.GetEnabled(),
 				Timeout:                    uint32(currentRoute.HealthCheck.GetTimeout()),
 			}
+			if currentRoute.HealthCheck.Request != nil {
+				healthCheckSettings.Request = &healthcheck.Request{
+					Method:     currentRoute.HealthCheck.Request.GetMethod(),
+					StatusCode: uint32(currentRoute.HealthCheck.Request.GetStatusCode()),
+					Headers:    currentRoute.HealthCheck.Request.GetHeaders(),
+					Body:       currentRoute.HealthCheck.Request.GetBody(),
+				}
+			}
 		}
 
 		proxyHandler, err := handler.NewFactory(proxyController)
@@ -90,8 +131,25 @@ func (i *ProxyInitializer) Initialize(ctx context.Context) error {
 		if currentRoute.Path == nil {
 			currentRoute.Path = ptr.String("/")
 		}
-		listMiddleware := []middleware.MiddlewareFunc{middleware.NewPrometheus(&middleware.Prometheus{RouteUuid: currentRoute.GetUuid()})}
-		setupMiddleware := middleware.MiddlewareComposer(listMiddleware)
+
+		listMiddlewareWithPriority := []*middleware.MiddlewareWithPriority{}
+		if currentRoute.Plugins != nil {
+			for _, p := range currentRoute.Plugins.Middleware {
+				logger.Infof("Adding Plugin Middleware: %s", p.Name)
+				pluginMiddleware, err := i.pluginManager.GetPluginMiddleware(p.Name)
+				if err != nil {
+					logger.Errorf("failed to get plugin middleware %s: %w", p.Name, err)
+					continue
+					//return fmt.Errorf("failed to get plugin %s: %w", p.Name, err)
+				}
+				listMiddlewareWithPriority = append(listMiddlewareWithPriority, &middleware.MiddlewareWithPriority{
+					Name:       p.Name,
+					Middleware: pluginMiddleware,
+					Priority:   int(p.Priority),
+				})
+			}
+		}
+		//setupMiddleware := middleware.MiddlewareComposerWithPriority(listMiddlewareWithPriority)
 
 		route := route.NewRoute(
 			currentRoute.GetUuid(),
@@ -100,17 +158,15 @@ func (i *ProxyInitializer) Initialize(ctx context.Context) error {
 			reverseproxy.NewReverseProxyHandler(proxyHandler),
 			proxyController,
 			route.WithHealthCheckConfig(healthCheckSettings),
-			route.WithMiddleware(setupMiddleware),
+			route.WithListMiddleware(listMiddlewareWithPriority),
 		)
 
 		if listUpstream.Data != nil {
 			for idx, upstream := range listUpstream.Data.Items {
 				if idx == 0 && currentRoute.HealthCheck != nil && currentRoute.HealthCheck.GetEnabled() {
 					healthCheckRoute, err = healthcheck.NewHealthCheck(
-						healthcheck.HealthCheckType(*currentRoute.HealthCheck.Type),
 						proxyController.ClientManager,
-						uint32(currentRoute.HealthCheck.GetInterval()),
-						uint32(currentRoute.HealthCheck.GetTimeout()),
+						healthCheckSettings,
 					)
 					i.router.AddHealthCheck(currentRoute.GetUuid(), healthCheckRoute)
 					route.HealthCheckConfig = healthCheckSettings
@@ -143,7 +199,7 @@ func (i *ProxyInitializer) Initialize(ctx context.Context) error {
 			}
 		}
 
-		if err := i.router.Add(route); err != nil {
+		if err := i.router.Upsert(route); err != nil {
 			return fmt.Errorf("failed to add route %s: %w", currentRoute.GetUuid(), err)
 		}
 	}

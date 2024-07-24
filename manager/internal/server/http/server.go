@@ -22,6 +22,7 @@ import (
 	"github.com/gofiber/swagger"
 	"github.com/starton-io/tyrscale/go-kit/pkg/validation"
 	networkHttp "github.com/starton-io/tyrscale/manager/api/network/port/http"
+	pluginHttp "github.com/starton-io/tyrscale/manager/api/proxy/plugin/port/http"
 	routeHttp "github.com/starton-io/tyrscale/manager/api/proxy/route/port/http"
 	upstreamHttp "github.com/starton-io/tyrscale/manager/api/proxy/upstream/port/http"
 	recommendationHttp "github.com/starton-io/tyrscale/manager/api/recommendation/port/http"
@@ -134,6 +135,7 @@ func (s *Server) MapRoutes() error {
 	rpcHttp.Routes(v1, s.dbKV, s.validator, s.publisher)
 	recommendationHttp.Routes(v1, s.dbKV, s.validator, s.publisher)
 	upstreamHttp.Routes(v1, s.dbKV, s.validator, s.publisher)
-	routeHttp.Routes(v1, s.dbKV, s.validator, s.publisher)
+	pluginHttp.Routes(v1, s.cfg.GatewayUrl)
+	routeHttp.Routes(v1, s.dbKV, s.validator, s.publisher, s.cfg.GatewayUrl)
 	return nil
 }

@@ -15,14 +15,21 @@
 
 import * as runtime from '../runtime';
 import type {
+  AttachPluginReq,
+  DetachPluginReq,
   ResponsesBadRequestResponse,
   ResponsesCreatedSuccessResponseCreateRouteRes,
   ResponsesDefaultSuccessResponseListRouteRes,
   ResponsesDefaultSuccessResponseWithoutData,
   ResponsesInternalServerErrorResponse,
   Route,
+  UpdateRouteReq,
 } from '../models/index';
 import {
+    AttachPluginReqFromJSON,
+    AttachPluginReqToJSON,
+    DetachPluginReqFromJSON,
+    DetachPluginReqToJSON,
     ResponsesBadRequestResponseFromJSON,
     ResponsesBadRequestResponseToJSON,
     ResponsesCreatedSuccessResponseCreateRouteResFromJSON,
@@ -35,7 +42,14 @@ import {
     ResponsesInternalServerErrorResponseToJSON,
     RouteFromJSON,
     RouteToJSON,
+    UpdateRouteReqFromJSON,
+    UpdateRouteReqToJSON,
 } from '../models/index';
+
+export interface AttachPluginRequest {
+    routeUuid: string;
+    plugin: AttachPluginReq;
+}
 
 export interface CreateRouteRequest {
     route: Route;
@@ -45,6 +59,11 @@ export interface DeleteRouteRequest {
     uuid: string;
 }
 
+export interface DetachPluginRequest {
+    routeUuid: string;
+    plugin: DetachPluginReq;
+}
+
 export interface ListRoutesRequest {
     host?: string;
     loadBalancerStrategy?: ListRoutesLoadBalancerStrategyEnum;
@@ -52,10 +71,60 @@ export interface ListRoutesRequest {
     uuid?: string;
 }
 
+export interface UpdateRouteRequest {
+    uuid: string;
+    route: UpdateRouteReq;
+}
+
 /**
  * 
  */
 export class RoutesApi extends runtime.BaseAPI {
+
+    /**
+     * Attach a plugin to a route
+     * Attach a plugin to a route
+     */
+    async attachPluginRaw(requestParameters: AttachPluginRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponsesDefaultSuccessResponseWithoutData>> {
+        if (requestParameters['routeUuid'] == null) {
+            throw new runtime.RequiredError(
+                'routeUuid',
+                'Required parameter "routeUuid" was null or undefined when calling attachPlugin().'
+            );
+        }
+
+        if (requestParameters['plugin'] == null) {
+            throw new runtime.RequiredError(
+                'plugin',
+                'Required parameter "plugin" was null or undefined when calling attachPlugin().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/routes/{route_uuid}/attach-plugin`.replace(`{${"route_uuid"}}`, encodeURIComponent(String(requestParameters['routeUuid']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: AttachPluginReqToJSON(requestParameters['plugin']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponsesDefaultSuccessResponseWithoutDataFromJSON(jsonValue));
+    }
+
+    /**
+     * Attach a plugin to a route
+     * Attach a plugin to a route
+     */
+    async attachPlugin(requestParameters: AttachPluginRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponsesDefaultSuccessResponseWithoutData> {
+        const response = await this.attachPluginRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Create a route
@@ -131,6 +200,51 @@ export class RoutesApi extends runtime.BaseAPI {
     }
 
     /**
+     * Detach a plugin from a route
+     * Detach a plugin from a route
+     */
+    async detachPluginRaw(requestParameters: DetachPluginRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponsesDefaultSuccessResponseWithoutData>> {
+        if (requestParameters['routeUuid'] == null) {
+            throw new runtime.RequiredError(
+                'routeUuid',
+                'Required parameter "routeUuid" was null or undefined when calling detachPlugin().'
+            );
+        }
+
+        if (requestParameters['plugin'] == null) {
+            throw new runtime.RequiredError(
+                'plugin',
+                'Required parameter "plugin" was null or undefined when calling detachPlugin().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/routes/{route_uuid}/detach-plugin`.replace(`{${"route_uuid"}}`, encodeURIComponent(String(requestParameters['routeUuid']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: DetachPluginReqToJSON(requestParameters['plugin']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponsesDefaultSuccessResponseWithoutDataFromJSON(jsonValue));
+    }
+
+    /**
+     * Detach a plugin from a route
+     * Detach a plugin from a route
+     */
+    async detachPlugin(requestParameters: DetachPluginRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponsesDefaultSuccessResponseWithoutData> {
+        const response = await this.detachPluginRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Get list routes
      * Get list routes
      */
@@ -171,6 +285,51 @@ export class RoutesApi extends runtime.BaseAPI {
      */
     async listRoutes(requestParameters: ListRoutesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponsesDefaultSuccessResponseListRouteRes> {
         const response = await this.listRoutesRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Update a route
+     * Update a route
+     */
+    async updateRouteRaw(requestParameters: UpdateRouteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<ResponsesDefaultSuccessResponseWithoutData>> {
+        if (requestParameters['uuid'] == null) {
+            throw new runtime.RequiredError(
+                'uuid',
+                'Required parameter "uuid" was null or undefined when calling updateRoute().'
+            );
+        }
+
+        if (requestParameters['route'] == null) {
+            throw new runtime.RequiredError(
+                'route',
+                'Required parameter "route" was null or undefined when calling updateRoute().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/routes/{uuid}`.replace(`{${"uuid"}}`, encodeURIComponent(String(requestParameters['uuid']))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UpdateRouteReqToJSON(requestParameters['route']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => ResponsesDefaultSuccessResponseWithoutDataFromJSON(jsonValue));
+    }
+
+    /**
+     * Update a route
+     * Update a route
+     */
+    async updateRoute(requestParameters: UpdateRouteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ResponsesDefaultSuccessResponseWithoutData> {
+        const response = await this.updateRouteRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
