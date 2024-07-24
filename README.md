@@ -111,7 +111,7 @@ POST http://localhost:8888/api/v1/rpcs
 
 ### Create a upstream from RPC node
 ```
-POST http://localhost:8888/api/v1/routes/:route_uuid/upstreams
+PUT http://localhost:8888/api/v1/routes/:route_uuid/upstreams
 {
   "rpc_uuid": "xxxxx-xxxx-xxxx-xxxx",
   "weight": 90.0
@@ -142,6 +142,10 @@ Feel free to explore, contribute, and shape the future of TyrScale with us! Your
 To get started, see [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 Please adhere to Starton's [Code of Conduct](./CODE_OF_CONDUCT.md).
+
+### Extend Gateway with Plugins
+
+If you are interested to extend the gateway capabilities, you can contribute to the  [Plugins Development](./docs/development/plugins.md)
 
 
 ## License

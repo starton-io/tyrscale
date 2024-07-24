@@ -36,6 +36,7 @@ func (b LoadBalancerStrategy) Validate() error {
 	return fmt.Errorf("invalid balancer type: %s", b)
 }
 
+//go:generate mockery --name=IBalancer
 type IBalancer interface {
 	Balance() ([]string, error)
 	AddServer(server *Server, opts ...ServerOption)

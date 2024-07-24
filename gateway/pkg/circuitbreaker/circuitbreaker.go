@@ -22,6 +22,7 @@ type DefaultProxyCircuitBreaker struct {
 	CircuitBreaker map[string]*gobreaker.CircuitBreaker
 }
 
+//go:generate mockery --name=ProxyCircuitBreaker
 type ProxyCircuitBreaker interface {
 	Get(key string) *gobreaker.CircuitBreaker
 	Add(key string)

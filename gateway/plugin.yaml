@@ -4,4 +4,4 @@ plugins:
     sha256sum: f2cc4674fe32ebac7c8b3e63cdd4e893536ed81b650eff24810d235aed825c7d
   - name: LoggingMiddleware
     path: ../plugins/middleware/exemple/example.so
-    sha256sum: 0f8799e2cf55eb722cd2d733772fcf116868e98bfbd2012ce13542bdb4026667
+    sha256sum: 5ba1294e61efcb74e3839d04634937b7942c81eb98b2538ccecddc262dae1560

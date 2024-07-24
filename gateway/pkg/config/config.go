@@ -100,7 +100,6 @@ func LoadPluginConfig() (*PluginConfig, error) {
 		log.Printf("Plugin configuration file does not exist: %v", *pluginConfigPath)
 		return pluginConfig, nil // Return an empty PluginConfig
 	}
-	log.Printf("Plugin configuration file exists: %v", *pluginConfigPath)
 
 	yamlData, err := os.ReadFile(*pluginConfigPath)
 	if err != nil {

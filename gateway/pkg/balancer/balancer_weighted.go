@@ -137,10 +137,13 @@ func (r *roundRobinWeight) UpdateWeight(uuid string, newWeight int) error {
 func (r *roundRobinWeight) RemoveServer(uuid string) error {
 	r.Lock()
 	defer r.Unlock()
+
+	founded := false
 	for i, s := range r.servers {
 		if uuid == s.Uuid {
 			r.servers = append(r.servers[:i], r.servers[i+1:]...)
 			r.count--
+			founded = true
 			if len(r.servers) > 0 {
 				r.gcd = r.servers[0].Weight
 				r.maxWeight = r.servers[0].Weight
@@ -153,7 +156,10 @@ func (r *roundRobinWeight) RemoveServer(uuid string) error {
 			}
 		}
 	}
-	return ErrNoUpstreams
+	if !founded {
+		return errors.New("upstream not found")
+	}
+	return nil
 }
 
 func (r *roundRobinWeight) RemoveAll() {

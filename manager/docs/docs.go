@@ -654,7 +654,50 @@ const docTemplate = `{
             }
         },
         "/routes/{uuid}": {
-            "put": {
+            "delete": {
+                "description": "Delete a route",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "routes"
+                ],
+                "summary": "Delete a route",
+                "operationId": "deleteRoute",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Route UUID",
+                        "name": "uuid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.DefaultSuccessResponseWithoutData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responses.BadRequestResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.InternalServerErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
                 "description": "Update a route",
                 "consumes": [
                     "application/json"
@@ -683,49 +726,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/UpdateRouteReq"
                         }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/responses.DefaultSuccessResponseWithoutData"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/responses.BadRequestResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/responses.InternalServerErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete a route",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "routes"
-                ],
-                "summary": "Delete a route",
-                "operationId": "deleteRoute",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Route UUID",
-                        "name": "uuid",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {

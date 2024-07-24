@@ -130,10 +130,4 @@ model_update_route_req.go
 model_upstream.go
 model_upstream_upsert_res.go
 response.go
-test/api_networks_test.go
-test/api_plugins_test.go
-test/api_recommendation_test.go
-test/api_routes_test.go
-test/api_rpcs_test.go
-test/api_upstreams_test.go
 utils.go

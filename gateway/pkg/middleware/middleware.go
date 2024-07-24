@@ -7,8 +7,8 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-// Middleware chainable fasthttp middleware func
-type Middleware func(next fasthttp.RequestHandler) fasthttp.RequestHandler
+// // Middleware chainable fasthttp middleware func
+// type Middleware func(next fasthttp.RequestHandler) fasthttp.RequestHandler
 
 // Apply process multiple middleware
 func Apply(h fasthttp.RequestHandler, m ...types.MiddlewareFunc) fasthttp.RequestHandler {
@@ -25,13 +25,6 @@ func ComposeMiddleware(m ...types.MiddlewareFunc) types.MiddlewareFunc {
 	}
 }
 
-// middlewarecomposer with priority
-func MiddlewareComposerWithPriority(middlewares []*MiddlewareWithPriority) types.MiddlewareFunc {
-	return func(next fasthttp.RequestHandler) fasthttp.RequestHandler {
-		return ChainMiddlewareWithPriority(next, middlewares)
-	}
-}
-
 // MiddlewareWithPriority holds a middleware function and its priority.
 type MiddlewareWithPriority struct {
 	Middleware types.MiddlewareFunc
@@ -40,14 +33,16 @@ type MiddlewareWithPriority struct {
 }
 
 func ChainMiddlewareWithPriority(h fasthttp.RequestHandler, listMiddleware []*MiddlewareWithPriority) fasthttp.RequestHandler {
-	// Sort middleware by priority in ascending order
+	// Sort middleware by priority in descending order
 	sort.SliceStable(listMiddleware, func(i, j int) bool {
-		return listMiddleware[i].Priority < listMiddleware[j].Priority
+		return listMiddleware[i].Priority > listMiddleware[j].Priority
 	})
-	// Apply middleware in reverse order to maintain priority
+
+	// Apply middleware in the sorted order
 	for i := len(listMiddleware) - 1; i >= 0; i-- {
 		h = listMiddleware[i].Middleware(h)
 	}
+
 	return h
 }
 

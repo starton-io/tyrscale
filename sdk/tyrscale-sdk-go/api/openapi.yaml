@@ -558,7 +558,7 @@ paths:
       summary: Delete a route
       tags:
       - routes
-    put:
+    patch:
       description: Update a route
       operationId: updateRoute
       parameters:
