@@ -94,6 +94,7 @@ func (m *DefaultClientManager) Close() {
 
 type ProxyController struct {
 	mu                    sync.Mutex
+	Name                  string
 	Labels                map[string]string
 	ClientManager         *DefaultClientManager
 	Balancer              balancer.IBalancer
