@@ -3,7 +3,6 @@ package healthcheck
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -63,7 +62,10 @@ func GetSyncingStatus(c *proxy.UpstreamClient, timeout time.Duration) (bool, err
 	defer fasthttp.ReleaseRequest(req)
 	defer fasthttp.ReleaseResponse(resp)
 
-	c.RequestInterceptor.Intercept(req)
+	err := c.RequestInterceptor.Intercept(req)
+	if err != nil {
+		return false, err
+	}
 	req.Header.SetMethod("POST")
 	req.Header.SetContentType("application/json")
 	req.SetBody([]byte(`{"method":"eth_syncing","params":[],"id":1,"jsonrpc":"2.0"}`))
@@ -138,7 +140,7 @@ func (h *EthSyncing) CheckHealth() error {
 
 	// Update client health status
 	for _, client := range clients {
-		log.Println(client.Client.Name, client.Healthy)
+		logger.Debugf("upstream UUID: %s, healthy: %t", client.Client.Name, client.Healthy)
 		h.clientManager.SetHealthy(client.Client.Name, client.Healthy)
 	}
 	return nil

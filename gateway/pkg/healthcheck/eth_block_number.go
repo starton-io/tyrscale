@@ -3,7 +3,6 @@ package healthcheck
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -65,7 +64,10 @@ func GetBlockNumber(c *proxy.UpstreamClient, timeout time.Duration) (uint64, err
 	defer fasthttp.ReleaseRequest(req)
 	defer fasthttp.ReleaseResponse(resp)
 
-	c.RequestInterceptor.Intercept(req)
+	err := c.RequestInterceptor.Intercept(req)
+	if err != nil {
+		return 0, err
+	}
 	req.Header.SetMethod("POST")
 	req.Header.SetContentType("application/json")
 	req.SetBody([]byte(`{"method":"eth_blockNumber","params":[],"id":1,"jsonrpc":"2.0"}`))
@@ -154,7 +156,6 @@ func (h *EthBlockNumber) CheckHealth() error {
 
 	// Update client health status
 	for _, client := range clients {
-		log.Println(client.Client.Name, client.Healthy && mapBlockNumber[client.Client.Name] >= h.highestBlock && mapBlockNumber[client.Client.Name] != 0)
 		h.clientManager.SetHealthy(client.Client.Name, client.Healthy && mapBlockNumber[client.Client.Name] >= h.highestBlock && mapBlockNumber[client.Client.Name] != 0)
 	}
 	return nil
