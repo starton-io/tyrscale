@@ -32,6 +32,7 @@ type Route struct {
 
 	ReverseProxy    reverseproxy.ProxyHandler
 	ProxyController *proxy.ProxyController
+	//TargetsGroup    map[string]*proxy.ProxyController
 
 	Middleware     types.MiddlewareFunc
 	ListMiddleware []*middleware.MiddlewareWithPriority

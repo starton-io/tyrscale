@@ -51,6 +51,7 @@ require (
 	github.com/samber/lo v1.39.0 // indirect
 	github.com/samber/slog-common v0.16.0 // indirect
 	github.com/samber/slog-zap/v2 v2.4.0 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	go.opentelemetry.io/otel v1.27.0 // indirect

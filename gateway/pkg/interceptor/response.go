@@ -1,8 +1,6 @@
 package interceptor
 
 import (
-	"bytes"
-	"compress/gzip"
 	"errors"
 
 	"github.com/valyala/fasthttp"
@@ -54,32 +52,33 @@ func (r *DefaultResponseInterceptor) Intercept(res *fasthttp.Response) error {
 	return nil
 }
 
-type DefaultLastResponseInterceptor struct {
-}
-
-func gZipData(data []byte) (compressedData []byte, err error) {
-	var b bytes.Buffer
-	gz := gzip.NewWriter(&b)
-	_, err = gz.Write(data)
-	if err != nil {
-		return
-	}
-	if err = gz.Flush(); err != nil {
-		return
-	}
-	if err = gz.Close(); err != nil {
-		return
-	}
-	compressedData = b.Bytes()
-	return
-}
-
-func (r *DefaultLastResponseInterceptor) Intercept(res *fasthttp.Response) error {
-	//gzip the body
-	body, err := gZipData(res.Body())
-	if err != nil {
-		return err
-	}
-	res.SetBody(body)
-	return nil
-}
+// TODO: implement default last response interceptor GZIP
+//type DefaultLastResponseInterceptor struct {
+//}
+//
+//func gZipData(data []byte) (compressedData []byte, err error) {
+//	var b bytes.Buffer
+//	gz := gzip.NewWriter(&b)
+//	_, err = gz.Write(data)
+//	if err != nil {
+//		return
+//	}
+//	if err = gz.Flush(); err != nil {
+//		return
+//	}
+//	if err = gz.Close(); err != nil {
+//		return
+//	}
+//	compressedData = b.Bytes()
+//	return
+//}
+//
+//func (r *DefaultLastResponseInterceptor) Intercept(res *fasthttp.Response) error {
+//	//gzip the body
+//	body, err := gZipData(res.Body())
+//	if err != nil {
+//		return err
+//	}
+//	res.SetBody(body)
+//	return nil
+//}

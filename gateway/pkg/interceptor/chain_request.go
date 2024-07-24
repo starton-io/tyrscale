@@ -19,7 +19,9 @@ type orderedRequestInterceptor struct {
 }
 
 func NewInterceptorRequestChain() InterceptorRequestChain {
-	return InterceptorRequestChain{}
+	return InterceptorRequestChain{
+		interceptors: make([]*orderedRequestInterceptor, 0),
+	}
 }
 
 func (chain *InterceptorRequestChain) Intercept(req *fasthttp.Request) error {

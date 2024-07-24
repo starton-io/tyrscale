@@ -43,20 +43,6 @@ func (h *RouteHandler) HandleRouteCreated(msg *message.Message) error {
 		"route_uuid": routeProxy.GetUuid(),
 	})
 
-	// setup interceptor
-	if routeProxy.Plugins != nil {
-		interceptor := interceptor.NewInterceptorResponseChain()
-		for _, p := range routeProxy.Plugins.InterceptorResponse {
-			logger.Infof("Adding plugin response interceptor: %s", p.Name)
-			interceptorResp, err := h.PluginManager.GetPluginRespInterceptor(p.Name)
-			if err != nil {
-				return fmt.Errorf("error getting interceptor: %v", err)
-			}
-			interceptor.AddOrdered(interceptorResp, int(p.Priority))
-		}
-		proxyController.SetResponsesInterceptors(interceptor)
-	}
-
 	if routeProxy.CircuitBreaker != nil && routeProxy.CircuitBreaker.Enabled {
 		logger.Infof("CircuitBreaker: %v", routeProxy.CircuitBreaker)
 		proxyController.CircuitBreaker = circuitbreaker.NewCircuitBreaker(circuitbreaker.Settings{
@@ -100,29 +86,8 @@ func (h *RouteHandler) HandleRouteCreated(msg *message.Message) error {
 	}
 
 	// setup middleware
-	listMiddlewareWithPriority := []middleware.MiddlewareWithPriority{}
-	if routeProxy.Plugins != nil {
-		for _, p := range routeProxy.Plugins.Middleware {
-			logger.Infof("Adding Plugin Middleware: %s", p.Name)
-			pluginMiddleware, err := h.PluginManager.GetPluginMiddleware(p.Name)
-			if err != nil {
-				logger.Errorf("failed to get plugin middleware %s: %w", p.Name, err)
-				continue
-				//return fmt.Errorf("failed to get plugin %s: %w", p.Name, err)
-			}
-			listMiddlewareWithPriority = append(listMiddlewareWithPriority, middleware.MiddlewareWithPriority{
-				Middleware: pluginMiddleware,
-				Name:       p.Name,
-				Priority:   int(p.Priority),
-			})
-		}
-	}
-	// Convert listMiddlewareWithPriority to a slice of pointers
-	listMiddlewareWithPriorityPtrs := make([]*middleware.MiddlewareWithPriority, 0)
-	for i := range listMiddlewareWithPriority {
-		listMiddlewareWithPriorityPtrs[i] = &listMiddlewareWithPriority[i]
-	}
-	setupMiddleware := middleware.MiddlewareComposerWithPriority(listMiddlewareWithPriorityPtrs)
+	listMiddlewareWithPriority := make([]*middleware.MiddlewareWithPriority, 0)
+	setupMiddleware := middleware.MiddlewareWithPriorityComposer(listMiddlewareWithPriority...)
 	route.Middleware = setupMiddleware
 
 	logger.Infof("Adding route: %s", route.Host+route.Path)
