@@ -33,7 +33,7 @@ variables:
 
 
 
-test-lint-manager:
+test-lint:
   stage: test
   tags: ["starton-standard-v2"]
   image: golangci/golangci-lint:v1.58.0
@@ -47,31 +47,37 @@ test-lint-manager:
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" && $CI_COMMIT_TAG == null
     - if: $CI_COMMIT_BRANCH == "master" && $CI_COMMIT_TAG == null
+  parallel:
+    matrix:
+      - SERVICE: [manager, gateway]
 
-test-unit-manager:
+test-unit:
   stage: test
   tags: ["starton-standard-v2"]
   image: golang:1.21.6
   extends: .go-cache
   script:
-    - mkdir -p ${CI_PROJECT_DIR}/${ARTIFACTS_DIR}/manager
+    - mkdir -p ${CI_PROJECT_DIR}/${ARTIFACTS_DIR}/${SERVICE}
     - ls -al
     - make test ENV=ci
   after_script:
     - >
       if [ $CI_JOB_STATUS != 'success' ]; then
-        cat ${CI_PROJECT_DIR}/${ARTIFACTS_DIR}/manager/tests.out 
+        cat ${CI_PROJECT_DIR}/${ARTIFACTS_DIR}/${SERVICE}/tests.out 
       fi
     - make test-report ENV=ci
   coverage: '/^total:\s+\(statements\)\s+\d+.\d+%/'
   artifacts:
     paths:
-      - ${ARTIFACTS_DIR}/manager
+      - ${ARTIFACTS_DIR}/${SERVICE}
     reports:
-      junit: ${ARTIFACTS_DIR}/manager/report.xml
+      junit: ${ARTIFACTS_DIR}/${SERVICE}/report.xml
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" && $CI_COMMIT_TAG == null
     - if: $CI_COMMIT_BRANCH == "master" && $CI_COMMIT_TAG == null
+  parallel:
+    matrix:
+      - SERVICE: [manager, gateway]
 
 
 # TODO: Add test-gateway job
