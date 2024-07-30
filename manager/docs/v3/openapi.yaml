@@ -121,6 +121,32 @@ paths:
       summary: Delete a network
       tags:
       - networks
+  /plugins:
+    get:
+      description: Get list plugins
+      operationId: listPlugins
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses.DefaultSuccessResponse-plugin_ListPluginsResponse'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses.BadRequestResponse'
+          description: Bad Request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses.InternalServerErrorResponse'
+          description: Internal Server Error
+      summary: Get list plugins
+      tags:
+      - plugins
   /recommendations:
     get:
       description: List recommendation
@@ -326,7 +352,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Route'
+              $ref: '#/components/schemas/CreateRouteReq'
         description: Route request
         required: true
       responses:
@@ -392,12 +418,6 @@ paths:
       - description: Route UUID
         in: path
         name: route_uuid
-        required: true
-        schema:
-          type: string
-      - description: Upstream UUID
-        in: path
-        name: uuid
         required: true
         schema:
           type: string
@@ -503,6 +523,161 @@ paths:
       summary: Delete a route
       tags:
       - routes
+    put:
+      description: Update a route
+      operationId: updateRoute
+      parameters:
+      - description: UUID
+        in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRouteReq'
+        description: Route request
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses.DefaultSuccessResponseWithoutData'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses.BadRequestResponse'
+          description: Bad Request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses.InternalServerErrorResponse'
+          description: Internal Server Error
+      summary: Update a route
+      tags:
+      - routes
+      x-codegen-request-body-name: route
+  /routes/{uuid}/attach-plugin:
+    post:
+      description: Attach plugin to route
+      operationId: attachPlugin
+      parameters:
+      - description: Route UUID
+        in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttachPluginReq'
+        description: Attach plugin request
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses.DefaultSuccessResponseWithoutData'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses.BadRequestResponse'
+          description: Bad Request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses.InternalServerErrorResponse'
+          description: Internal Server Error
+      summary: Attach plugin to route
+      tags:
+      - plugins
+      x-codegen-request-body-name: body
+  /routes/{uuid}/detach-plugin:
+    post:
+      description: Detach plugin from route
+      operationId: detachPlugin
+      parameters:
+      - description: Route UUID
+        in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DetachPluginReq'
+        description: Detach plugin request
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses.DefaultSuccessResponseWithoutData'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses.BadRequestResponse'
+          description: Bad Request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses.InternalServerErrorResponse'
+          description: Internal Server Error
+      summary: Detach plugin from route
+      tags:
+      - plugins
+      x-codegen-request-body-name: body
+  /routes/{uuid}/plugins:
+    get:
+      description: Get list plugins from route
+      operationId: listPluginsFromRoute
+      parameters:
+      - description: Route UUID
+        in: path
+        name: uuid
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses.DefaultSuccessResponse-Plugins'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses.BadRequestResponse'
+          description: Bad Request
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses.InternalServerErrorResponse'
+          description: Internal Server Error
+      summary: Get list plugins from route
+      tags:
+      - plugins
   /rpcs:
     get:
       description: List RPCs
@@ -743,31 +918,157 @@ components:
       - chain_id
       - name
       type: object
+    AttachPluginReq:
+      example:
+        name: name
+        description: description
+        priority: 81
+        type: ResponseInterceptor
+        config: "{}"
+      properties:
+        config:
+          type: object
+        description:
+          type: string
+        name:
+          type: string
+        priority:
+          maximum: 1000
+          minimum: 1
+          type: integer
+        type:
+          $ref: '#/components/schemas/plugin.PluginType'
+      required:
+      - config
+      - name
+      - priority
+      - type
+      type: object
+    DetachPluginReq:
+      example:
+        name: name
+        type: ResponseInterceptor
+      properties:
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/plugin.PluginType'
+      required:
+      - name
+      - type
+      type: object
+    Plugin:
+      example:
+        name: name
+        description: description
+        priority: 81
+        config: "{}"
+      properties:
+        config:
+          type: object
+        description:
+          type: string
+        name:
+          type: string
+        priority:
+          maximum: 1000
+          minimum: 1
+          type: integer
+      required:
+      - name
+      - priority
+      type: object
+    Plugins:
+      example:
+        RequestInterceptor:
+        - name: name
+          description: description
+          priority: 81
+          config: "{}"
+        - name: name
+          description: description
+          priority: 81
+          config: "{}"
+        Middleware:
+        - name: name
+          description: description
+          priority: 81
+          config: "{}"
+        - name: name
+          description: description
+          priority: 81
+          config: "{}"
+        ResponseInterceptor:
+        - name: name
+          description: description
+          priority: 81
+          config: "{}"
+        - name: name
+          description: description
+          priority: 81
+          config: "{}"
+      properties:
+        Middleware:
+          items:
+            $ref: '#/components/schemas/Plugin'
+          type: array
+        RequestInterceptor:
+          items:
+            $ref: '#/components/schemas/Plugin'
+          type: array
+        ResponseInterceptor:
+          items:
+            $ref: '#/components/schemas/Plugin'
+          type: array
+      type: object
+    CreateRouteReq:
+      example:
+        path: path
+        host: host
+        load_balancer_strategy: weight-round-robin
+        circuit_breaker:
+          max_requests: 1
+          max_consecutive_failures: 6
+          name: name
+          interval: 0
+          enabled: true
+          timeout: 5
+        health_check:
+          request:
+            headers:
+              key: headers
+            status_code: 2
+            method: method
+            body: body
+          combined_with_circuit_breaker: true
+          interval: 5
+          type: eth_block_number
+          enabled: true
+          timeout: 7
+        uuid: uuid
+      properties:
+        circuit_breaker:
+          $ref: '#/components/schemas/circuitbreaker.Settings'
+        health_check:
+          $ref: '#/components/schemas/healthcheck.HealthCheckConfig'
+        host:
+          type: string
+        load_balancer_strategy:
+          $ref: '#/components/schemas/balancer.LoadBalancerStrategy'
+        path:
+          type: string
+        uuid:
+          type: string
+      required:
+      - host
+      - load_balancer_strategy
+      type: object
     CreateRouteRes:
       example:
         uuid: uuid
       properties:
         uuid:
           type: string
-      type: object
-    HealthCheckConfig:
-      example:
-        combined_with_circuit_breaker: true
-        interval: 5
-        type: eth_block_number
-        enabled: true
-        timeout: 2
-      properties:
-        combined_with_circuit_breaker:
-          type: boolean
-        enabled:
-          type: boolean
-        interval:
-          type: integer
-        timeout:
-          type: integer
-        type:
-          $ref: '#/components/schemas/healthcheck.HealthCheckType'
       type: object
     ListRouteRes:
       example:
@@ -783,11 +1084,17 @@ components:
             enabled: true
             timeout: 5
           health_check:
+            request:
+              headers:
+                key: headers
+              status_code: 2
+              method: method
+              body: body
             combined_with_circuit_breaker: true
             interval: 5
             type: eth_block_number
             enabled: true
-            timeout: 2
+            timeout: 7
           uuid: uuid
         - path: path
           host: host
@@ -800,11 +1107,17 @@ components:
             enabled: true
             timeout: 5
           health_check:
+            request:
+              headers:
+                key: headers
+              status_code: 2
+              method: method
+              body: body
             combined_with_circuit_breaker: true
             interval: 5
             type: eth_block_number
             enabled: true
-            timeout: 2
+            timeout: 7
           uuid: uuid
       properties:
         items:
@@ -825,17 +1138,23 @@ components:
           enabled: true
           timeout: 5
         health_check:
+          request:
+            headers:
+              key: headers
+            status_code: 2
+            method: method
+            body: body
           combined_with_circuit_breaker: true
           interval: 5
           type: eth_block_number
           enabled: true
-          timeout: 2
+          timeout: 7
         uuid: uuid
       properties:
         circuit_breaker:
           $ref: '#/components/schemas/circuitbreaker.Settings'
         health_check:
-          $ref: '#/components/schemas/HealthCheckConfig'
+          $ref: '#/components/schemas/healthcheck.HealthCheckConfig'
         host:
           type: string
         load_balancer_strategy:
@@ -847,6 +1166,44 @@ components:
       required:
       - host
       - load_balancer_strategy
+      type: object
+    UpdateRouteReq:
+      example:
+        path: path
+        host: host
+        load_balancer_strategy: weight-round-robin
+        circuit_breaker:
+          max_requests: 1
+          max_consecutive_failures: 6
+          name: name
+          interval: 0
+          enabled: true
+          timeout: 5
+        health_check:
+          request:
+            headers:
+              key: headers
+            status_code: 2
+            method: method
+            body: body
+          combined_with_circuit_breaker: true
+          interval: 5
+          type: eth_block_number
+          enabled: true
+          timeout: 7
+      properties:
+        circuit_breaker:
+          $ref: '#/components/schemas/circuitbreaker.Settings'
+        health_check:
+          $ref: '#/components/schemas/healthcheck.HealthCheckConfig'
+        host:
+          description: "Uuid                 string                         `json:\"\
+            uuid\" validate:\"required,uuid\"`"
+          type: string
+        load_balancer_strategy:
+          $ref: '#/components/schemas/balancer.LoadBalancerStrategy'
+        path:
+          type: string
       type: object
     ListUpstreamRes:
       example:
@@ -1117,12 +1474,98 @@ components:
       - type
       - url
       type: object
+    healthcheck.HealthCheckConfig:
+      example:
+        request:
+          headers:
+            key: headers
+          status_code: 2
+          method: method
+          body: body
+        combined_with_circuit_breaker: true
+        interval: 5
+        type: eth_block_number
+        enabled: true
+        timeout: 7
+      properties:
+        combined_with_circuit_breaker:
+          type: boolean
+        enabled:
+          type: boolean
+        interval:
+          type: integer
+        request:
+          $ref: '#/components/schemas/healthcheck.Request'
+        timeout:
+          type: integer
+        type:
+          $ref: '#/components/schemas/healthcheck.HealthCheckType'
+      type: object
     healthcheck.HealthCheckType:
       enum:
       - eth_block_number
+      - eth_syncing
+      - custom
       type: string
       x-enum-varnames:
       - EthBlockNumberType
+      - EthSyncingType
+      - CustomType
+    healthcheck.Request:
+      example:
+        headers:
+          key: headers
+        status_code: 2
+        method: method
+        body: body
+      properties:
+        body:
+          type: string
+        headers:
+          additionalProperties:
+            type: string
+          type: object
+        method:
+          type: string
+        status_code:
+          type: integer
+      type: object
+    plugin.ListPluginsResponse:
+      example:
+        plugins:
+          key:
+            names:
+            - names
+            - names
+      properties:
+        plugins:
+          additionalProperties:
+            $ref: '#/components/schemas/plugin.PluginList'
+          description: "Map of plugin lists, keyed by an integer ID"
+          type: object
+      type: object
+    plugin.PluginList:
+      example:
+        names:
+        - names
+        - names
+      properties:
+        names:
+          description: Repeated field of plugin names
+          items:
+            type: string
+          type: array
+      type: object
+    plugin.PluginType:
+      enum:
+      - ResponseInterceptor
+      - RequestInterceptor
+      - Middleware
+      type: string
+      x-enum-varnames:
+      - PluginTypeResponseInterceptor
+      - PluginTypeRequestInterceptor
+      - PluginTypeMiddleware
     responses.BadRequestResponse:
       example:
         code: 3
@@ -1301,6 +1744,52 @@ components:
           example: 200
           type: integer
       type: object
+    responses.DefaultSuccessResponse-Plugins:
+      example:
+        code: 0
+        data:
+          RequestInterceptor:
+          - name: name
+            description: description
+            priority: 81
+            config: "{}"
+          - name: name
+            description: description
+            priority: 81
+            config: "{}"
+          Middleware:
+          - name: name
+            description: description
+            priority: 81
+            config: "{}"
+          - name: name
+            description: description
+            priority: 81
+            config: "{}"
+          ResponseInterceptor:
+          - name: name
+            description: description
+            priority: 81
+            config: "{}"
+          - name: name
+            description: description
+            priority: 81
+            config: "{}"
+        message: Created Success
+        status: 200
+      properties:
+        code:
+          example: 0
+          type: integer
+        data:
+          $ref: '#/components/schemas/Plugins'
+        message:
+          example: Created Success
+          type: string
+        status:
+          example: 200
+          type: integer
+      type: object
     responses.DefaultSuccessResponse-ListRouteRes:
       example:
         code: 0
@@ -1317,11 +1806,17 @@ components:
               enabled: true
               timeout: 5
             health_check:
+              request:
+                headers:
+                  key: headers
+                status_code: 2
+                method: method
+                body: body
               combined_with_circuit_breaker: true
               interval: 5
               type: eth_block_number
               enabled: true
-              timeout: 2
+              timeout: 7
             uuid: uuid
           - path: path
             host: host
@@ -1334,11 +1829,17 @@ components:
               enabled: true
               timeout: 5
             health_check:
+              request:
+                headers:
+                  key: headers
+                status_code: 2
+                method: method
+                body: body
               combined_with_circuit_breaker: true
               interval: 5
               type: eth_block_number
               enabled: true
-              timeout: 2
+              timeout: 7
             uuid: uuid
         message: Created Success
         status: 200
@@ -1468,6 +1969,30 @@ components:
           type: integer
         data:
           $ref: '#/components/schemas/ListRpcRes'
+        message:
+          example: Created Success
+          type: string
+        status:
+          example: 200
+          type: integer
+      type: object
+    responses.DefaultSuccessResponse-plugin_ListPluginsResponse:
+      example:
+        code: 0
+        data:
+          plugins:
+            key:
+              names:
+              - names
+              - names
+        message: Created Success
+        status: 200
+      properties:
+        code:
+          example: 0
+          type: integer
+        data:
+          $ref: '#/components/schemas/plugin.ListPluginsResponse'
         message:
           example: Created Success
           type: string

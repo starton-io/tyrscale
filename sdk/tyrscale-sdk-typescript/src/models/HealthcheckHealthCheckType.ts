@@ -18,7 +18,9 @@
  * @export
  */
 export const HealthcheckHealthCheckType = {
-    EthBlockNumberType: 'eth_block_number'
+    EthBlockNumberType: 'eth_block_number',
+    EthSyncingType: 'eth_syncing',
+    CustomType: 'custom'
 } as const;
 export type HealthcheckHealthCheckType = typeof HealthcheckHealthCheckType[keyof typeof HealthcheckHealthCheckType];
 

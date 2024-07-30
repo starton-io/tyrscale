@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/starton-io/tyrscale/go-kit/pkg/infrastructure/kv"
 	"github.com/starton-io/tyrscale/go-kit/pkg/tracer"
@@ -110,7 +109,6 @@ func (r *RouteRepository) List(ctx context.Context, filterParams *dto.ListRouteR
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(matchCriteria)
 	filter := kv.NewParamsFilterPB[*pb.RouteModel](matchCriteria, false, "", 0)
 	if matchCriteria["uuid"] != "" {
 		filter.EnablePrefilter = true

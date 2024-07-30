@@ -13,6 +13,12 @@
  */
 
 import { mapValues } from '../runtime';
+import type { HealthcheckHealthCheckConfig } from './HealthcheckHealthCheckConfig';
+import {
+    HealthcheckHealthCheckConfigFromJSON,
+    HealthcheckHealthCheckConfigFromJSONTyped,
+    HealthcheckHealthCheckConfigToJSON,
+} from './HealthcheckHealthCheckConfig';
 import type { BalancerLoadBalancerStrategy } from './BalancerLoadBalancerStrategy';
 import {
     BalancerLoadBalancerStrategyFromJSON,
@@ -25,12 +31,6 @@ import {
     CircuitbreakerSettingsFromJSONTyped,
     CircuitbreakerSettingsToJSON,
 } from './CircuitbreakerSettings';
-import type { HealthCheckConfig } from './HealthCheckConfig';
-import {
-    HealthCheckConfigFromJSON,
-    HealthCheckConfigFromJSONTyped,
-    HealthCheckConfigToJSON,
-} from './HealthCheckConfig';
 
 /**
  * 
@@ -46,10 +46,10 @@ export interface Route {
     circuitBreaker?: CircuitbreakerSettings;
     /**
      * 
-     * @type {HealthCheckConfig}
+     * @type {HealthcheckHealthCheckConfig}
      * @memberof Route
      */
-    healthCheck?: HealthCheckConfig;
+    healthCheck?: HealthcheckHealthCheckConfig;
     /**
      * 
      * @type {string}
@@ -96,7 +96,7 @@ export function RouteFromJSONTyped(json: any, ignoreDiscriminator: boolean): Rou
     return {
         
         'circuitBreaker': json['circuit_breaker'] == null ? undefined : CircuitbreakerSettingsFromJSON(json['circuit_breaker']),
-        'healthCheck': json['health_check'] == null ? undefined : HealthCheckConfigFromJSON(json['health_check']),
+        'healthCheck': json['health_check'] == null ? undefined : HealthcheckHealthCheckConfigFromJSON(json['health_check']),
         'host': json['host'],
         'loadBalancerStrategy': BalancerLoadBalancerStrategyFromJSON(json['load_balancer_strategy']),
         'path': json['path'] == null ? undefined : json['path'],
@@ -111,7 +111,7 @@ export function RouteToJSON(value?: Route | null): any {
     return {
         
         'circuit_breaker': CircuitbreakerSettingsToJSON(value['circuitBreaker']),
-        'health_check': HealthCheckConfigToJSON(value['healthCheck']),
+        'health_check': HealthcheckHealthCheckConfigToJSON(value['healthCheck']),
         'host': value['host'],
         'load_balancer_strategy': BalancerLoadBalancerStrategyToJSON(value['loadBalancerStrategy']),
         'path': value['path'],

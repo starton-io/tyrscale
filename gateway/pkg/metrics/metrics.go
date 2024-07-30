@@ -2,25 +2,26 @@ package metrics
 
 import (
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 )
 
 // upstream metrics
 var (
-	UpstreamSuccesses = prometheus.NewCounterVec(
+	UpstreamSuccesses = promauto.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "upstream_successes_total",
 			Help: "Total number of requests to upstreams",
 		},
 		[]string{"upstream_uuid", "route_uuid"},
 	)
-	UpstreamFailures = prometheus.NewCounterVec(
+	UpstreamFailures = promauto.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "upstream_failures_total",
 			Help: "Total number of failed requests to upstreams",
 		},
 		[]string{"upstream_uuid", "route_uuid"},
 	)
-	UpstreamDuration = prometheus.NewHistogramVec(
+	UpstreamDuration = promauto.NewHistogramVec(
 		prometheus.HistogramOpts{
 			Name:    "upstream_duration_seconds",
 			Help:    "Duration of requests to upstreams",
@@ -28,14 +29,14 @@ var (
 		},
 		[]string{"upstream_uuid", "route_uuid"},
 	)
-	Status429Responses = prometheus.NewCounterVec(
+	Status429Responses = promauto.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "status_429_responses_total",
 			Help: "Total number of status code 429 responses",
 		},
 		[]string{"upstream_uuid", "route_uuid"},
 	)
-	UpstreamTotalRequests = prometheus.NewCounterVec(
+	UpstreamTotalRequests = promauto.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "upstream_total_requests",
 			Help: "Total number of responses",
@@ -46,14 +47,14 @@ var (
 
 // route metrics
 var (
-	RouteRequestCount = prometheus.NewCounterVec(
+	RouteRequestCount = promauto.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "route_requests_total",
 			Help: "Number of HTTP requests",
 		},
 		[]string{"route_uuid", "method", "status", "host", "scheme"},
 	)
-	RouteRequestDuration = prometheus.NewHistogramVec(
+	RouteRequestDuration = promauto.NewHistogramVec(
 		prometheus.HistogramOpts{
 			Name:    "route_http_request_duration_seconds",
 			Help:    "Duration of HTTP requests",
@@ -63,7 +64,7 @@ var (
 	)
 )
 
-func init() {
-	prometheus.MustRegister(UpstreamSuccesses, UpstreamFailures, UpstreamDuration, Status429Responses, UpstreamTotalRequests)
-	prometheus.MustRegister(RouteRequestCount, RouteRequestDuration)
-}
+//func init() {
+//	prometheus.MustRegister(UpstreamSuccesses, UpstreamFailures, UpstreamDuration, Status429Responses, UpstreamTotalRequests)
+//	prometheus.MustRegister(RouteRequestCount, RouteRequestDuration)
+//}

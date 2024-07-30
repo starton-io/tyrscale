@@ -23,7 +23,7 @@ var _ MappedNullable = &Route{}
 // Route struct for Route
 type Route struct {
 	CircuitBreaker *CircuitbreakerSettings `json:"circuit_breaker,omitempty"`
-	HealthCheck *HealthCheckConfig `json:"health_check,omitempty"`
+	HealthCheck *HealthcheckHealthCheckConfig `json:"health_check,omitempty"`
 	Host string `json:"host"`
 	LoadBalancerStrategy BalancerLoadBalancerStrategy `json:"load_balancer_strategy"`
 	Path *string `json:"path,omitempty"`
@@ -84,9 +84,9 @@ func (o *Route) SetCircuitBreaker(v CircuitbreakerSettings) {
 }
 
 // GetHealthCheck returns the HealthCheck field value if set, zero value otherwise.
-func (o *Route) GetHealthCheck() HealthCheckConfig {
+func (o *Route) GetHealthCheck() HealthcheckHealthCheckConfig {
 	if o == nil || IsNil(o.HealthCheck) {
-		var ret HealthCheckConfig
+		var ret HealthcheckHealthCheckConfig
 		return ret
 	}
 	return *o.HealthCheck
@@ -94,7 +94,7 @@ func (o *Route) GetHealthCheck() HealthCheckConfig {
 
 // GetHealthCheckOk returns a tuple with the HealthCheck field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Route) GetHealthCheckOk() (*HealthCheckConfig, bool) {
+func (o *Route) GetHealthCheckOk() (*HealthcheckHealthCheckConfig, bool) {
 	if o == nil || IsNil(o.HealthCheck) {
 		return nil, false
 	}
@@ -110,8 +110,8 @@ func (o *Route) HasHealthCheck() bool {
 	return false
 }
 
-// SetHealthCheck gets a reference to the given HealthCheckConfig and assigns it to the HealthCheck field.
-func (o *Route) SetHealthCheck(v HealthCheckConfig) {
+// SetHealthCheck gets a reference to the given HealthcheckHealthCheckConfig and assigns it to the HealthCheck field.
+func (o *Route) SetHealthCheck(v HealthcheckHealthCheckConfig) {
 	o.HealthCheck = &v
 }
 

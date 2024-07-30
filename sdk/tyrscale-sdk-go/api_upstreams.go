@@ -61,10 +61,9 @@ type UpstreamsAPI interface {
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param routeUuid Route UUID
-	@param uuid Upstream UUID
 	@return ApiUpsertUpstreamRequest
 	*/
-	UpsertUpstream(ctx context.Context, routeUuid string, uuid string) ApiUpsertUpstreamRequest
+	UpsertUpstream(ctx context.Context, routeUuid string) ApiUpsertUpstreamRequest
 
 	// UpsertUpstreamExecute executes the request
 	//  @return ResponsesCreatedSuccessResponseUpstreamUpsertRes
@@ -330,7 +329,6 @@ type ApiUpsertUpstreamRequest struct {
 	ctx context.Context
 	ApiService UpstreamsAPI
 	routeUuid string
-	uuid string
 	upstream *Upstream
 }
 
@@ -351,15 +349,13 @@ Create or update a upstream
 
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @param routeUuid Route UUID
- @param uuid Upstream UUID
  @return ApiUpsertUpstreamRequest
 */
-func (a *UpstreamsAPIService) UpsertUpstream(ctx context.Context, routeUuid string, uuid string) ApiUpsertUpstreamRequest {
+func (a *UpstreamsAPIService) UpsertUpstream(ctx context.Context, routeUuid string) ApiUpsertUpstreamRequest {
 	return ApiUpsertUpstreamRequest{
 		ApiService: a,
 		ctx: ctx,
 		routeUuid: routeUuid,
-		uuid: uuid,
 	}
 }
 
@@ -380,7 +376,6 @@ func (a *UpstreamsAPIService) UpsertUpstreamExecute(r ApiUpsertUpstreamRequest) 
 
 	localVarPath := localBasePath + "/routes/{route_uuid}/upstreams"
 	localVarPath = strings.Replace(localVarPath, "{"+"route_uuid"+"}", url.PathEscape(parameterValueToString(r.routeUuid, "routeUuid")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"uuid"+"}", url.PathEscape(parameterValueToString(r.uuid, "uuid")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

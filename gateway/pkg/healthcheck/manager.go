@@ -29,7 +29,7 @@ func (m *HealthCheckManager) AddHealthCheck(id string, healthCheck HealthCheckIn
 	if m.CircuitBreaker != nil {
 		healthCheck.SetCircuitBreaker(m.CircuitBreaker)
 	}
-	m.Scheduler.AddWithID(id, &tasks.Task{
+	_ = m.Scheduler.AddWithID(id, &tasks.Task{
 		Interval: healthCheck.GetInterval(),
 		TaskFunc: healthCheck.CheckHealth,
 	})

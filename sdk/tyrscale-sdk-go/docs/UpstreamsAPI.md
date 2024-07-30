@@ -155,7 +155,7 @@ No authorization required
 
 ## UpsertUpstream
 
-> ResponsesCreatedSuccessResponseUpstreamUpsertRes UpsertUpstream(ctx, routeUuid, uuid).Upstream(upstream).Execute()
+> ResponsesCreatedSuccessResponseUpstreamUpsertRes UpsertUpstream(ctx, routeUuid).Upstream(upstream).Execute()
 
 Create or update a upstream
 
@@ -175,12 +175,11 @@ import (
 
 func main() {
 	routeUuid := "routeUuid_example" // string | Route UUID
-	uuid := "uuid_example" // string | Upstream UUID
 	upstream := *openapiclient.NewUpstream(float32(123)) // Upstream | Upstream request
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.UpstreamsAPI.UpsertUpstream(context.Background(), routeUuid, uuid).Upstream(upstream).Execute()
+	resp, r, err := apiClient.UpstreamsAPI.UpsertUpstream(context.Background(), routeUuid).Upstream(upstream).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `UpstreamsAPI.UpsertUpstream``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -197,7 +196,6 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 **ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
 **routeUuid** | **string** | Route UUID | 
-**uuid** | **string** | Upstream UUID | 
 
 ### Other Parameters
 
@@ -206,7 +204,6 @@ Other parameters are passed through a pointer to a apiUpsertUpstreamRequest stru
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
-
 
  **upstream** | [**Upstream**](Upstream.md) | Upstream request | 
 

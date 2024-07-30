@@ -30,6 +30,8 @@ type Schema struct {
 	OtlpEnabled             bool   `env:"otlp_enabled" envDefault:"false"`
 	OtlpEndpoint            string `env:"otlp_endpoint" envDefault:"http://localhost:4318/v1/traces"`
 	AppVersion              string `env:"app_version"`
+
+	GatewayUrl string `env:"gateway_url" envDefault:"localhost:7778"`
 }
 
 var (

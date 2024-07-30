@@ -33,13 +33,13 @@ func NewRouteHandler(service service.IRouteService, upstreamService upstreamServ
 //	@Accept			json
 //	@Produce		json
 //
-//	@Param			route	body		dto.Route	true	"Route request"
+//	@Param			route	body		dto.CreateRouteReq	true	"Route request"
 //	@Success		201		{object}	responses.CreatedSuccessResponse[dto.CreateRouteRes]
 //	@Failure		400		{object}	responses.BadRequestResponse			"Bad Request"
 //	@Failure		500		{object}	responses.InternalServerErrorResponse	"Internal Server Error"
 //	@Router			/routes [post]
 func (h *RouteHandler) CreateRoute(c *fiber.Ctx) error {
-	req := new(dto.Route)
+	req := new(dto.CreateRouteReq)
 	if err := c.BodyParser(&req); c.Body() == nil || err != nil {
 		logger.Warnf("Failed to parse body: %v", err)
 		resp := responses.BadRequestResp.ToGeneral()
@@ -57,6 +57,50 @@ func (h *RouteHandler) CreateRoute(c *fiber.Ctx) error {
 		return responses.HandleServiceError(c, err)
 	}
 	resp := responses.CreatedSuccessResp.ToGeneral(*routeResp)
+	return resp.JSON(c)
+}
+
+// UpdateRoute godoc
+//
+//	@Id				updateRoute
+//	@Summary		Update a route
+//	@Description	Update a route
+//	@Tags			routes
+//	@Accept			json
+//	@Produce		json
+//
+//	@Param			uuid	path		string				true	"UUID"
+//	@Param			route	body		dto.UpdateRouteReq	true	"Route request"
+//	@Success		200		{object}	responses.DefaultSuccessResponseWithoutData
+//	@Failure		400		{object}	responses.BadRequestResponse			"Bad Request"
+//	@Failure		500		{object}	responses.InternalServerErrorResponse	"Internal Server Error"
+//	@Router			/routes/{uuid} [put]
+func (h *RouteHandler) UpdateRoute(c *fiber.Ctx) error {
+	uuid := c.Params("uuid")
+	if uuid == "" {
+		logger.Error("Failed to get uuid from path")
+		resp := responses.BadRequestResp.ToGeneral()
+		return resp.WithError(c, fmt.Errorf("failed to get uuid from path")).JSON(c)
+	}
+
+	req := new(dto.UpdateRouteReq)
+	if err := c.BodyParser(&req); c.Body() == nil || err != nil {
+		logger.Warnf("Failed to parse body: %v", err)
+		resp := responses.BadRequestResp.ToGeneral()
+		return resp.WithError(c, err).JSON(c)
+	}
+
+	if err := h.validator.ValidateStruct(req); err != nil {
+		logger.Warnf("Validation failed for create network: %v", err)
+		resp := responses.BadRequestResp.ToGeneral()
+		return resp.WithError(c, err).JSON(c)
+	}
+
+	err := h.service.Update(c.UserContext(), uuid, req)
+	if err != nil {
+		return responses.HandleServiceError(c, err)
+	}
+	resp := responses.DefaultSuccessRespWithoutData.ToGeneral()
 	return resp.JSON(c)
 }
 
@@ -143,3 +187,36 @@ func (h *RouteHandler) DeleteRoute(c *fiber.Ctx) error {
 	resp := responses.DefaultSuccessRespWithoutData.ToGeneral()
 	return resp.JSON(c)
 }
+
+//unc (h *RouteHandler) DetachPlugin(c *fiber.Ctx) error {
+//	uuid := c.Params("uuid")
+//	if uuid == "" {
+//		logger.Error("Failed to get uuid from path")
+//		resp := responses.BadRequestResp.ToGeneral()
+//		return resp.WithError(c, fmt.Errorf("failed to get chainID from path")).JSON(c)
+//	}
+//	logger.Debugf("Detach plugin request: %v", uuid)
+//
+//	req := new(dto.DetachPluginReq)
+//	if err := c.BodyParser(&req); c.Body() == nil || err != nil {
+//		logger.Warnf("Failed to parse body: %v", err)
+//		resp := responses.BadRequestResp.ToGeneral()
+//		return resp.WithError(c, err).JSON(c)
+//	}
+//
+//	// validate request
+//	if err := h.validator.ValidateStruct(req); err != nil {
+//		logger.Warnf("Validation failed for create network: %v", err)
+//		resp := responses.BadRequestResp.ToGeneral()
+//		return resp.WithError(c, err).JSON(c)
+//	}
+//
+//	// detach plugin from route
+//	err := h.service.DetachPlugin(c.UserContext(), uuid, req)
+//	if err != nil {
+//		return responses.HandleServiceError(c, err)
+//	}
+//
+//	resp := responses.DefaultSuccessRespWithoutData.ToGeneral()
+//	return resp.JSON(c)
+//}

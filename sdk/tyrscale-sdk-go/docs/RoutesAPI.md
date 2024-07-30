@@ -7,6 +7,7 @@ Method | HTTP request | Description
 [**CreateRoute**](RoutesAPI.md#CreateRoute) | **Post** /routes | Create a route
 [**DeleteRoute**](RoutesAPI.md#DeleteRoute) | **Delete** /routes/{uuid} | Delete a route
 [**ListRoutes**](RoutesAPI.md#ListRoutes) | **Get** /routes | Get list routes
+[**UpdateRoute**](RoutesAPI.md#UpdateRoute) | **Put** /routes/{uuid} | Update a route
 
 
 
@@ -31,7 +32,7 @@ import (
 )
 
 func main() {
-	route := *openapiclient.NewRoute("Host_example", openapiclient.balancer.LoadBalancerStrategy("weight-round-robin")) // Route | Route request
+	route := *openapiclient.NewCreateRouteReq("Host_example", openapiclient.balancer.LoadBalancerStrategy("weight-round-robin")) // CreateRouteReq | Route request
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
@@ -56,7 +57,7 @@ Other parameters are passed through a pointer to a apiCreateRouteRequest struct 
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **route** | [**Route**](Route.md) | Route request | 
+ **route** | [**CreateRouteReq**](CreateRouteReq.md) | Route request | 
 
 ### Return type
 
@@ -211,6 +212,78 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## UpdateRoute
+
+> ResponsesDefaultSuccessResponseWithoutData UpdateRoute(ctx, uuid).Route(route).Execute()
+
+Update a route
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/starton-io/tyrscale/sdk/tyrscale-sdk-go"
+)
+
+func main() {
+	uuid := "uuid_example" // string | UUID
+	route := *openapiclient.NewUpdateRouteReq() // UpdateRouteReq | Route request
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.RoutesAPI.UpdateRoute(context.Background(), uuid).Route(route).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `RoutesAPI.UpdateRoute``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `UpdateRoute`: ResponsesDefaultSuccessResponseWithoutData
+	fmt.Fprintf(os.Stdout, "Response from `RoutesAPI.UpdateRoute`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+**ctx** | **context.Context** | context for authentication, logging, cancellation, deadlines, tracing, etc.
+**uuid** | **string** | UUID | 
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiUpdateRouteRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+
+ **route** | [**UpdateRouteReq**](UpdateRouteReq.md) | Route request | 
+
+### Return type
+
+[**ResponsesDefaultSuccessResponseWithoutData**](ResponsesDefaultSuccessResponseWithoutData.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: application/json
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)

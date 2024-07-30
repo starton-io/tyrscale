@@ -38,9 +38,9 @@ func Test_tyrscalesdkgo_RecommendationAPIService(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		var uuid string
+		var routeUuid string
 
-		resp, httpRes, err := apiClient.RecommendationAPI.DeleteRecommendation(context.Background(), uuid).Execute()
+		resp, httpRes, err := apiClient.RecommendationAPI.DeleteRecommendation(context.Background(), routeUuid).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)

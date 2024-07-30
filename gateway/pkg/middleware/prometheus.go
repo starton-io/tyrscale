@@ -6,6 +6,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/starton-io/tyrscale/gateway/pkg/metrics"
+	"github.com/starton-io/tyrscale/gateway/pkg/middleware/types"
 	"github.com/valyala/fasthttp"
 	"github.com/valyala/fasthttp/fasthttpadaptor"
 )
@@ -14,7 +15,7 @@ type Prometheus struct {
 	RouteUuid string
 }
 
-func NewPrometheus(prometheus *Prometheus) MiddlewareFunc {
+func NewPrometheus(prometheus *Prometheus) types.MiddlewareFunc {
 	return func(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 		return func(ctx *fasthttp.RequestCtx) {
 			start := time.Now()

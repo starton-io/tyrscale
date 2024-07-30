@@ -5,6 +5,7 @@ import (
 
 	"github.com/starton-io/tyrscale/gateway/pkg/config"
 	"github.com/starton-io/tyrscale/gateway/pkg/middleware"
+	"github.com/starton-io/tyrscale/gateway/pkg/middleware/types"
 	"github.com/starton-io/tyrscale/gateway/pkg/route"
 	"github.com/starton-io/tyrscale/go-kit/pkg/logger"
 	"github.com/valyala/fasthttp"
@@ -14,7 +15,7 @@ import (
 type Server struct {
 	Engine          *fasthttp.Server
 	Router          route.IRouter
-	ApplyMiddleware middleware.MiddlewareFunc
+	ApplyMiddleware types.MiddlewareFunc
 	Cfg             *config.Schema
 }
 
@@ -41,7 +42,7 @@ func WithRouter(router route.IRouter) Option {
 	}
 }
 
-func WithMiddleware(middleware middleware.MiddlewareFunc) Option {
+func WithMiddleware(middleware types.MiddlewareFunc) Option {
 	return func(s *Server) {
 		s.ApplyMiddleware = middleware
 	}

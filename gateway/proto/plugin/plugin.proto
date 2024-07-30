@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package plugin;
+
+option go_package = "./;plugin";
+
+import "google/protobuf/empty.proto";
+
+// Service definition for PluginService
+service PluginService {
+    // list plugins
+    rpc ListPlugins(ListPluginsRequest) returns (ListPluginsResponse);
+    // validate plugin
+    rpc ValidatePlugin(ValidatePluginRequest) returns (google.protobuf.Empty);
+}
+
+// Request message for ListPlugins RPC
+message ListPluginsRequest {}
+
+// Response message for ListPlugins RPC
+message ListPluginsResponse {
+    // Map of plugin lists, keyed by an integer ID
+    map<string, PluginList> plugins = 1;
+}
+
+// Message representing a list of plugins
+message PluginList {
+    // Repeated field of plugin names
+    repeated string names = 1;
+}
+
+message Plugins {
+  repeated Plugin request_interceptor = 1 [json_name="RequestInterceptor"];
+  repeated Plugin response_interceptor = 2 [json_name="ResponseInterceptor"];
+  repeated Plugin middleware = 3 [json_name="Middleware"];
+}
+
+message PublishPlugin {
+  string route_host = 1;
+  string route_path = 2;
+  string plugin_name = 3;
+  string plugin_description = 4;
+  bytes plugin_config = 5;
+  string plugin_type = 6;
+  int32 plugin_priority = 7;
+}
+
+message Plugin {
+  string name = 1;
+  string description = 2;
+  string type = 3;
+  bytes config = 4;
+  uint32 priority = 5;
+}
+
+message ValidatePluginRequest {
+  string name = 1;
+  // Type is the type of the plugin
+  string type = 2;
+  // Payload is the configuration for the plugin
+  bytes payload = 3;
+}
+
+message ValidatePluginResponse {}
