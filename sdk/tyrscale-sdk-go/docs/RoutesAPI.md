@@ -7,7 +7,7 @@ Method | HTTP request | Description
 [**CreateRoute**](RoutesAPI.md#CreateRoute) | **Post** /routes | Create a route
 [**DeleteRoute**](RoutesAPI.md#DeleteRoute) | **Delete** /routes/{uuid} | Delete a route
 [**ListRoutes**](RoutesAPI.md#ListRoutes) | **Get** /routes | Get list routes
-[**UpdateRoute**](RoutesAPI.md#UpdateRoute) | **Put** /routes/{uuid} | Update a route
+[**UpdateRoute**](RoutesAPI.md#UpdateRoute) | **Patch** /routes/{uuid} | Update a route
 
 
 

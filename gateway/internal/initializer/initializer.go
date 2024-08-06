@@ -159,7 +159,7 @@ func (i *ProxyInitializer) Initialize(ctx context.Context) error {
 				Priority:   int(p.Priority),
 			})
 		}
-		setupMiddleware := middleware.MiddlewareComposerWithPriority(listMiddlewareWithPriority)
+		setupMiddleware := middleware.MiddlewareWithPriorityComposer(listMiddlewareWithPriority...)
 		route := route.NewRoute(
 			currentRoute.GetUuid(),
 			currentRoute.Host,

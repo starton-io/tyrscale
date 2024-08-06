@@ -23,6 +23,7 @@ type ReverseProxyHandler struct {
 	ReverseProxy handler.ProxyHandler
 }
 
+//go:generate mockery --name=ProxyHandler
 type ProxyHandler interface {
 	ReverseProxyHandler(ctx *fasthttp.RequestCtx)
 }

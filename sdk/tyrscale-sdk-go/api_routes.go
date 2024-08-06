@@ -535,7 +535,7 @@ func (a *RoutesAPIService) UpdateRoute(ctx context.Context, uuid string) ApiUpda
 //  @return ResponsesDefaultSuccessResponseWithoutData
 func (a *RoutesAPIService) UpdateRouteExecute(r ApiUpdateRouteRequest) (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPut
+		localVarHTTPMethod   = http.MethodPatch
 		localVarPostBody     interface{}
 		formFiles            []formFile
 		localVarReturnValue  *ResponsesDefaultSuccessResponseWithoutData

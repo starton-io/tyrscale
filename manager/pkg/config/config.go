@@ -2,7 +2,6 @@ package config
 
 import (
 	"flag"
-	"fmt"
 	"log"
 
 	"github.com/caarlos0/env"
@@ -56,6 +55,5 @@ func LoadConfig() (*Schema, error) {
 }
 
 func GetConfig() *Schema {
-	fmt.Println(&cfg)
 	return &cfg
 }
