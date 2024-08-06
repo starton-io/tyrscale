@@ -144,7 +144,7 @@ func (_m *IRedisStore) Get(ctx context.Context, key string, value interface{}) e
 }
 
 // GetClient provides a mock function with given fields:
-func (_m *IRedisStore) GetClient() (string, *redis.Client) {
+func (_m *IRedisStore) GetClient() (string, redis.UniversalClient) {
 	ret := _m.Called()
 
 	if len(ret) == 0 {
@@ -152,8 +152,8 @@ func (_m *IRedisStore) GetClient() (string, *redis.Client) {
 	}
 
 	var r0 string
-	var r1 *redis.Client
-	if rf, ok := ret.Get(0).(func() (string, *redis.Client)); ok {
+	var r1 redis.UniversalClient
+	if rf, ok := ret.Get(0).(func() (string, redis.UniversalClient)); ok {
 		return rf()
 	}
 	if rf, ok := ret.Get(0).(func() string); ok {
@@ -162,11 +162,11 @@ func (_m *IRedisStore) GetClient() (string, *redis.Client) {
 		r0 = ret.Get(0).(string)
 	}
 
-	if rf, ok := ret.Get(1).(func() *redis.Client); ok {
+	if rf, ok := ret.Get(1).(func() redis.UniversalClient); ok {
 		r1 = rf()
 	} else {
 		if ret.Get(1) != nil {
-			r1 = ret.Get(1).(*redis.Client)
+			r1 = ret.Get(1).(redis.UniversalClient)
 		}
 	}
 

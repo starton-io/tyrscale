@@ -39,11 +39,15 @@ func main() {
 		panic(err)
 	}
 
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     cfg.RedisURI,
+	redisOptions := &redis.UniversalOptions{
+		Addrs:    []string{cfg.RedisURI},
 		Password: cfg.RedisPassword,
 		DB:       cfg.RedisDB,
-	})
+	}
+	if cfg.RedisMasterName != "" {
+		redisOptions.MasterName = cfg.RedisMasterName
+	}
+	redisClient := redis.NewUniversalClient(redisOptions)
 
 	var pubConfig pubsub.IPub
 	pubConfig = pubsub.NewRedisPub(redisstream.PublisherConfig{

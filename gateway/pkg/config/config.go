@@ -35,7 +35,7 @@ type Schema struct {
 	RedisDBGlobalPrefix     string `env:"redis_db_global_prefix" envDefault:"tyrscale:db"`
 	RedisPassword           string `env:"redis_password"`
 	RedisDB                 int    `env:"redis_db" envDefault:"0"`
-
+	RedisMasterName         string `env:"redis_master_name" envDefault:""`
 	// tyrscaleApi
 	TyrscaleApiUrl string `env:"tyrscale_api_url" envDefault:"http://localhost:8888/api/v1"`
 

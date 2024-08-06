@@ -14,13 +14,13 @@ const Timeout = 1
 type redis struct {
 	timeout      time.Duration
 	globalPrefix string
-	client       *goredis.Client
+	client       goredis.UniversalClient
 }
 
 type OptsRedis func(*redis)
 
 // New Redis interface with config
-func NewRedis(client *goredis.Client, opts ...OptsRedis) (IRedisStore, error) {
+func NewRedis(client goredis.UniversalClient, opts ...OptsRedis) (IRedisStore, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), Timeout*time.Second)
 	defer cancel()
 
@@ -220,6 +220,6 @@ func (r *redis) Zlist(ctx context.Context, key string, start, stop int64) (map[s
 	return ret, nil
 }
 
-func (r *redis) GetClient() (string, *goredis.Client) {
+func (r *redis) GetClient() (string, goredis.UniversalClient) {
 	return r.globalPrefix, r.client
 }

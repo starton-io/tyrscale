@@ -55,12 +55,18 @@ func main() {
 	listMiddleware := []types.MiddlewareFunc{middleware.HeadersMiddleware, middleware.NewLogger(logger.Logger)}
 	setupMiddleware := middleware.ComposeMiddleware(listMiddleware...)
 
-	// init redis pubsub
-	redisClient := redis.NewClient(&redis.Options{
-		Addr:     cfg.RedisURI,
+	// init redis client
+	redisOptions := &redis.UniversalOptions{
+		Addrs:    []string{cfg.RedisURI},
 		Password: cfg.RedisPassword,
 		DB:       cfg.RedisDB,
-	})
+	}
+	if cfg.RedisMasterName != "" {
+		redisOptions.MasterName = cfg.RedisMasterName
+	}
+	redisClient := redis.NewUniversalClient(redisOptions)
+
+	// init redis pubsub
 	subConfig := pubsub.NewRedisSub(redisstream.SubscriberConfig{
 		ConsumerGroup: "gateway",
 		Client:        redisClient,
