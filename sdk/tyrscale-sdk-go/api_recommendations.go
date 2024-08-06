@@ -21,7 +21,7 @@ import (
 )
 
 
-type RecommendationAPI interface {
+type RecommendationsAPI interface {
 
 	/*
 	CreateRecommendation Create a recommendation
@@ -81,12 +81,12 @@ type RecommendationAPI interface {
 	UpdateRecommendationExecute(r ApiUpdateRecommendationRequest) (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error)
 }
 
-// RecommendationAPIService RecommendationAPI service
-type RecommendationAPIService service
+// RecommendationsAPIService RecommendationsAPI service
+type RecommendationsAPIService service
 
 type ApiCreateRecommendationRequest struct {
 	ctx context.Context
-	ApiService RecommendationAPI
+	ApiService RecommendationsAPI
 	recommendation *CreateRecommendationReq
 }
 
@@ -108,7 +108,7 @@ Create a recommendation
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateRecommendationRequest
 */
-func (a *RecommendationAPIService) CreateRecommendation(ctx context.Context) ApiCreateRecommendationRequest {
+func (a *RecommendationsAPIService) CreateRecommendation(ctx context.Context) ApiCreateRecommendationRequest {
 	return ApiCreateRecommendationRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -117,7 +117,7 @@ func (a *RecommendationAPIService) CreateRecommendation(ctx context.Context) Api
 
 // Execute executes the request
 //  @return ResponsesCreatedSuccessResponseCreateRecommendationRes
-func (a *RecommendationAPIService) CreateRecommendationExecute(r ApiCreateRecommendationRequest) (*ResponsesCreatedSuccessResponseCreateRecommendationRes, *http.Response, error) {
+func (a *RecommendationsAPIService) CreateRecommendationExecute(r ApiCreateRecommendationRequest) (*ResponsesCreatedSuccessResponseCreateRecommendationRes, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -125,7 +125,7 @@ func (a *RecommendationAPIService) CreateRecommendationExecute(r ApiCreateRecomm
 		localVarReturnValue  *ResponsesCreatedSuccessResponseCreateRecommendationRes
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecommendationAPIService.CreateRecommendation")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecommendationsAPIService.CreateRecommendation")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -218,7 +218,7 @@ func (a *RecommendationAPIService) CreateRecommendationExecute(r ApiCreateRecomm
 
 type ApiDeleteRecommendationRequest struct {
 	ctx context.Context
-	ApiService RecommendationAPI
+	ApiService RecommendationsAPI
 	routeUuid string
 }
 
@@ -235,7 +235,7 @@ Delete a recommendation
  @param routeUuid Route UUID
  @return ApiDeleteRecommendationRequest
 */
-func (a *RecommendationAPIService) DeleteRecommendation(ctx context.Context, routeUuid string) ApiDeleteRecommendationRequest {
+func (a *RecommendationsAPIService) DeleteRecommendation(ctx context.Context, routeUuid string) ApiDeleteRecommendationRequest {
 	return ApiDeleteRecommendationRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -245,7 +245,7 @@ func (a *RecommendationAPIService) DeleteRecommendation(ctx context.Context, rou
 
 // Execute executes the request
 //  @return ResponsesDefaultSuccessResponseWithoutData
-func (a *RecommendationAPIService) DeleteRecommendationExecute(r ApiDeleteRecommendationRequest) (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error) {
+func (a *RecommendationsAPIService) DeleteRecommendationExecute(r ApiDeleteRecommendationRequest) (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodDelete
 		localVarPostBody     interface{}
@@ -253,7 +253,7 @@ func (a *RecommendationAPIService) DeleteRecommendationExecute(r ApiDeleteRecomm
 		localVarReturnValue  *ResponsesDefaultSuccessResponseWithoutData
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecommendationAPIService.DeleteRecommendation")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecommendationsAPIService.DeleteRecommendation")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -364,7 +364,7 @@ func (a *RecommendationAPIService) DeleteRecommendationExecute(r ApiDeleteRecomm
 
 type ApiListRecommendationsRequest struct {
 	ctx context.Context
-	ApiService RecommendationAPI
+	ApiService RecommendationsAPI
 }
 
 func (r ApiListRecommendationsRequest) Execute() (*ResponsesDefaultSuccessResponseListRecommendationRes, *http.Response, error) {
@@ -379,7 +379,7 @@ List recommendation
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiListRecommendationsRequest
 */
-func (a *RecommendationAPIService) ListRecommendations(ctx context.Context) ApiListRecommendationsRequest {
+func (a *RecommendationsAPIService) ListRecommendations(ctx context.Context) ApiListRecommendationsRequest {
 	return ApiListRecommendationsRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -388,7 +388,7 @@ func (a *RecommendationAPIService) ListRecommendations(ctx context.Context) ApiL
 
 // Execute executes the request
 //  @return ResponsesDefaultSuccessResponseListRecommendationRes
-func (a *RecommendationAPIService) ListRecommendationsExecute(r ApiListRecommendationsRequest) (*ResponsesDefaultSuccessResponseListRecommendationRes, *http.Response, error) {
+func (a *RecommendationsAPIService) ListRecommendationsExecute(r ApiListRecommendationsRequest) (*ResponsesDefaultSuccessResponseListRecommendationRes, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -396,7 +396,7 @@ func (a *RecommendationAPIService) ListRecommendationsExecute(r ApiListRecommend
 		localVarReturnValue  *ResponsesDefaultSuccessResponseListRecommendationRes
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecommendationAPIService.ListRecommendations")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecommendationsAPIService.ListRecommendations")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -484,7 +484,7 @@ func (a *RecommendationAPIService) ListRecommendationsExecute(r ApiListRecommend
 
 type ApiUpdateRecommendationRequest struct {
 	ctx context.Context
-	ApiService RecommendationAPI
+	ApiService RecommendationsAPI
 	recommendation *UpdateRecommendationReq
 }
 
@@ -506,7 +506,7 @@ Update a recommendation
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiUpdateRecommendationRequest
 */
-func (a *RecommendationAPIService) UpdateRecommendation(ctx context.Context) ApiUpdateRecommendationRequest {
+func (a *RecommendationsAPIService) UpdateRecommendation(ctx context.Context) ApiUpdateRecommendationRequest {
 	return ApiUpdateRecommendationRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -515,7 +515,7 @@ func (a *RecommendationAPIService) UpdateRecommendation(ctx context.Context) Api
 
 // Execute executes the request
 //  @return ResponsesDefaultSuccessResponseWithoutData
-func (a *RecommendationAPIService) UpdateRecommendationExecute(r ApiUpdateRecommendationRequest) (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error) {
+func (a *RecommendationsAPIService) UpdateRecommendationExecute(r ApiUpdateRecommendationRequest) (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPut
 		localVarPostBody     interface{}
@@ -523,7 +523,7 @@ func (a *RecommendationAPIService) UpdateRecommendationExecute(r ApiUpdateRecomm
 		localVarReturnValue  *ResponsesDefaultSuccessResponseWithoutData
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecommendationAPIService.UpdateRecommendation")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RecommendationsAPIService.UpdateRecommendation")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}

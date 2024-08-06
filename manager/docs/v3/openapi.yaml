@@ -172,7 +172,7 @@ paths:
           description: Internal Server Error
       summary: List recommendation
       tags:
-      - recommendation
+      - recommendations
     post:
       description: Create a recommendation
       operationId: createRecommendation
@@ -204,7 +204,7 @@ paths:
           description: Internal Server Error
       summary: Create a recommendation
       tags:
-      - recommendation
+      - recommendations
       x-codegen-request-body-name: recommendation
     put:
       description: Update a recommendation
@@ -243,7 +243,7 @@ paths:
           description: Internal Server Error
       summary: Update a recommendation
       tags:
-      - recommendation
+      - recommendations
       x-codegen-request-body-name: recommendation
   /recommendations/{route_uuid}:
     delete:
@@ -289,7 +289,7 @@ paths:
           description: Internal Server Error
       summary: Delete a recommendation
       tags:
-      - recommendation
+      - recommendations
   /routes:
     get:
       description: Get list routes

@@ -4,7 +4,7 @@ README.md
 package.json
 src/apis/NetworksApi.ts
 src/apis/PluginsApi.ts
-src/apis/RecommendationApi.ts
+src/apis/RecommendationsApi.ts
 src/apis/RoutesApi.ts
 src/apis/RpcsApi.ts
 src/apis/UpstreamsApi.ts

@@ -1,13 +1,13 @@
-# \RecommendationAPI
+# \RecommendationsAPI
 
 All URIs are relative to *http://localhost*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**CreateRecommendation**](RecommendationAPI.md#CreateRecommendation) | **Post** /recommendations | Create a recommendation
-[**DeleteRecommendation**](RecommendationAPI.md#DeleteRecommendation) | **Delete** /recommendations/{route_uuid} | Delete a recommendation
-[**ListRecommendations**](RecommendationAPI.md#ListRecommendations) | **Get** /recommendations | List recommendation
-[**UpdateRecommendation**](RecommendationAPI.md#UpdateRecommendation) | **Put** /recommendations | Update a recommendation
+[**CreateRecommendation**](RecommendationsAPI.md#CreateRecommendation) | **Post** /recommendations | Create a recommendation
+[**DeleteRecommendation**](RecommendationsAPI.md#DeleteRecommendation) | **Delete** /recommendations/{route_uuid} | Delete a recommendation
+[**ListRecommendations**](RecommendationsAPI.md#ListRecommendations) | **Get** /recommendations | List recommendation
+[**UpdateRecommendation**](RecommendationsAPI.md#UpdateRecommendation) | **Put** /recommendations | Update a recommendation
 
 
 
@@ -36,13 +36,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.RecommendationAPI.CreateRecommendation(context.Background()).Recommendation(recommendation).Execute()
+	resp, r, err := apiClient.RecommendationsAPI.CreateRecommendation(context.Background()).Recommendation(recommendation).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `RecommendationAPI.CreateRecommendation``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `RecommendationsAPI.CreateRecommendation``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `CreateRecommendation`: ResponsesCreatedSuccessResponseCreateRecommendationRes
-	fmt.Fprintf(os.Stdout, "Response from `RecommendationAPI.CreateRecommendation`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `RecommendationsAPI.CreateRecommendation`: %v\n", resp)
 }
 ```
 
@@ -102,13 +102,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.RecommendationAPI.DeleteRecommendation(context.Background(), routeUuid).Execute()
+	resp, r, err := apiClient.RecommendationsAPI.DeleteRecommendation(context.Background(), routeUuid).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `RecommendationAPI.DeleteRecommendation``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `RecommendationsAPI.DeleteRecommendation``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `DeleteRecommendation`: ResponsesDefaultSuccessResponseWithoutData
-	fmt.Fprintf(os.Stdout, "Response from `RecommendationAPI.DeleteRecommendation`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `RecommendationsAPI.DeleteRecommendation`: %v\n", resp)
 }
 ```
 
@@ -171,13 +171,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.RecommendationAPI.ListRecommendations(context.Background()).Execute()
+	resp, r, err := apiClient.RecommendationsAPI.ListRecommendations(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `RecommendationAPI.ListRecommendations``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `RecommendationsAPI.ListRecommendations``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `ListRecommendations`: ResponsesDefaultSuccessResponseListRecommendationRes
-	fmt.Fprintf(os.Stdout, "Response from `RecommendationAPI.ListRecommendations`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `RecommendationsAPI.ListRecommendations`: %v\n", resp)
 }
 ```
 
@@ -233,13 +233,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.RecommendationAPI.UpdateRecommendation(context.Background()).Recommendation(recommendation).Execute()
+	resp, r, err := apiClient.RecommendationsAPI.UpdateRecommendation(context.Background()).Recommendation(recommendation).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `RecommendationAPI.UpdateRecommendation``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `RecommendationsAPI.UpdateRecommendation``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `UpdateRecommendation`: ResponsesDefaultSuccessResponseWithoutData
-	fmt.Fprintf(os.Stdout, "Response from `RecommendationAPI.UpdateRecommendation`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `RecommendationsAPI.UpdateRecommendation`: %v\n", resp)
 }
 ```
 

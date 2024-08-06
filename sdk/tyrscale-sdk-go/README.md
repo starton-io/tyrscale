@@ -86,10 +86,10 @@ Class | Method | HTTP request | Description
 *PluginsAPI* | [**DetachPlugin**](docs/PluginsAPI.md#detachplugin) | **Post** /routes/{uuid}/detach-plugin | Detach plugin from route
 *PluginsAPI* | [**ListPlugins**](docs/PluginsAPI.md#listplugins) | **Get** /plugins | Get list plugins
 *PluginsAPI* | [**ListPluginsFromRoute**](docs/PluginsAPI.md#listpluginsfromroute) | **Get** /routes/{uuid}/plugins | Get list plugins from route
-*RecommendationAPI* | [**CreateRecommendation**](docs/RecommendationAPI.md#createrecommendation) | **Post** /recommendations | Create a recommendation
-*RecommendationAPI* | [**DeleteRecommendation**](docs/RecommendationAPI.md#deleterecommendation) | **Delete** /recommendations/{route_uuid} | Delete a recommendation
-*RecommendationAPI* | [**ListRecommendations**](docs/RecommendationAPI.md#listrecommendations) | **Get** /recommendations | List recommendation
-*RecommendationAPI* | [**UpdateRecommendation**](docs/RecommendationAPI.md#updaterecommendation) | **Put** /recommendations | Update a recommendation
+*RecommendationsAPI* | [**CreateRecommendation**](docs/RecommendationsAPI.md#createrecommendation) | **Post** /recommendations | Create a recommendation
+*RecommendationsAPI* | [**DeleteRecommendation**](docs/RecommendationsAPI.md#deleterecommendation) | **Delete** /recommendations/{route_uuid} | Delete a recommendation
+*RecommendationsAPI* | [**ListRecommendations**](docs/RecommendationsAPI.md#listrecommendations) | **Get** /recommendations | List recommendation
+*RecommendationsAPI* | [**UpdateRecommendation**](docs/RecommendationsAPI.md#updaterecommendation) | **Put** /recommendations | Update a recommendation
 *RoutesAPI* | [**CreateRoute**](docs/RoutesAPI.md#createroute) | **Post** /routes | Create a route
 *RoutesAPI* | [**DeleteRoute**](docs/RoutesAPI.md#deleteroute) | **Delete** /routes/{uuid} | Delete a route
 *RoutesAPI* | [**ListRoutes**](docs/RoutesAPI.md#listroutes) | **Get** /routes | Get list routes

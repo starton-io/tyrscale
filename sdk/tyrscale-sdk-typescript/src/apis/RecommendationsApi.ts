@@ -61,7 +61,7 @@ export interface UpdateRecommendationRequest {
 /**
  * 
  */
-export class RecommendationApi extends runtime.BaseAPI {
+export class RecommendationsApi extends runtime.BaseAPI {
 
     /**
      * Create a recommendation

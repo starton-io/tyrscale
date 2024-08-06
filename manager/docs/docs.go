@@ -212,7 +212,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "recommendation"
+                    "recommendations"
                 ],
                 "summary": "List recommendation",
                 "operationId": "listRecommendations",
@@ -246,7 +246,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "recommendation"
+                    "recommendations"
                 ],
                 "summary": "Update a recommendation",
                 "operationId": "updateRecommendation",
@@ -297,7 +297,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "recommendation"
+                    "recommendations"
                 ],
                 "summary": "Create a recommendation",
                 "operationId": "createRecommendation",
@@ -344,7 +344,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "recommendation"
+                    "recommendations"
                 ],
                 "summary": "Delete a recommendation",
                 "operationId": "deleteRecommendation",

@@ -4,7 +4,7 @@ README.md
 api/openapi.yaml
 api_networks.go
 api_plugins.go
-api_recommendation.go
+api_recommendations.go
 api_routes.go
 api_rpcs.go
 api_upstreams.go
@@ -41,7 +41,7 @@ docs/Plugins.md
 docs/PluginsAPI.md
 docs/RPCType.md
 docs/Recommendation.md
-docs/RecommendationAPI.md
+docs/RecommendationsAPI.md
 docs/ResponsesBadRequestResponse.md
 docs/ResponsesConflictResponse.md
 docs/ResponsesCreatedSuccessResponseCreateNetworkRes.md
@@ -130,4 +130,10 @@ model_update_route_req.go
 model_upstream.go
 model_upstream_upsert_res.go
 response.go
+test/api_networks_test.go
+test/api_plugins_test.go
+test/api_recommendations_test.go
+test/api_routes_test.go
+test/api_rpcs_test.go
+test/api_upstreams_test.go
 utils.go

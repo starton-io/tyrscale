@@ -54,7 +54,7 @@ type APIClient struct {
 
 	PluginsAPI PluginsAPI
 
-	RecommendationAPI RecommendationAPI
+	RecommendationsAPI RecommendationsAPI
 
 	RoutesAPI RoutesAPI
 
@@ -81,7 +81,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	// API Services
 	c.NetworksAPI = (*NetworksAPIService)(&c.common)
 	c.PluginsAPI = (*PluginsAPIService)(&c.common)
-	c.RecommendationAPI = (*RecommendationAPIService)(&c.common)
+	c.RecommendationsAPI = (*RecommendationsAPIService)(&c.common)
 	c.RoutesAPI = (*RoutesAPIService)(&c.common)
 	c.RpcsAPI = (*RpcsAPIService)(&c.common)
 	c.UpstreamsAPI = (*UpstreamsAPIService)(&c.common)

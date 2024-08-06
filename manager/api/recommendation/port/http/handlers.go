@@ -27,7 +27,7 @@ func NewHandler(recommendationService service.IRecommendationService, validator 
 //
 //	@Summary		Create a recommendation
 //	@Description	Create a recommendation
-//	@Tags			recommendation
+//	@Tags			recommendations
 //	@Accept			json
 //	@Produce		json
 //
@@ -60,7 +60,7 @@ func (h *RecommendationHandler) CreateRecommendation(c *fiber.Ctx) error {
 //	@Id				listRecommendations
 //	@Summary		List recommendation
 //	@Description	List recommendation
-//	@Tags			recommendation
+//	@Tags			recommendations
 //	@Accept			json
 //	@Produce		json
 //	@Success		200	{object}	responses.DefaultSuccessResponse[dto.ListRecommendationRes]
@@ -92,7 +92,7 @@ func (h *RecommendationHandler) ListRecommendation(c *fiber.Ctx) error {
 //	@Id				deleteRecommendation
 //	@Summary		Delete a recommendation
 //	@Description	Delete a recommendation
-//	@Tags			recommendation
+//	@Tags			recommendations
 //	@Accept			json
 //	@Produce		json
 //	@Param			route_uuid	path		string	true	"Route UUID"
@@ -126,7 +126,7 @@ func (h *RecommendationHandler) DeleteRecommendation(c *fiber.Ctx) error {
 //	@Id				updateRecommendation
 //	@Summary		Update a recommendation
 //	@Description	Update a recommendation
-//	@Tags			recommendation
+//	@Tags			recommendations
 //	@Accept			json
 //	@Produce		json
 //	@Param			recommendation	body		dto.UpdateRecommendationReq	true	"Recommendation Object request"

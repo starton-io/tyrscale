@@ -828,7 +828,7 @@ paths:
             $ref: '#/definitions/responses.InternalServerErrorResponse'
       summary: List recommendation
       tags:
-      - recommendation
+      - recommendations
     post:
       consumes:
       - application/json
@@ -858,7 +858,7 @@ paths:
             $ref: '#/definitions/responses.InternalServerErrorResponse'
       summary: Create a recommendation
       tags:
-      - recommendation
+      - recommendations
     put:
       consumes:
       - application/json
@@ -892,7 +892,7 @@ paths:
             $ref: '#/definitions/responses.InternalServerErrorResponse'
       summary: Update a recommendation
       tags:
-      - recommendation
+      - recommendations
   /recommendations/{route_uuid}:
     delete:
       consumes:
@@ -930,7 +930,7 @@ paths:
             $ref: '#/definitions/responses.InternalServerErrorResponse'
       summary: Delete a recommendation
       tags:
-      - recommendation
+      - recommendations
   /routes:
     get:
       consumes:

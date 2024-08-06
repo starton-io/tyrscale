@@ -1,7 +1,7 @@
 /*
 Tyrscale Manager API
 
-Testing RecommendationAPIService
+Testing RecommendationsAPIService
 
 */
 
@@ -17,16 +17,16 @@ import (
 	openapiclient "github.com/starton-io/tyrscale/sdk/tyrscale-sdk-go"
 )
 
-func Test_tyrscalesdkgo_RecommendationAPIService(t *testing.T) {
+func Test_tyrscalesdkgo_RecommendationsAPIService(t *testing.T) {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
 
-	t.Run("Test RecommendationAPIService CreateRecommendation", func(t *testing.T) {
+	t.Run("Test RecommendationsAPIService CreateRecommendation", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.RecommendationAPI.CreateRecommendation(context.Background()).Execute()
+		resp, httpRes, err := apiClient.RecommendationsAPI.CreateRecommendation(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -34,13 +34,13 @@ func Test_tyrscalesdkgo_RecommendationAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test RecommendationAPIService DeleteRecommendation", func(t *testing.T) {
+	t.Run("Test RecommendationsAPIService DeleteRecommendation", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
 		var routeUuid string
 
-		resp, httpRes, err := apiClient.RecommendationAPI.DeleteRecommendation(context.Background(), routeUuid).Execute()
+		resp, httpRes, err := apiClient.RecommendationsAPI.DeleteRecommendation(context.Background(), routeUuid).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -48,11 +48,11 @@ func Test_tyrscalesdkgo_RecommendationAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test RecommendationAPIService ListRecommendations", func(t *testing.T) {
+	t.Run("Test RecommendationsAPIService ListRecommendations", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.RecommendationAPI.ListRecommendations(context.Background()).Execute()
+		resp, httpRes, err := apiClient.RecommendationsAPI.ListRecommendations(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -60,11 +60,11 @@ func Test_tyrscalesdkgo_RecommendationAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test RecommendationAPIService UpdateRecommendation", func(t *testing.T) {
+	t.Run("Test RecommendationsAPIService UpdateRecommendation", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.RecommendationAPI.UpdateRecommendation(context.Background()).Execute()
+		resp, httpRes, err := apiClient.RecommendationsAPI.UpdateRecommendation(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
