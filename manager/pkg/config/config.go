@@ -23,6 +23,7 @@ type Schema struct {
 	LogLevel                string `env:"log_level" envDefault:"debug"`
 	RedisPassword           string `env:"redis_password"`
 	RedisDB                 int    `env:"redis_db" envDefault:"0"`
+	RedisMasterName         string `env:"redis_master_name" envDefault:""`
 	ReadTimeout             int    `env:"read_timeout" envDefault:"10"`
 	WriteTimeout            int    `env:"write_timeout" envDefault:"10"`
 	ServerName              string `env:"server_name"`

@@ -21,7 +21,7 @@ type IKeyValueStore interface {
 //go:generate mockery --name=IRedisStore --output=./redismocks
 type IRedisStore interface {
 	IKeyValueStore
-	GetClient() (string, *goredis.Client)
+	GetClient() (string, goredis.UniversalClient)
 	Zset(ctx context.Context, key string, value interface{}, score float64) error
 	Zget(ctx context.Context, key string, start, stop int64) ([]goredis.Z, error)
 	Zdel(ctx context.Context, key string, value interface{}) error
