@@ -75,7 +75,7 @@ func (s *UpstreamService) Upsert(ctx context.Context, routeUuid string, upstream
 	defer tracer.SafeEndSpan(span)
 	if upstream.Uuid != "" {
 		// check if upstream exists
-		upstreams, err := s.repo.List(ctx, &dto.ListUpstreamReq{Uuid: &upstream.Uuid})
+		upstreams, err := s.repo.List(ctx, &dto.ListUpstreamReq{RouteUuid: routeUuid, Uuid: &upstream.Uuid})
 		if err != nil {
 			return nil, err
 		}
@@ -128,7 +128,6 @@ func (s *UpstreamService) Upsert(ctx context.Context, routeUuid string, upstream
 	if err != nil {
 		return nil, err
 	}
-
 	upstreamPublishModel := &pb.UpstreamPublishUpsertModel{
 		Uuid:      upstreamModel.Uuid,
 		RouteHost: routes[0].Host,
@@ -137,9 +136,7 @@ func (s *UpstreamService) Upsert(ctx context.Context, routeUuid string, upstream
 		Port:      upstreamModel.Port,
 		Path:      upstreamModel.Path,
 		Scheme:    upstreamModel.Scheme,
-	}
-	if upstreamModel.Weight != nil {
-		upstreamPublishModel.Weight = *upstreamModel.Weight
+		Weight:    upstream.Weight,
 	}
 
 	upstreamBytes, err := proto.Marshal(upstreamPublishModel)

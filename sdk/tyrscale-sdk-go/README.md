@@ -93,7 +93,7 @@ Class | Method | HTTP request | Description
 *RoutesAPI* | [**CreateRoute**](docs/RoutesAPI.md#createroute) | **Post** /routes | Create a route
 *RoutesAPI* | [**DeleteRoute**](docs/RoutesAPI.md#deleteroute) | **Delete** /routes/{uuid} | Delete a route
 *RoutesAPI* | [**ListRoutes**](docs/RoutesAPI.md#listroutes) | **Get** /routes | Get list routes
-*RoutesAPI* | [**UpdateRoute**](docs/RoutesAPI.md#updateroute) | **Put** /routes/{uuid} | Update a route
+*RoutesAPI* | [**UpdateRoute**](docs/RoutesAPI.md#updateroute) | **Patch** /routes/{uuid} | Update a route
 *RpcsAPI* | [**CreateRpc**](docs/RpcsAPI.md#createrpc) | **Post** /rpcs | Create a new Rpc
 *RpcsAPI* | [**DeleteRPC**](docs/RpcsAPI.md#deleterpc) | **Delete** /rpcs/{uuid} | Delete a RPC
 *RpcsAPI* | [**ListRPCs**](docs/RpcsAPI.md#listrpcs) | **Get** /rpcs | List RPCs

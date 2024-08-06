@@ -22,6 +22,8 @@ type UpstreamClient struct {
 }
 
 // ClientManager manages a map of UpstreamClients.
+//
+//go:generate mockery --name=ClientManager
 type ClientManager interface {
 	AddClient(uuid string, client *UpstreamClient)
 	GetClient(uuid string) (*UpstreamClient, bool)
@@ -92,6 +94,7 @@ func (m *DefaultClientManager) Close() {
 	}
 }
 
+//go:generate mockery --name=ProxyController
 type ProxyController struct {
 	mu                    sync.Mutex
 	Name                  string

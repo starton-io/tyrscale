@@ -41,11 +41,13 @@ type PluginService struct {
 
 type IPluginService interface {
 	List(ctx context.Context) (*pb.ListPluginsResponse, error)
-	ListFromRoute(ctx context.Context, routeUuid string) (*pb.ListPluginsResponse, error)
+	ListFromRoute(ctx context.Context, routeUuid string) (*dto.Plugins, error)
+	AttachPlugin(ctx context.Context, routeUuid string, plugin *dto.AttachPluginReq) error
+	DetachPlugin(ctx context.Context, routeUuid string, req *dto.DetachPluginReq) error
 	Validate(ctx context.Context, req *pb.ValidatePluginRequest) (*pb.ValidatePluginResponse, error)
 }
 
-func NewPluginService(listenerURL string, routeRepo routeRepo.IRouteRepository, pluginRepo pluginRepo.IPluginRepository, publisher pubsub.IPub) *PluginService {
+func NewPluginService(listenerURL string, routeRepo routeRepo.IRouteRepository, pluginRepo pluginRepo.IPluginRepository, publisher pubsub.IPub) IPluginService {
 	return &PluginService{listenerURL: listenerURL, routeRepo: routeRepo, pluginRepo: pluginRepo, publisher: publisher}
 }
 
@@ -93,7 +95,6 @@ func (s *PluginService) Validate(ctx context.Context, req *pb.ValidatePluginRequ
 }
 
 func (s *PluginService) ListFromRoute(ctx context.Context, routeUuid string) (*dto.Plugins, error) {
-	log.Printf("ListFromRoute: %s", routeUuid)
 	routes, err := s.routeRepo.List(ctx, &dtoRoute.ListRouteReq{
 		Uuid: routeUuid,
 	})
@@ -109,7 +110,6 @@ func (s *PluginService) ListFromRoute(ctx context.Context, routeUuid string) (*d
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("plugins: %v", plugins)
 	var res = &dto.Plugins{
 		InterceptorRequest:  make([]*dto.Plugin, 0),
 		Middleware:          make([]*dto.Plugin, 0),
@@ -219,7 +219,6 @@ func (s *PluginService) DetachPlugin(ctx context.Context, routeUuid string, req 
 	if err != nil {
 		return err
 	}
-	log.Printf("plugins: %v", plugins)
 	if len(plugins) == 0 {
 		return errors.New("plugin not found")
 	}

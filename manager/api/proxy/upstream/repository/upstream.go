@@ -101,75 +101,8 @@ func (r *UpstreamRepository) List(ctx context.Context, req *dto.ListUpstreamReq)
 		}
 	}
 
-	//fmt.Println("listPbUpstream", listPbUpstream)
-	//if len(listPbUpstream) == 0 {
-	//	return []*pb.UpstreamModel{}, nil
-	//}
-
-	//// list score
-	//var routeKey = "*"
-	//if req.RouteUuid != "" {
-	//	routeKey = req.RouteUuid
-	//}
-
-	//key := fmt.Sprintf("%s:%s:%s", routeRepo.BASE_KEY, routeKey, BASE_KEY)
-	//listScore, err := r.kvDB.ExecuteLuaScript(ctx, LuaScriptList, []string{key})
-	//if err != nil {
-	//	return nil, err
-	//}
-	//err = processListScore(listScore, listPbUpstream)
-	//if err != nil {
-	//	return nil, err
-	//}
 	return listPbUpstream, nil
 }
-
-//func processListScore(listScore interface{}, listPbUpstream []*pb.UpstreamModel) error {
-//	listScoreArray, ok := listScore.([]interface{})
-//	if !ok {
-//		return fmt.Errorf("listScore is not of type []interface{}")
-//	}
-//
-//	// Create a map to quickly find upstream models by UUID
-//	upstreamMap := make(map[string]*pb.UpstreamModel)
-//	for _, upstream := range listPbUpstream {
-//		upstreamMap[upstream.Uuid] = upstream
-//	}
-//
-//	for _, item := range listScoreArray {
-//		itemArray, ok := item.([]interface{})
-//		if !ok || len(itemArray) < 2 {
-//			continue
-//		}
-//
-//		upstreams, ok := itemArray[1].([]interface{})
-//		if !ok {
-//			continue
-//		}
-//
-//		for i := 0; i < len(upstreams); i += 2 {
-//			uuid, ok := upstreams[i].(string)
-//			if !ok {
-//				continue
-//			}
-//
-//			weightStr, ok := upstreams[i+1].(string)
-//			if !ok {
-//				continue
-//			}
-//
-//			weight, err := strconv.ParseFloat(weightStr, 64)
-//			if err != nil {
-//				return fmt.Errorf("error parsing weight: %v", err)
-//			}
-//
-//			if upstream, exists := upstreamMap[uuid]; exists {
-//				upstream.Weight = &weight
-//			}
-//		}
-//	}
-//	return nil
-//}
 
 func (r *UpstreamRepository) Upsert(ctx context.Context, routeUuid string, upstream *pb.UpstreamModel) error {
 	ctx, span := tracer.Start(ctx, "UpsertUpstreamRepository")

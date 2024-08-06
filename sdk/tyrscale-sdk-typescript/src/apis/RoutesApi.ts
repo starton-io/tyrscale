@@ -209,7 +209,7 @@ export class RoutesApi extends runtime.BaseAPI {
 
         const response = await this.request({
             path: `/routes/{uuid}`.replace(`{${"uuid"}}`, encodeURIComponent(String(requestParameters['uuid']))),
-            method: 'PUT',
+            method: 'PATCH',
             headers: headerParameters,
             query: queryParameters,
             body: UpdateRouteReqToJSON(requestParameters['route']),

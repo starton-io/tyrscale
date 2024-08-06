@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/starton-io/tyrscale/gateway/pkg/middleware/types"
 
@@ -11,9 +12,10 @@ import (
 // LoggingMiddleware is an example middleware that logs requests
 func LoggingMiddleware(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
-		log.Printf("Request: %s %s", ctx.Method(), ctx.RequestURI())
+		log.Printf("Request: %s, %s", ctx.Method(), ctx.RequestURI())
+		start := time.Now()
 		next(ctx)
-		log.Printf("Response: %s %d", ctx.Method(), ctx.Response.StatusCode())
+		log.Printf("Response: %s ,%d , duration: %s", ctx.Method(), ctx.Response.StatusCode(), time.Since(start))
 	}
 }
 

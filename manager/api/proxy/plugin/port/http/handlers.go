@@ -12,11 +12,11 @@ import (
 )
 
 type PluginHandler struct {
-	pluginSvc *service.PluginService
+	pluginSvc service.IPluginService
 	validator validation.Validation
 }
 
-func NewPluginHandler(pluginSvc *service.PluginService, validator validation.Validation) *PluginHandler {
+func NewPluginHandler(pluginSvc service.IPluginService, validator validation.Validation) *PluginHandler {
 	return &PluginHandler{pluginSvc: pluginSvc, validator: validator}
 }
 

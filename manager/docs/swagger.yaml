@@ -1136,7 +1136,7 @@ paths:
       summary: Delete a route
       tags:
       - routes
-    put:
+    patch:
       consumes:
       - application/json
       description: Update a route
