@@ -215,36 +215,3 @@ func (h *RouteHandler) DeleteRoute(c *fiber.Ctx) error {
 	resp := responses.DefaultSuccessRespWithoutData.ToGeneral()
 	return resp.JSON(c)
 }
-
-//unc (h *RouteHandler) DetachPlugin(c *fiber.Ctx) error {
-//	uuid := c.Params("uuid")
-//	if uuid == "" {
-//		logger.Error("Failed to get uuid from path")
-//		resp := responses.BadRequestResp.ToGeneral()
-//		return resp.WithError(c, fmt.Errorf("failed to get chainID from path")).JSON(c)
-//	}
-//	logger.Debugf("Detach plugin request: %v", uuid)
-//
-//	req := new(dto.DetachPluginReq)
-//	if err := c.BodyParser(&req); c.Body() == nil || err != nil {
-//		logger.Warnf("Failed to parse body: %v", err)
-//		resp := responses.BadRequestResp.ToGeneral()
-//		return resp.WithError(c, err).JSON(c)
-//	}
-//
-//	// validate request
-//	if err := h.validator.ValidateStruct(req); err != nil {
-//		logger.Warnf("Validation failed for create network: %v", err)
-//		resp := responses.BadRequestResp.ToGeneral()
-//		return resp.WithError(c, err).JSON(c)
-//	}
-//
-//	// detach plugin from route
-//	err := h.service.DetachPlugin(c.UserContext(), uuid, req)
-//	if err != nil {
-//		return responses.HandleServiceError(c, err)
-//	}
-//
-//	resp := responses.DefaultSuccessRespWithoutData.ToGeneral()
-//	return resp.JSON(c)
-//}
