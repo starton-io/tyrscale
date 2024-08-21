@@ -171,7 +171,7 @@ func (r *Router) GetProxyController(host string, path string) (*proxy.ProxyContr
 
 func (r *Router) ProxyRouter(ctx *fasthttp.RequestCtx) {
 	logger.Infof("Request Host: %s, Path: %s", ctx.Host(), ctx.Path())
-	hostURI := strings.TrimSuffix(string(ctx.Host())+string(ctx.Path()), "/")
+	hostURI := r.normalizeHostURI(strings.Split(string(ctx.Host()), ":")[0], string(ctx.Path()))
 	r.mutex.RLock()
 	route, ok := r.routes[hostURI]
 	if !ok {
