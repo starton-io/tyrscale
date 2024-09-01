@@ -19,7 +19,9 @@ import (
 	"github.com/starton-io/tyrscale/gateway/pkg/middleware"
 	"github.com/starton-io/tyrscale/gateway/pkg/middleware/types"
 	"github.com/starton-io/tyrscale/gateway/pkg/plugin"
+	"github.com/starton-io/tyrscale/gateway/pkg/probes"
 	"github.com/starton-io/tyrscale/gateway/pkg/route"
+	"github.com/starton-io/tyrscale/go-kit/pkg/infrastructure/kv"
 	"github.com/starton-io/tyrscale/go-kit/pkg/infrastructure/pubsub"
 	"github.com/starton-io/tyrscale/go-kit/pkg/logger"
 	"go.uber.org/zap/zapcore"
@@ -81,6 +83,13 @@ func main() {
 
 	consumer := consumer.NewConsumer(routeHandler, subConfig, msgRouter)
 
+	// Init probes
+	kvDB, err := kv.NewRedis(redisClient, kv.WithGlobalPrefix(cfg.RedisDBGlobalPrefix))
+	if err != nil {
+		logger.Fatalf("failed to create redis store: %v", err)
+	}
+	probes := probes.NewHealthChecker(cfg, kvDB)
+
 	consumer.Start(context.Background())
 
 	// Initialize proxy
@@ -92,7 +101,11 @@ func main() {
 
 	consumer.Resume()
 
-	svr := server.NewServer(cfg, logger.Logger, server.WithRouter(router), server.WithMiddleware(setupMiddleware))
+	svr := server.NewServer(cfg, logger.Logger,
+		server.WithRouter(router),
+		server.WithMiddleware(setupMiddleware),
+		server.WithProbes(probes),
+	)
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
 	go func() {
