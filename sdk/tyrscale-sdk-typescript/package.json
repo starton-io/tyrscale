@@ -1,6 +1,6 @@
 {
   "name": "@starton/tyrscale-sdk-typescript",
-  "version": "0.0.1-rc7",
+  "version": "0.0.1-rc8",
   "description": "OpenAPI client for @starton/tyrscale-sdk-typescript",
   "author": "OpenAPI-Generator",
   "repository": {
