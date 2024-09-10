@@ -115,9 +115,11 @@ func (s *Server) Run() error {
 	})
 
 	s.app.Get("/liveness", func(c *fiber.Ctx) error {
-		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"status": "true",
-		})
+		result := s.probes.LiveEndpoint()
+		if result.Status {
+			return c.Status(fiber.StatusOK).JSON(result)
+		}
+		return c.Status(fiber.StatusServiceUnavailable).JSON(result)
 	})
 
 	// Start http server

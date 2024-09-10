@@ -154,6 +154,7 @@ func (m *ProxyController) AddUpstream(upstream *upstream.UpstreamPublishUpsertMo
 	proxy := &UpstreamClient{
 		Healthy: true,
 		Client: &fasthttp.HostClient{
+			MaxConns:     10000,
 			ReadTimeout:  5 * time.Second,
 			WriteTimeout: 5 * time.Second,
 			Addr:         upstream.Host,

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/starton-io/tyrscale/gateway/pkg/config"
@@ -8,6 +9,7 @@ import (
 	"github.com/starton-io/tyrscale/gateway/pkg/middleware/types"
 	"github.com/starton-io/tyrscale/gateway/pkg/route"
 	"github.com/starton-io/tyrscale/go-kit/pkg/logger"
+	"github.com/starton-io/tyrscale/manager/pkg/probes"
 	"github.com/valyala/fasthttp"
 	"go.uber.org/zap"
 )
@@ -16,6 +18,7 @@ type Server struct {
 	Engine          *fasthttp.Server
 	Router          route.IRouter
 	ApplyMiddleware types.MiddlewareFunc
+	probes          probes.HealthCheckApplication
 	Cfg             *config.Schema
 }
 
@@ -48,10 +51,38 @@ func WithMiddleware(middleware types.MiddlewareFunc) Option {
 	}
 }
 
+func WithProbes(probes probes.HealthCheckApplication) Option {
+	return func(s *Server) {
+		s.probes = probes
+	}
+}
+
 func (s *Server) Run() error {
 	logger.Infof("Starting server on port %d", s.Cfg.ProxyHttpPort)
 	routerHandler := func(ctx *fasthttp.RequestCtx) {
 		switch string(ctx.Path()) {
+		case "/liveness":
+			result := s.probes.LiveEndpoint()
+			body, _ := json.Marshal(result)
+			ctx.Response.Header.Set("Content-Type", "application/json")
+			if result.Status {
+				ctx.Response.SetBody(body)
+				ctx.Response.SetStatusCode(fasthttp.StatusOK)
+			} else {
+				ctx.Response.SetBody(body)
+				ctx.Response.SetStatusCode(fasthttp.StatusServiceUnavailable)
+			}
+		case "/readiness":
+			result := s.probes.ReadyEndpoint()
+			body, _ := json.Marshal(result)
+			ctx.Response.Header.Set("Content-Type", "application/json")
+			if result.Status {
+				ctx.Response.SetBody(body)
+				ctx.Response.SetStatusCode(fasthttp.StatusOK)
+			} else {
+				ctx.Response.SetBody(body)
+				ctx.Response.SetStatusCode(fasthttp.StatusServiceUnavailable)
+			}
 		case "/metrics":
 			middleware.PrometheusHandler()(ctx)
 		default:
