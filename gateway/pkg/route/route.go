@@ -170,8 +170,17 @@ func (r *Router) GetProxyController(host string, path string) (*proxy.ProxyContr
 }
 
 func (r *Router) ProxyRouter(ctx *fasthttp.RequestCtx) {
-	logger.Infof("Request Host: %s, Path: %s", ctx.Host(), ctx.Path())
-	hostURI := r.normalizeHostURI(strings.Split(string(ctx.Host()), ":")[0], string(ctx.Path()))
+	hostHeader := string(ctx.Host())
+
+	// check if the X-Forwarded-Host header is present, if so use it instead of the host header
+	xForwardedHost := ctx.Request.Header.Peek("X-Forwarded-Host")
+	if len(xForwardedHost) > 0 {
+		hostHeader = string(xForwardedHost)
+	}
+
+	logger.Infof("Request Host: %s, Path: %s", hostHeader, ctx.Path())
+
+	hostURI := r.normalizeHostURI(strings.Split(hostHeader, ":")[0], string(ctx.Path()))
 	r.mutex.RLock()
 	route, ok := r.routes[hostURI]
 	if !ok {
@@ -187,44 +196,3 @@ func (r *Router) ProxyRouter(ctx *fasthttp.RequestCtx) {
 	}
 	handler(ctx)
 }
-
-//type MapRoute struct {
-//	proxyClient     map[string]proxy.IProxyClient
-//
-//	// thread	safe
-//	mutex sync.Mutex
-//}
-//
-//func NewRoute() *MapRoute {
-//	return &MapRoute{
-//		proxyClient: make(map[string]proxy.IProxyClient),
-//	}
-//}
-//
-//func (r *MapRoute) ProxyRouter(ctx *fasthttp.RequestCtx) {
-//	dns := ctx.Host()
-//	proxy, ok := r.proxyClient[string(dns)]
-//	if !ok {
-//		ctx.SetStatusCode(fasthttp.StatusNotFound)
-//		ctx.SetBody([]byte("404 Not Found"))
-//		return
-//	}
-//	proxy.ReverseProxyHandler(ctx)
-//}
-//
-//func (r *MapRoute) Add(host string, proxy proxy.IProxyClient) error {
-//	r.mutex.Lock()
-//	defer r.mutex.Unlock()
-//
-//	r.proxyClient[host] = proxy
-//	return nil
-//}
-//
-//func (r *MapRoute) Remove(host string, proxy proxy.IProxyClient) error {
-//	r.mutex.Lock()
-//	defer r.mutex.Unlock()
-//	r.proxyClient[host].CloseAll()
-//	delete(r.proxyClient, host)
-//	return nil
-//}
-//
