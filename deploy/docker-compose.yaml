@@ -13,6 +13,7 @@ services:
     - 8888:8888
     environment:
     - redis_uri=redis:6379
+    - gateway_url=gateway:7778
     depends_on:
     - redis
   gateway:
