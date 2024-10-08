@@ -13,7 +13,6 @@ type Route struct {
 	LoadBalancerStrategy balancer.LoadBalancerStrategy  `json:"load_balancer_strategy" validate:"required"`
 	CircuitBreaker       *circuitbreaker.Settings       `json:"circuit_breaker,omitempty" validate:"omitempty"`
 	HealthCheck          *healthcheck.HealthCheckConfig `json:"health_check,omitempty" validate:"omitempty"`
-	//Plugins              *Plugins                       `json:"plugins,omitempty" validate:"omitempty"`
 }
 
 type CreateRouteReq struct {
@@ -24,24 +23,6 @@ type CreateRouteReq struct {
 	CircuitBreaker       *circuitbreaker.Settings       `json:"circuit_breaker,omitempty" validate:"omitempty"`
 	HealthCheck          *healthcheck.HealthCheckConfig `json:"health_check,omitempty" validate:"omitempty"`
 }
-
-//type Plugins struct {
-//	Middleware          []*Plugin `json:"Middleware,omitempty" validate:"omitempty"`
-//	InterceptorRequest  []*Plugin `json:"RequestInterceptor,omitempty" validate:"omitempty"`
-//	InterceptorResponse []*Plugin `json:"ResponseInterceptor,omitempty" validate:"omitempty"`
-//}
-//
-//type Plugin struct {
-//	Name        string      `json:"name" validate:"required"`
-//	Description string      `json:"description" validate:"omitempty"`
-//	Priority    int         `json:"priority" validate:"required,gte=1,lte=1000"`
-//	Config      interface{} `json:"config,omitempty" validate:"omitempty"`
-//}
-
-// CircuitBreakerConfig holds the configuration for the circuit breaker.
-//type CircuitBreakerConfig struct {
-//	Settings *circuitbreaker.Settings `json:"settings,omitempty" validate:"required_if=Enabled true,dive"`
-//}
 
 type HealthCheckConfig struct {
 	Enabled                    bool                        `json:"enabled" validate:"omitempty"`
@@ -62,19 +43,6 @@ type UpdateRouteReq struct {
 	//Plugins              *Plugins                       `json:"plugins,omitempty" validate:"omitempty"`
 }
 
-//type AttachPluginReq struct {
-//	Name        string            `json:"name" validate:"required"`
-//	Type        plugin.PluginType `json:"type" validate:"required"`
-//	Config      interface{}       `json:"config" validate:"required"`
-//	Description string            `json:"description" validate:"omitempty"`
-//	Priority    int               `json:"priority" validate:"required,gte=1,lte=1000"`
-//}
-//
-//type DetachPluginReq struct {
-//	PluginName string            `json:"plugin_name" validate:"required"`
-//	PluginType plugin.PluginType `json:"plugin_type" validate:"required"`
-//}
-
 type CreateRouteRes struct {
 	Uuid string `json:"uuid"`
 }
@@ -85,8 +53,8 @@ type ListRouteRes struct {
 
 type ListRouteReq struct {
 	Uuid                 string                        `query:"uuid" validate:"omitempty,uuid"`
-	Host                 string                        `query:"host" validate:"omitempty,regexp=^[a-zA-Z0-9_-]+$"`
-	Path                 string                        `query:"path" validate:"omitempty,regexp=^\\/[a-zA-Z0-9_-\\/]+$"`
+	Host                 string                        `query:"host" validate:"omitempty,fqdn"`
+	Path                 string                        `query:"path" validate:"omitempty"`
 	LoadBalancerStrategy balancer.LoadBalancerStrategy `query:"load_balancer_strategy" validate:"omitempty"`
 }
 

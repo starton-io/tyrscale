@@ -79,7 +79,7 @@ No authorization required
 
 ## DeleteRPC
 
-> ResponsesDefaultSuccessResponseWithoutData DeleteRPC(ctx, uuid).Rpc(rpc).Execute()
+> ResponsesDefaultSuccessResponseWithoutData DeleteRPC(ctx, uuid).Execute()
 
 Delete a RPC
 
@@ -99,11 +99,10 @@ import (
 
 func main() {
 	uuid := "uuid_example" // string | UUID
-	rpc := *openapiclient.NewDeleteRpcOptReq() // DeleteRpcOptReq | Delete Rpc request
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.RpcsAPI.DeleteRPC(context.Background(), uuid).Rpc(rpc).Execute()
+	resp, r, err := apiClient.RpcsAPI.DeleteRPC(context.Background(), uuid).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `RpcsAPI.DeleteRPC``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -129,7 +128,6 @@ Other parameters are passed through a pointer to a apiDeleteRPCRequest struct vi
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 
- **rpc** | [**DeleteRpcOptReq**](DeleteRpcOptReq.md) | Delete Rpc request | 
 
 ### Return type
 
@@ -141,7 +139,7 @@ No authorization required
 
 ### HTTP request headers
 
-- **Content-Type**: application/json
+- **Content-Type**: Not defined
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)

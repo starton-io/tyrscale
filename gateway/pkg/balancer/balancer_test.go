@@ -135,6 +135,17 @@ func TestLeastLoad_Balance(t *testing.T) {
 	if servers[0] != "server1" {
 		t.Errorf("expected server1 to be first, got %s", servers[0])
 	}
+
+	servers, err = ll.Balance()
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+	if len(servers) != 2 {
+		t.Errorf("expected 2 servers, got %d", len(servers))
+	}
+	if servers[0] != "server2" {
+		t.Errorf("expected server2 to be first, got %s", servers[0])
+	}
 }
 
 func TestLeastLoad_UpdateWeight(t *testing.T) {
@@ -210,7 +221,7 @@ func TestBalance(t *testing.T) {
 	balancer.AddServer(server2)
 
 	// Perform multiple balance operations to test round-robin behavior
-	expectedOrder := []string{"server1", "server1", "server1", "server1", "server1", "server2"}
+	expectedOrder := []string{"server1", "server1", "server1", "server1", "server1", "server2", "server1", "server1", "server1", "server1", "server1", "server2"}
 	for i, expected := range expectedOrder {
 		uuid, err := balancer.Balance()
 		if err != nil {

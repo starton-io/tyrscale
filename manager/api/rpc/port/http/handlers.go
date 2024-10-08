@@ -103,8 +103,7 @@ func (h *RPCHandler) ListRPCs(c *fiber.Ctx) error {
 //	@Tags			rpcs
 //	@Accept			json
 //	@Produce		json
-//	@Param			uuid	path		string				true	"UUID"
-//	@Param			rpc		body		dto.DeleteRpcOptReq	true	"Delete Rpc request"
+//	@Param			uuid	path		string	true	"UUID"
 //	@Success		200		{object}	responses.DefaultSuccessResponseWithoutData
 //	@Failure		404		{object}	responses.NotFoundResponse
 //	@Failure		500		{object}	responses.InternalServerErrorResponse

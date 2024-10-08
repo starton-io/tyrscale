@@ -220,13 +220,6 @@ type ApiDeleteRPCRequest struct {
 	ctx context.Context
 	ApiService RpcsAPI
 	uuid string
-	rpc *DeleteRpcOptReq
-}
-
-// Delete Rpc request
-func (r ApiDeleteRPCRequest) Rpc(rpc DeleteRpcOptReq) ApiDeleteRPCRequest {
-	r.rpc = &rpc
-	return r
 }
 
 func (r ApiDeleteRPCRequest) Execute() (*ResponsesDefaultSuccessResponseWithoutData, *http.Response, error) {
@@ -271,12 +264,9 @@ func (a *RpcsAPIService) DeleteRPCExecute(r ApiDeleteRPCRequest) (*ResponsesDefa
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.rpc == nil {
-		return localVarReturnValue, nil, reportError("rpc is required and must be specified")
-	}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
+	localVarHTTPContentTypes := []string{}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -292,8 +282,6 @@ func (a *RpcsAPIService) DeleteRPCExecute(r ApiDeleteRPCRequest) (*ResponsesDefa
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	// body params
-	localVarPostBody = r.rpc
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err

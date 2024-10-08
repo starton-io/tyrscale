@@ -25,6 +25,7 @@ func (h *FailoverHandler) CloseConnections() {
 func (h *FailoverHandler) Handle(ctx *fasthttp.RequestCtx) {
 	req := &ctx.Request
 	res := &ctx.Response
+	var lastErr error
 
 	listUpstream, err := h.proxyController.Balancer.Balance()
 	if err != nil {
@@ -65,6 +66,7 @@ func (h *FailoverHandler) Handle(ctx *fasthttp.RequestCtx) {
 			if cb != nil {
 				_, err = cb.Execute(func() (interface{}, error) {
 					if err := upstreamClient.Client.Do(req, res); err != nil {
+						lastErr = err
 						return nil, err
 					}
 					return nil, upstreamClient.ResponseInterceptor.Intercept(res)
@@ -103,6 +105,9 @@ func (h *FailoverHandler) Handle(ctx *fasthttp.RequestCtx) {
 		}
 	}
 	logger.Error("All upstream nodes are unhealthy/dead")
-	res.SetStatusCode(fasthttp.StatusServiceUnavailable)
-	res.SetBody([]byte("All upstream nodes are unhealthy/dead"))
+	if lastErr != nil {
+		logger.Errorf("last listUpstream error: %v, body: %s", lastErr, res.Body())
+	}
+	res.SetStatusCode(res.StatusCode())
+	res.SetBody(res.Body())
 }

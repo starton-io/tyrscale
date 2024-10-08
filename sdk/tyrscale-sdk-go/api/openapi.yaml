@@ -871,13 +871,6 @@ paths:
         schema:
           type: string
         style: simple
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DeleteRpcOptReq'
-        description: Delete Rpc request
-        required: true
       responses:
         "200":
           content:
@@ -900,7 +893,6 @@ paths:
       summary: Delete a RPC
       tags:
       - rpcs
-      x-codegen-request-body-name: rpc
 components:
   schemas:
     balancer.LoadBalancerStrategy:
@@ -1462,13 +1454,6 @@ components:
       properties:
         uuid:
           type: string
-      type: object
-    DeleteRpcOptReq:
-      example:
-        cascade_delete_upstream: true
-      properties:
-        cascade_delete_upstream:
-          type: boolean
       type: object
     ListRpcRes:
       example:

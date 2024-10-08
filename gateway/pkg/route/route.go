@@ -170,17 +170,15 @@ func (r *Router) GetProxyController(host string, path string) (*proxy.ProxyContr
 }
 
 func (r *Router) ProxyRouter(ctx *fasthttp.RequestCtx) {
-	hostHeader := string(ctx.Host())
-
 	// check if the X-Forwarded-Host header is present, if so use it instead of the host header
 	xForwardedHost := ctx.Request.Header.Peek("X-Forwarded-Host")
 	if len(xForwardedHost) > 0 {
-		hostHeader = string(xForwardedHost)
+		ctx.Request.Header.SetHost(string(xForwardedHost))
 	}
 
-	logger.Infof("Request Host: %s, Path: %s", hostHeader, ctx.Path())
+	logger.Infof("Request Host: %s, Path: %s", string(ctx.Request.Header.Host()), ctx.Path())
 
-	hostURI := r.normalizeHostURI(strings.Split(hostHeader, ":")[0], string(ctx.Path()))
+	hostURI := r.normalizeHostURI(strings.Split(string(ctx.Request.Header.Host()), ":")[0], string(ctx.Path()))
 	r.mutex.RLock()
 	route, ok := r.routes[hostURI]
 	if !ok {

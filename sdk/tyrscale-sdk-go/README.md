@@ -116,7 +116,6 @@ Class | Method | HTTP request | Description
  - [CreateRpcReq](docs/CreateRpcReq.md)
  - [CreateRpcRes](docs/CreateRpcRes.md)
  - [DeleteNetworkRes](docs/DeleteNetworkRes.md)
- - [DeleteRpcOptReq](docs/DeleteRpcOptReq.md)
  - [DetachPluginReq](docs/DetachPluginReq.md)
  - [HealthcheckHealthCheckConfig](docs/HealthcheckHealthCheckConfig.md)
  - [HealthcheckHealthCheckType](docs/HealthcheckHealthCheckType.md)

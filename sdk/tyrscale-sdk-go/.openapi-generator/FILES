@@ -21,7 +21,6 @@ docs/CreateRouteRes.md
 docs/CreateRpcReq.md
 docs/CreateRpcRes.md
 docs/DeleteNetworkRes.md
-docs/DeleteRpcOptReq.md
 docs/DetachPluginReq.md
 docs/HealthcheckHealthCheckConfig.md
 docs/HealthcheckHealthCheckType.md
@@ -85,7 +84,6 @@ model_create_route_res.go
 model_create_rpc_req.go
 model_create_rpc_res.go
 model_delete_network_res.go
-model_delete_rpc_opt_req.go
 model_detach_plugin_req.go
 model_healthcheck_health_check_config.go
 model_healthcheck_health_check_type.go
@@ -130,10 +128,4 @@ model_update_route_req.go
 model_upstream.go
 model_upstream_upsert_res.go
 response.go
-test/api_networks_test.go
-test/api_plugins_test.go
-test/api_recommendations_test.go
-test/api_routes_test.go
-test/api_rpcs_test.go
-test/api_upstreams_test.go
 utils.go

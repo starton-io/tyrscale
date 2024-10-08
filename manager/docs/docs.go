@@ -1082,15 +1082,6 @@ const docTemplate = `{
                         "name": "uuid",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "Delete Rpc request",
-                        "name": "rpc",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/DeleteRpcOptReq"
-                        }
                     }
                 ],
                 "responses": {
@@ -1566,14 +1557,6 @@ const docTemplate = `{
             "properties": {
                 "uuid": {
                     "type": "string"
-                }
-            }
-        },
-        "DeleteRpcOptReq": {
-            "type": "object",
-            "properties": {
-                "cascade_delete_upstream": {
-                    "type": "boolean"
                 }
             }
         },

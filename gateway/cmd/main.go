@@ -6,6 +6,9 @@ import (
 	"os/signal"
 	"syscall"
 
+	"net/http"
+	_ "net/http/pprof"
+
 	"github.com/ThreeDotsLabs/watermill-redisstream/pkg/redisstream"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/carlmjohnson/flowmatic"
@@ -115,6 +118,9 @@ func main() {
 			},
 			func() error {
 				return grpcServer.Run()
+			},
+			func() error {
+				return http.ListenAndServe("localhost:6060", nil)
 			},
 		)
 		if err != nil {
