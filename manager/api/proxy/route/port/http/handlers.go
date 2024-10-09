@@ -164,7 +164,7 @@ func (h *RouteHandler) DeleteRoute(c *fiber.Ctx) error {
 	if uuid == "" {
 		logger.Error("Failed to get uuid from path")
 		resp := responses.BadRequestResp.ToGeneral()
-		return resp.WithError(c, fmt.Errorf("failed to get chainID from path")).JSON(c)
+		return resp.WithError(c, fmt.Errorf("failed to get route uuid from path")).JSON(c)
 	}
 	logger.Debugf("Delete route request: %v", uuid)
 

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"sync"
 
@@ -118,9 +117,8 @@ func (s *PluginService) ListFromRoute(ctx context.Context, routeUuid string) (*d
 
 	for _, pluginResp := range plugins {
 		var payloadConfig map[string]interface{}
-		if err := json.Unmarshal(pluginResp.Config, &payloadConfig); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal plugin config: %w", err)
-		}
+		_ = json.Unmarshal(pluginResp.Config, &payloadConfig)
+
 		switch pluginResp.Type {
 		case string(plugin.PluginTypeMiddleware):
 			res.Middleware = append(res.Middleware, &dto.Plugin{

@@ -111,21 +111,21 @@ func (s *RPCService) Delete(ctx context.Context, rpc *dto.DeleteRpcReq) error {
 		return fmt.Errorf("rpc with uuid %s does not exist", rpc.UUID)
 	}
 	rpcRes := res[0]
-	if rpc.CascadeDeleteUpstream {
-		associatedUpstream, err := s.repo.ListAssociatedUpstream(ctx, rpcRes.Uuid)
+	associatedUpstream, err := s.repo.ListAssociatedUpstreamByRPCUuid(ctx, rpcRes.Uuid)
+	if err != nil {
+		return err
+	}
+	logger.Debugf("associatedUpstream: %v", associatedUpstream)
+	if len(associatedUpstream) > 0 {
+		err = s.repo.DeleteAssociatedUpstream(ctx, rpcRes.Uuid)
 		if err != nil {
 			return err
 		}
-		if len(associatedUpstream) > 0 {
-			err = s.repo.DeleteAssociatedUpstream(ctx, rpcRes.Uuid)
+		for _, upstream := range associatedUpstream {
+			logger.Debugf("upstream: %v", upstream)
+			err = s.upstreamService.Delete(ctx, &upstreamDto.UpstreamDeleteReq{Uuid: upstream.Uuid, RouteUuid: upstream.RouteUuid})
 			if err != nil {
 				return err
-			}
-			for _, upstream := range associatedUpstream {
-				err = s.upstreamService.Delete(ctx, &upstreamDto.UpstreamDeleteReq{Uuid: upstream.Uuid, RouteUuid: upstream.RouteUuid})
-				if err != nil {
-					return err
-				}
 			}
 		}
 	}

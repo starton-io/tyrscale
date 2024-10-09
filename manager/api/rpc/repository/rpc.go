@@ -33,7 +33,7 @@ type IRPCRepository interface {
 	Update(ctx context.Context, rpc *pb.RpcModel) error
 	Delete(ctx context.Context, rpc *pb.RpcModel) error
 	DeleteAssociatedUpstream(ctx context.Context, uuid string) error
-	ListAssociatedUpstream(ctx context.Context, uuid string) ([]*upstreamPb.UpstreamRPCRouteAssociation, error)
+	ListAssociatedUpstreamByRPCUuid(ctx context.Context, uuid string) ([]*upstreamPb.UpstreamRPCRouteAssociation, error)
 }
 
 type RPCRepository struct {
@@ -133,15 +133,18 @@ func (r *RPCRepository) Delete(ctx context.Context, rpc *pb.RpcModel) error {
 func (r *RPCRepository) DeleteAssociatedUpstream(ctx context.Context, uuid string) error {
 	ctx, span := tracer.Start(ctx, "DeleteAssociatedUpstreamRPCRepository", trace.WithAttributes(attribute.String("app.rpc.UUID", uuid)))
 	defer tracer.SafeEndSpan(span)
-	key := fmt.Sprintf("%s:%s", uuid, BASE_KEY_UPSTREAM)
+	key := fmt.Sprintf("%s:%s:%s", r.baseKey, uuid, BASE_KEY_UPSTREAM)
 	return r.kvDB.Delete(ctx, key)
 }
 
-func (r *RPCRepository) ListAssociatedUpstream(ctx context.Context, uuid string) ([]*upstreamPb.UpstreamRPCRouteAssociation, error) {
+func (r *RPCRepository) ListAssociatedUpstreamByRPCUuid(ctx context.Context, uuid string) ([]*upstreamPb.UpstreamRPCRouteAssociation, error) {
 	ctx, span := tracer.Start(ctx, "ListAssociatedUpstreamRPCRepository", trace.WithAttributes(attribute.String("app.rpc.UUID", uuid)))
 	defer tracer.SafeEndSpan(span)
-	key := fmt.Sprintf("%s:%s", uuid, BASE_KEY_UPSTREAM)
-	filter := kv.NewParamsFilterPB[*upstreamPb.UpstreamRPCRouteAssociation](make(map[string]string), true, "*", 0)
+	key := fmt.Sprintf("%s:%s:%s", r.baseKey, uuid, BASE_KEY_UPSTREAM)
+	matchCriteria := make(map[string]string)
+	matchCriteria["rpc_uuid"] = uuid
+	filter := kv.NewParamsFilterPB[*upstreamPb.UpstreamRPCRouteAssociation](matchCriteria, false, "", 0)
+
 	list, err := r.kvDB.ScanHash(ctx, key, filter)
 	if err != nil {
 		return nil, err

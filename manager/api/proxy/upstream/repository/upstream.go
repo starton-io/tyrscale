@@ -141,7 +141,7 @@ func (r *UpstreamRepository) Upsert(ctx context.Context, routeUuid string, upstr
 		if err != nil {
 			return err
 		}
-		err = tx.HSet(ctx, keyRpc, *upstream.RpcUuid, serializedUpstreamAssociation).Err()
+		err = tx.HSet(ctx, keyRpc, upstream.Uuid, serializedUpstreamAssociation).Err()
 		if err != nil {
 			return err
 		}

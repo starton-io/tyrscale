@@ -102,12 +102,12 @@ func (_m *IRPCRepository) List(ctx context.Context, filter *dto.ListReq) ([]*rpc
 	return r0, r1
 }
 
-// ListAssociatedUpstream provides a mock function with given fields: ctx, uuid
-func (_m *IRPCRepository) ListAssociatedUpstream(ctx context.Context, uuid string) ([]*upstream.UpstreamRPCRouteAssociation, error) {
+// ListAssociatedUpstreamByRPCUuid provides a mock function with given fields: ctx, uuid
+func (_m *IRPCRepository) ListAssociatedUpstreamByRPCUuid(ctx context.Context, uuid string) ([]*upstream.UpstreamRPCRouteAssociation, error) {
 	ret := _m.Called(ctx, uuid)
 
 	if len(ret) == 0 {
-		panic("no return value specified for ListAssociatedUpstream")
+		panic("no return value specified for ListAssociatedUpstreamByRPCUuid")
 	}
 
 	var r0 []*upstream.UpstreamRPCRouteAssociation
