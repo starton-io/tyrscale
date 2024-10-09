@@ -16,6 +16,7 @@ import (
 	"github.com/starton-io/tyrscale/manager/api/rpc/repository/mocks"
 	netPb "github.com/starton-io/tyrscale/manager/pkg/pb/network"
 	pb "github.com/starton-io/tyrscale/manager/pkg/pb/rpc"
+	"github.com/starton-io/tyrscale/manager/pkg/pb/upstream"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 )
@@ -99,6 +100,7 @@ func (suite *RPCServiceTestSuite) TestDeleteRPC() {
 		UUID: "test-rpc",
 	}
 	suite.mocks.On("List", mock.Anything, dtoList).Return(listRes, nil)
+	suite.mocks.On("ListAssociatedUpstreamByRPCUuid", mock.Anything, listRes[0].Uuid).Return([]*upstream.UpstreamRPCRouteAssociation{}, nil)
 	suite.mocks.On("Delete", mock.Anything, listRes[0]).Return(nil)
 	suite.mocksPubSub.On("Publish", mock.Anything, "rpc_deleted", mock.Anything).Return(nil)
 	err := suite.service.Delete(ctx, dtoDelete)
