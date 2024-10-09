@@ -2,8 +2,10 @@ package config
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
+	"regexp"
 
 	"github.com/caarlos0/env"
 	"github.com/joho/godotenv"
@@ -63,14 +65,35 @@ type PluginConfig struct {
 }
 
 type Plugin struct {
-	Name      string `yaml:"name"`
-	Path      string `yaml:"path"`
-	Sha256sum string `yaml:"sha256sum"`
+	Name               string            `yaml:"name"`
+	Path               string            `yaml:"path"`
+	Destination        string            `yaml:"destination"`
+	Sha256sum          string            `yaml:"sha256sum"`
+	Headers            map[string]string `yaml:"headers"`
+	SkipCheckSha256sum bool              `yaml:"skip_check_sha256sum"`
+}
+
+func (p *Plugin) Validate() error {
+	if p.Path == "" {
+		return fmt.Errorf("path is required")
+	}
+
+	// Define regex pattern for file and git paths
+	pathPattern := `^(https?|file)://`
+
+	// Compile the regex pattern
+	pathRegex := regexp.MustCompile(pathPattern)
+
+	// Check if the path matches either the file or git path pattern
+	if !pathRegex.MatchString(p.Path) {
+		return fmt.Errorf("path must be a valid file or git path")
+	}
+	return nil
 }
 
 var (
 	cfg              Schema
-	cfgPath          = flag.String("gatewayConfig", "./config/config.yaml", "path to the gateway configuration file")
+	cfgPath          = flag.String("gatewayCOnfig", "./config/config.yaml", "path to the gateway configuration file")
 	pluginConfigPath = flag.String("pluginConfig", "./plugin.yaml", "path to the plugin configuration file")
 )
 

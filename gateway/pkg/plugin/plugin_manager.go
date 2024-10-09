@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 	"plugin"
 	"strings"
 
@@ -106,12 +108,34 @@ func (pm *PluginManager) Store() IPluginStorage {
 
 func (pm *PluginManager) loadPlugin(p *config.Plugin) error {
 	logger.Info("Loading plugin", "name", p.Name, "path", p.Path, "sha256sum", p.Sha256sum)
-	ok, err := utils.GetSHA256Checksum(p.Path, p.Sha256sum)
-	if err != nil {
-		return fmt.Errorf("error getting checksum: %v", err)
+
+	// if p.path is git path download it
+	if strings.HasPrefix(p.Path, "https://") {
+		logger.Info("Downloading plugin", "name", p.Name, "path", p.Path)
+		// create parent directory if not exist
+		if _, err := os.Stat(filepath.Dir(p.Destination)); os.IsNotExist(err) {
+			err := os.MkdirAll(filepath.Dir(p.Destination), 0755)
+			if err != nil {
+				return fmt.Errorf("error creating parent directory: %v", err)
+			}
+		}
+		err := utils.DownloadFile(p.Destination, p.Path, p.Headers)
+		if err != nil {
+			return fmt.Errorf("error downloading plugin: %v", err)
+		}
+		p.Path = p.Destination
+	} else {
+		// strip file:// prefix from p.Path
+		p.Path = strings.TrimPrefix(p.Path, "file://")
 	}
-	if !ok {
-		return fmt.Errorf("checksum %s does not match to %s", p.Sha256sum, p.Path)
+	if !p.SkipCheckSha256sum {
+		ok, err := utils.GetSHA256Checksum(p.Path, p.Sha256sum)
+		if err != nil {
+			return fmt.Errorf("error getting checksum: %v", err)
+		}
+		if !ok {
+			return fmt.Errorf("checksum %s does not match to %s", p.Sha256sum, p.Path)
+		}
 	}
 
 	plugin, err := plugin.Open(p.Path)

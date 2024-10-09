@@ -25,18 +25,21 @@ COPY ./gateway /app/gateway/
 
 # Build the Go app
 #RUN CGO_ENABLED=0 GOOS=${OS} GOARCH=${ARCH} go build -a -installsuffix cgo -o manager .
-RUN CGO_ENABLED=0 GOOS=${OS} GOARCH=${ARCH} go build -o gateway ./cmd/main.go 
+RUN GO111MODULE=on CGO_ENABLED=0 GOOS=${OS} GOARCH=${ARCH} go build -o gateway ./cmd/main.go 
 # Start a new stage from scratch
 FROM alpine:latest  
 
 # Add ca-certificates
 RUN apk --no-cache add ca-certificates
 
+
 # Create a dedicated user and group to run the service
 # Avoid running as root for security
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 WORKDIR /home/appuser
+
+RUN mkdir -p /home/appuser/plugins
 
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/gateway/gateway .

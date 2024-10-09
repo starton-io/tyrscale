@@ -1,7 +1,17 @@
 plugins:
   - name: MyResponseInterceptor
-    path: ../plugins/interceptor/response/response.so
+    path: file://../plugins/interceptor/response/response.so
     sha256sum: fcfe0885a36c13806fae954eea1bd7fc7bc1dfafceac7d8bece9ab83b087635d
   - name: LoggingMiddleware
-    path: ../plugins/middleware/exemple/example.so
+    path: file://../plugins/middleware/exemple/example.so
     sha256sum: aeef566e98b614978f84e9ef20efbb9eb88deefac8eee00d5498fb3cb70187af
+  
+  # Download plugin from github/gitlab with auth
+  #- name: DownloadPlugin
+  #  path: https://raw.githubusercontent.com/starton-io/tyrscale/refs/tags/v0.25.3/plugins/middleware/example/example.so
+  #  headers:
+  #    Authorization: Bearer 1234567890
+  #  destination: ./plugins/example.so
+  #  sha256sum: 5aa283a244edc7f3050bd4008f9263ee98d96f864450b961a3d536f1ae203c34
+  #  # skip checksum verification is useful during development
+  #  skip_check_sha256sum: true
