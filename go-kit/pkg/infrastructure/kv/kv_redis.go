@@ -149,6 +149,7 @@ func (r *redis) ScanHash(ctx context.Context, key string, filter IFilterStrategy
 			break // This should not happen, but we check to avoid an odd number of elements causing a panic.
 		}
 		value := iter.Val()
+		logger.Debugf("value: %v", value)
 		if filter.ShouldInclude([]byte(value)) {
 			//fields[key] = value
 			result = append(result, []byte(value))

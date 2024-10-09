@@ -59,8 +59,10 @@ func (h *FailoverHandler) Handle(ctx *fasthttp.RequestCtx) {
 			setErrorResponse(res, fasthttp.StatusInternalServerError, "Interception error: "+err.Error())
 			return
 		}
+		routeUrl := string(ctx.URI().Host()) + string(ctx.URI().Path())
+		listLabelsValues := []string{upstreamClient.Client.Addr, upstreamUuid, routeUrl, h.proxyController.GetLabelValue("route_uuid")}
 		start := time.Now()
-		metrics.UpstreamTotalRequests.WithLabelValues(upstreamUuid, h.proxyController.GetLabelValue("route_uuid")).Inc()
+		metrics.UpstreamTotalRequests.WithLabelValues(listLabelsValues...).Inc()
 		if h.proxyController.CircuitBreaker != nil {
 			cb := h.proxyController.CircuitBreaker.Get(upstreamUuid)
 			if cb != nil {
@@ -72,35 +74,35 @@ func (h *FailoverHandler) Handle(ctx *fasthttp.RequestCtx) {
 					return nil, upstreamClient.ResponseInterceptor.Intercept(res)
 				})
 				if err == nil {
-					metrics.UpstreamDuration.WithLabelValues(upstreamUuid, h.proxyController.GetLabelValue("route_uuid")).Observe(time.Since(start).Seconds())
-					metrics.UpstreamSuccesses.WithLabelValues(upstreamUuid, h.proxyController.GetLabelValue("route_uuid")).Inc()
+					metrics.UpstreamDuration.WithLabelValues(listLabelsValues...).Observe(time.Since(start).Seconds())
+					metrics.UpstreamSuccesses.WithLabelValues(listLabelsValues...).Inc()
 					return // Successful execution
 				}
 				if res.StatusCode() == fasthttp.StatusTooManyRequests {
-					metrics.Status429Responses.WithLabelValues(upstreamUuid, h.proxyController.GetLabelValue("route_uuid")).Inc()
+					metrics.Status429Responses.WithLabelValues(listLabelsValues...).Inc()
 				}
 				logger.Errorf("Circuit breaker execution failed for %s: %v", upstreamUuid, err)
-				metrics.UpstreamFailures.WithLabelValues(upstreamUuid, h.proxyController.GetLabelValue("route_uuid")).Inc()
+				metrics.UpstreamFailures.WithLabelValues(listLabelsValues...).Inc()
 				continue
 			}
 		} else {
 			if err := upstreamClient.Client.Do(req, res); err != nil {
 				handleClientError(res, err)
-				metrics.UpstreamFailures.WithLabelValues(upstreamUuid, h.proxyController.GetLabelValue("route_uuid")).Inc()
+				metrics.UpstreamFailures.WithLabelValues(listLabelsValues...).Inc()
 				continue
 			}
 			err = upstreamClient.ResponseInterceptor.Intercept(res)
 			if err != nil {
 				logger.Errorf("Response interception failed for %s: %v", upstreamUuid, err)
 				if res.StatusCode() == fasthttp.StatusTooManyRequests {
-					metrics.Status429Responses.WithLabelValues(upstreamUuid, h.proxyController.GetLabelValue("route_uuid")).Inc()
+					metrics.Status429Responses.WithLabelValues(listLabelsValues...).Inc()
 				}
-				metrics.UpstreamFailures.WithLabelValues(upstreamUuid, h.proxyController.GetLabelValue("route_uuid")).Inc()
+				metrics.UpstreamFailures.WithLabelValues(listLabelsValues...).Inc()
 				setErrorResponse(res, fasthttp.StatusInternalServerError, "Interception error: "+err.Error())
 				continue
 			}
-			metrics.UpstreamDuration.WithLabelValues(upstreamUuid, h.proxyController.GetLabelValue("route_uuid")).Observe(time.Since(start).Seconds())
-			metrics.UpstreamSuccesses.WithLabelValues(upstreamUuid, h.proxyController.GetLabelValue("route_uuid")).Inc()
+			metrics.UpstreamDuration.WithLabelValues(listLabelsValues...).Observe(time.Since(start).Seconds())
+			metrics.UpstreamSuccesses.WithLabelValues(listLabelsValues...).Inc()
 			return
 		}
 	}

@@ -25,6 +25,9 @@ func (h *DefaultHandler) Handle(ctx *fasthttp.RequestCtx) {
 	req := &ctx.Request
 	res := &ctx.Response
 
+	routeUrl := string(req.URI().Host()) + string(req.URI().Path())
+	logger.Debugf("routeUrl: %s", routeUrl)
+
 	for retries := 0; retries < h.maxRetries; retries++ {
 		upstreamUuid, err := h.proxyController.Balancer.Balance()
 		if err != nil {
@@ -57,7 +60,9 @@ func (h *DefaultHandler) Handle(ctx *fasthttp.RequestCtx) {
 			return
 		}
 		start := time.Now()
-		metrics.UpstreamTotalRequests.WithLabelValues(upstreamUuid[0], h.proxyController.GetLabelValue("route_uuid")).Inc()
+		listLabelsValues := []string{h.proxyController.GetLabelValue("route_uuid"), routeUrl, upstreamUuid[0], upstreamClient.Client.Addr}
+
+		metrics.UpstreamTotalRequests.WithLabelValues(listLabelsValues...).Inc()
 
 		if h.proxyController.CircuitBreaker != nil {
 			cb := h.proxyController.CircuitBreaker.Get(upstreamUuid[0])
@@ -70,8 +75,8 @@ func (h *DefaultHandler) Handle(ctx *fasthttp.RequestCtx) {
 					return nil, upstreamClient.ResponseInterceptor.Intercept(res)
 				})
 				if err == nil {
-					metrics.UpstreamSuccesses.WithLabelValues(upstreamUuid[0], h.proxyController.GetLabelValue("route_uuid")).Inc()
-					metrics.UpstreamDuration.WithLabelValues(upstreamUuid[0], h.proxyController.GetLabelValue("route_uuid")).Observe(time.Since(start).Seconds())
+					metrics.UpstreamSuccesses.WithLabelValues(listLabelsValues...).Inc()
+					metrics.UpstreamDuration.WithLabelValues(listLabelsValues...).Observe(time.Since(start).Seconds())
 					return // Successful execution
 				}
 				continue
@@ -79,20 +84,20 @@ func (h *DefaultHandler) Handle(ctx *fasthttp.RequestCtx) {
 		}
 		if err := upstreamClient.Client.Do(req, res); err != nil {
 			handleClientError(res, err)
-			metrics.UpstreamFailures.WithLabelValues(upstreamUuid[0], h.proxyController.GetLabelValue("route_uuid")).Inc()
+			metrics.UpstreamFailures.WithLabelValues(listLabelsValues...).Inc()
 			continue
 		}
 		err = upstreamClient.ResponseInterceptor.Intercept(res)
 		if err != nil {
 			setErrorResponse(res, fasthttp.StatusInternalServerError, err.Error())
 			if res.StatusCode() == fasthttp.StatusTooManyRequests {
-				metrics.Status429Responses.WithLabelValues(upstreamUuid[0], h.proxyController.GetLabelValue("route_uuid")).Inc()
+				metrics.Status429Responses.WithLabelValues(listLabelsValues...).Inc()
 			}
-			metrics.UpstreamFailures.WithLabelValues(upstreamUuid[0], h.proxyController.GetLabelValue("route_uuid")).Inc()
+			metrics.UpstreamFailures.WithLabelValues(listLabelsValues...).Inc()
 			continue
 		}
-		metrics.UpstreamSuccesses.WithLabelValues(upstreamUuid[0], h.proxyController.GetLabelValue("route_uuid")).Inc()
-		metrics.UpstreamDuration.WithLabelValues(upstreamUuid[0], h.proxyController.GetLabelValue("route_uuid")).Observe(time.Since(start).Seconds())
+		metrics.UpstreamSuccesses.WithLabelValues(listLabelsValues...).Inc()
+		metrics.UpstreamDuration.WithLabelValues(listLabelsValues...).Observe(time.Since(start).Seconds())
 		return
 	}
 	logger.Error("all upstream nodes are unhealthy/dead after %d retries", h.maxRetries)

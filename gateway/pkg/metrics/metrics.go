@@ -12,14 +12,14 @@ var (
 			Name: "upstream_successes_total",
 			Help: "Total number of requests to upstreams",
 		},
-		[]string{"upstream_uuid", "route_uuid"},
+		[]string{"route_uuid", "route_url", "upstream_uuid", "upstream_url"},
 	)
 	UpstreamFailures = promauto.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "upstream_failures_total",
 			Help: "Total number of failed requests to upstreams",
 		},
-		[]string{"upstream_uuid", "route_uuid"},
+		[]string{"route_uuid", "route_url", "upstream_uuid", "upstream_url"},
 	)
 	UpstreamDuration = promauto.NewHistogramVec(
 		prometheus.HistogramOpts{
@@ -27,21 +27,21 @@ var (
 			Help:    "Duration of requests to upstreams",
 			Buckets: prometheus.DefBuckets,
 		},
-		[]string{"upstream_uuid", "route_uuid"},
+		[]string{"route_uuid", "route_url", "upstream_uuid", "upstream_url"},
 	)
 	Status429Responses = promauto.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "status_429_responses_total",
 			Help: "Total number of status code 429 responses",
 		},
-		[]string{"upstream_uuid", "route_uuid"},
+		[]string{"route_uuid", "route_url", "upstream_uuid", "upstream_url"},
 	)
 	UpstreamTotalRequests = promauto.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "upstream_total_requests",
 			Help: "Total number of responses",
 		},
-		[]string{"upstream_uuid", "route_uuid"},
+		[]string{"route_uuid", "route_url", "upstream_uuid", "upstream_url"},
 	)
 )
 
