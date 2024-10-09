@@ -150,7 +150,7 @@ If you are interested to extend the gateway capabilities, you can contribute to 
 
 ## License
 
-Tyrscale is licensed under the [Apache License 2.0](./LICENSE.md).
+Tyrscale is licensed under the [AGPL 3.0](./LICENSE.md).
 
 
 ## Authors
