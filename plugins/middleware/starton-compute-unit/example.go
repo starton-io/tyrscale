@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/starton-io/tyrscale/gateway/pkg/middleware/types"
 
@@ -25,26 +25,27 @@ var channel chan UseComputeUnit = make(chan UseComputeUnit, 100)
 // ComputeUnitMiddleware is an example middleware that logs requests
 func ComputeUnitMiddleware(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
-		projectId := string(ctx.Request.Header.Peek("x-project-id"))
-		consumerId := string(ctx.Request.Header.Peek("x-consumer-custom-id"))
-		log.Printf("Request: %s, %s, %s, %s", ctx.Method(), ctx.RequestURI(), projectId, consumerId)
+		projectId := string(ctx.Request.Header.Peek("x-consumer-custom-id"))
+		if projectId == "" {
+			log.Println("Could not get projectId")
+			// TODO return json
+			ctx.Error("You must be authenticated", fasthttp.StatusUnauthorized)
+			return
+		}
 
-		projectSetting, err := redisClient.HGetAll(ctx, "project:setting."+projectId).Result()
+		projectSetting, err := redisClient.HGetAll(ctx, fmt.Sprintf("project:setting.%s", projectId)).Result()
 		if err != nil {
 			log.Println("Could not fetch projectSettings", err)
 		}
 		if projectSetting["maxComputeUnitReach"] == "true" {
 			log.Printf("maxComputeUnitReach: %s", projectSetting["maxComputeUnitReach"])
+			// TODO return json
 			ctx.Error("You have reached your maximum comput unit.", fasthttp.StatusPaymentRequired)
 			return
 		}
-
-		log.Printf("redis: %s", projectSetting)
-		log.Println(startonRedisUri)
-		start := time.Now()
 		next(ctx)
+		// TODO CUSTOMIZE PRICING BY METHOD
 		channel <- UseComputeUnit{projectId, 5}
-		log.Printf("Response: %s ,%d , duration: %s", ctx.Method(), ctx.Response.StatusCode(), time.Since(start))
 	}
 }
 
