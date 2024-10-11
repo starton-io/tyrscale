@@ -12,6 +12,7 @@ import (
 	"github.com/starton-io/tyrscale/go-kit/pkg/logger"
 	"github.com/starton-io/tyrscale/manager/pkg/pb/upstream"
 	"github.com/valyala/fasthttp"
+	"github.com/valyala/fasthttp/fasthttpproxy"
 )
 
 type UpstreamClient struct {
@@ -151,11 +152,17 @@ func (m *ProxyController) AddUpstream(upstream *upstream.UpstreamPublishUpsertMo
 	chainRes.AddFirst(&interceptor.DefaultResponseInterceptor{}, "default")
 	//chainRes.AddLast(&interceptor.DefaultLastResponseInterceptor{})
 
+	var fasthttpFuncDialer fasthttp.DialFunc
+	if upstream.FasthttpSettings != nil {
+		fasthttpFuncDialer = fasthttpproxy.FasthttpHTTPDialerTimeout(upstream.FasthttpSettings.ProxyHost, time.Second*3)
+	}
+
 	proxy := &UpstreamClient{
 		Healthy: true,
 		Client: &fasthttp.HostClient{
+			Dial:         fasthttpFuncDialer,
 			MaxConns:     10000,
-			ReadTimeout:  5 * time.Second,
+			ReadTimeout:  7 * time.Second,
 			WriteTimeout: 5 * time.Second,
 			Addr:         upstream.Host,
 			Name:         upstream.Uuid,

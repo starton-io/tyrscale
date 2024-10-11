@@ -21,7 +21,6 @@ src/models/CreateRouteRes.ts
 src/models/CreateRpcReq.ts
 src/models/CreateRpcRes.ts
 src/models/DeleteNetworkRes.ts
-src/models/DeleteRpcOptReq.ts
 src/models/DetachPluginReq.ts
 src/models/HealthcheckHealthCheckConfig.ts
 src/models/HealthcheckHealthCheckType.ts
@@ -64,6 +63,7 @@ src/models/StrategyName.ts
 src/models/UpdateRecommendationReq.ts
 src/models/UpdateRouteReq.ts
 src/models/Upstream.ts
+src/models/UpstreamFastHTTPSettings.ts
 src/models/UpstreamUpsertRes.ts
 src/models/index.ts
 src/runtime.ts

@@ -1389,6 +1389,9 @@ const docTemplate = `{
                 "weight"
             ],
             "properties": {
+                "fasthttp_settings": {
+                    "$ref": "#/definitions/UpstreamFastHTTPSettings"
+                },
                 "host": {
                     "type": "string"
                 },
@@ -1413,6 +1416,14 @@ const docTemplate = `{
                     "type": "number",
                     "maximum": 100,
                     "minimum": 0
+                }
+            }
+        },
+        "UpstreamFastHTTPSettings": {
+            "type": "object",
+            "properties": {
+                "proxy_host": {
+                    "type": "string"
                 }
             }
         },

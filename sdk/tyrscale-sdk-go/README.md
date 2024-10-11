@@ -158,6 +158,7 @@ Class | Method | HTTP request | Description
  - [UpdateRecommendationReq](docs/UpdateRecommendationReq.md)
  - [UpdateRouteReq](docs/UpdateRouteReq.md)
  - [Upstream](docs/Upstream.md)
+ - [UpstreamFastHTTPSettings](docs/UpstreamFastHTTPSettings.md)
  - [UpstreamUpsertRes](docs/UpstreamUpsertRes.md)
 
 

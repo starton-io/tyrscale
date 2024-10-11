@@ -113,6 +113,11 @@ func getOption(opts ...Option) *option {
 }
 
 func Regexp(fl validator.FieldLevel) bool {
-	re := regexp.MustCompile(fl.Param())
+	// Replace all occurrences of \\ with \
+	param := strings.ReplaceAll(fl.Param(), "\\\\", "\\")
+	re, err := regexp.Compile(param)
+	if err != nil {
+		return false
+	}
 	return re.MatchString(fl.Field().String())
 }

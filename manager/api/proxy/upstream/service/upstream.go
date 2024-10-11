@@ -95,14 +95,20 @@ func (s *UpstreamService) Upsert(ctx context.Context, routeUuid string, upstream
 	if len(routes) == 0 {
 		return nil, errors.New("route not found")
 	}
-
+	var fasthttpSettings *pb.UpstreamFastHTTPSettings
+	if upstream.FastHTTPSettings != nil {
+		fasthttpSettings = &pb.UpstreamFastHTTPSettings{
+			ProxyHost: upstream.FastHTTPSettings.ProxyHost,
+		}
+	}
 	upstreamModel := &pb.UpstreamModel{
-		Uuid:   upstream.Uuid,
-		Weight: &upstream.Weight,
-		Host:   upstream.Host,
-		Port:   int32(upstream.Port),
-		Path:   upstream.Path,
-		Scheme: upstream.Scheme,
+		Uuid:             upstream.Uuid,
+		Weight:           &upstream.Weight,
+		Host:             upstream.Host,
+		Port:             int32(upstream.Port),
+		Path:             upstream.Path,
+		Scheme:           upstream.Scheme,
+		FasthttpSettings: fasthttpSettings,
 	}
 
 	// check if rpc exists
@@ -129,14 +135,15 @@ func (s *UpstreamService) Upsert(ctx context.Context, routeUuid string, upstream
 		return nil, err
 	}
 	upstreamPublishModel := &pb.UpstreamPublishUpsertModel{
-		Uuid:      upstreamModel.Uuid,
-		RouteHost: routes[0].Host,
-		RoutePath: routes[0].Path,
-		Host:      upstreamModel.Host,
-		Port:      upstreamModel.Port,
-		Path:      upstreamModel.Path,
-		Scheme:    upstreamModel.Scheme,
-		Weight:    upstream.Weight,
+		Uuid:             upstreamModel.Uuid,
+		RouteHost:        routes[0].Host,
+		RoutePath:        routes[0].Path,
+		Host:             upstreamModel.Host,
+		Port:             upstreamModel.Port,
+		Path:             upstreamModel.Path,
+		Scheme:           upstreamModel.Scheme,
+		Weight:           upstream.Weight,
+		FasthttpSettings: fasthttpSettings,
 	}
 
 	upstreamBytes, err := proto.Marshal(upstreamPublishModel)

@@ -15,13 +15,18 @@ type UpstreamCreateReq struct {
 }
 
 type Upstream struct {
-	Uuid    string  `json:"uuid" validate:"omitempty,uuid"`
-	RpcUuid string  `json:"rpc_uuid" validate:"excluded_with=Host Port Path Scheme"`
-	Host    string  `json:"host" validate:"required_without=RpcUuid"`
-	Port    int32   `json:"port" validate:"required_without=RpcUuid,gte=0,lte=65535"`
-	Path    string  `json:"path" validate:"required_without=RpcUuid,omitempty"`
-	Scheme  string  `json:"scheme" validate:"required_without=RpcUuid"`
-	Weight  float64 `json:"weight" validate:"required,gte=0,lte=100"`
+	Uuid             string                    `json:"uuid" validate:"omitempty,uuid"`
+	RpcUuid          string                    `json:"rpc_uuid" validate:"excluded_with=Host Port Path Scheme"`
+	Host             string                    `json:"host" validate:"required_without=RpcUuid"`
+	Port             int32                     `json:"port" validate:"required_without=RpcUuid,gte=0,lte=65535"`
+	Path             string                    `json:"path" validate:"required_without=RpcUuid,omitempty"`
+	Scheme           string                    `json:"scheme" validate:"required_without=RpcUuid"`
+	Weight           float64                   `json:"weight" validate:"required,gte=0,lte=100"`
+	FastHTTPSettings *UpstreamFastHTTPSettings `json:"fasthttp_settings"`
+}
+
+type UpstreamFastHTTPSettings struct {
+	ProxyHost string `json:"proxy_host" validate:"omitempty,regexp=^(?:([a-zA-Z0-9._-]+):([a-zA-Z0-9._-]+)@)?([a-zA-Z0-9]{1}[a-zA-Z0-9_-]+)(\\.[a-zA-Z0-9_]{1}[a-zA-Z0-9_-]+)*?:([0-9]+)$"`
 }
 
 type UpstreamUpdateReq struct {

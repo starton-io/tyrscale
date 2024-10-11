@@ -4,6 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**FasthttpSettings** | Pointer to [**UpstreamFastHTTPSettings**](UpstreamFastHTTPSettings.md) |  | [optional] 
 **Host** | Pointer to **string** |  | [optional] 
 **Path** | Pointer to **string** |  | [optional] 
 **Port** | Pointer to **int32** |  | [optional] 
@@ -30,6 +31,31 @@ will change when the set of required properties is changed
 NewUpstreamWithDefaults instantiates a new Upstream object
 This constructor will only assign default values to properties that have it defined,
 but it doesn't guarantee that properties required by API are set
+
+### GetFasthttpSettings
+
+`func (o *Upstream) GetFasthttpSettings() UpstreamFastHTTPSettings`
+
+GetFasthttpSettings returns the FasthttpSettings field if non-nil, zero value otherwise.
+
+### GetFasthttpSettingsOk
+
+`func (o *Upstream) GetFasthttpSettingsOk() (*UpstreamFastHTTPSettings, bool)`
+
+GetFasthttpSettingsOk returns a tuple with the FasthttpSettings field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetFasthttpSettings
+
+`func (o *Upstream) SetFasthttpSettings(v UpstreamFastHTTPSettings)`
+
+SetFasthttpSettings sets FasthttpSettings field to given value.
+
+### HasFasthttpSettings
+
+`func (o *Upstream) HasFasthttpSettings() bool`
+
+HasFasthttpSettings returns a boolean if a field has been set.
 
 ### GetHost
 

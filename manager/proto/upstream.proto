@@ -12,6 +12,7 @@ message UpstreamModel {
   string scheme = 5;
   int32 port = 6;
   optional double weight = 7;
+  optional UpstreamFastHTTPSettings fasthttp_settings = 8;
 }
 
 message UpstreamPublishUpsertModel {
@@ -23,8 +24,12 @@ message UpstreamPublishUpsertModel {
   string scheme = 6;
   int32 port = 7;
   double weight = 8;
+  optional UpstreamFastHTTPSettings fasthttp_settings = 9;
 }
 
+message UpstreamFastHTTPSettings {
+  string proxy_host = 1;
+}
 
 message UpstreamPublishDeleteModel {
   string uuid = 1;

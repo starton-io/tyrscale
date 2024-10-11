@@ -114,7 +114,11 @@ POST http://localhost:8888/api/v1/rpcs
 PUT http://localhost:8888/api/v1/routes/:route_uuid/upstreams
 {
   "rpc_uuid": "xxxxx-xxxx-xxxx-xxxx",
-  "weight": 90.0
+  "weight": 90.0,
+  // optional
+  //"fasthttp_settings": {
+  //  "proxy_host": "username:password@localhost:9050"
+  //}
 }
 ```
 

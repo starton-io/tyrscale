@@ -68,6 +68,7 @@ docs/StrategyName.md
 docs/UpdateRecommendationReq.md
 docs/UpdateRouteReq.md
 docs/Upstream.md
+docs/UpstreamFastHTTPSettings.md
 docs/UpstreamUpsertRes.md
 docs/UpstreamsAPI.md
 git_push.sh
@@ -126,6 +127,7 @@ model_strategy_name.go
 model_update_recommendation_req.go
 model_update_route_req.go
 model_upstream.go
+model_upstream_fast_http_settings.go
 model_upstream_upsert_res.go
 response.go
 utils.go

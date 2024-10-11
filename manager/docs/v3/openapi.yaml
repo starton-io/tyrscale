@@ -1205,6 +1205,8 @@ components:
           scheme: scheme
           port: 5248
           host: host
+          fasthttp_settings:
+            proxy_host: proxy_host
           weight: 60.27456183070403
           uuid: uuid
         - path: path
@@ -1212,6 +1214,8 @@ components:
           scheme: scheme
           port: 5248
           host: host
+          fasthttp_settings:
+            proxy_host: proxy_host
           weight: 60.27456183070403
           uuid: uuid
       properties:
@@ -1227,9 +1231,13 @@ components:
         scheme: scheme
         port: 5248
         host: host
+        fasthttp_settings:
+          proxy_host: proxy_host
         weight: 60.27456183070403
         uuid: uuid
       properties:
+        fasthttp_settings:
+          $ref: '#/components/schemas/UpstreamFastHTTPSettings'
         host:
           type: string
         path:
@@ -1250,6 +1258,13 @@ components:
           type: number
       required:
       - weight
+      type: object
+    UpstreamFastHTTPSettings:
+      example:
+        proxy_host: proxy_host
+      properties:
+        proxy_host:
+          type: string
       type: object
     UpstreamUpsertRes:
       example:
@@ -1851,6 +1866,8 @@ components:
             scheme: scheme
             port: 5248
             host: host
+            fasthttp_settings:
+              proxy_host: proxy_host
             weight: 60.27456183070403
             uuid: uuid
           - path: path
@@ -1858,6 +1875,8 @@ components:
             scheme: scheme
             port: 5248
             host: host
+            fasthttp_settings:
+              proxy_host: proxy_host
             weight: 60.27456183070403
             uuid: uuid
         message: Created Success

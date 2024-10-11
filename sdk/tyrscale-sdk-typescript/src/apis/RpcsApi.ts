@@ -16,7 +16,6 @@
 import * as runtime from '../runtime';
 import type {
   CreateRpcReq,
-  DeleteRpcOptReq,
   ResponsesBadRequestResponse,
   ResponsesCreatedSuccessResponseCreateRpcRes,
   ResponsesDefaultSuccessResponseListRpcRes,
@@ -28,8 +27,6 @@ import type {
 import {
     CreateRpcReqFromJSON,
     CreateRpcReqToJSON,
-    DeleteRpcOptReqFromJSON,
-    DeleteRpcOptReqToJSON,
     ResponsesBadRequestResponseFromJSON,
     ResponsesBadRequestResponseToJSON,
     ResponsesCreatedSuccessResponseCreateRpcResFromJSON,
@@ -52,7 +49,6 @@ export interface CreateRpcRequest {
 
 export interface DeleteRPCRequest {
     uuid: string;
-    rpc: DeleteRpcOptReq;
 }
 
 export interface ListRPCsRequest {
@@ -124,25 +120,15 @@ export class RpcsApi extends runtime.BaseAPI {
             );
         }
 
-        if (requestParameters['rpc'] == null) {
-            throw new runtime.RequiredError(
-                'rpc',
-                'Required parameter "rpc" was null or undefined when calling deleteRPC().'
-            );
-        }
-
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
             path: `/rpcs/{uuid}`.replace(`{${"uuid"}}`, encodeURIComponent(String(requestParameters['uuid']))),
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
-            body: DeleteRpcOptReqToJSON(requestParameters['rpc']),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => ResponsesDefaultSuccessResponseWithoutDataFromJSON(jsonValue));

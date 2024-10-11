@@ -13,12 +13,25 @@
  */
 
 import { mapValues } from '../runtime';
+import type { UpstreamFastHTTPSettings } from './UpstreamFastHTTPSettings';
+import {
+    UpstreamFastHTTPSettingsFromJSON,
+    UpstreamFastHTTPSettingsFromJSONTyped,
+    UpstreamFastHTTPSettingsToJSON,
+} from './UpstreamFastHTTPSettings';
+
 /**
  * 
  * @export
  * @interface Upstream
  */
 export interface Upstream {
+    /**
+     * 
+     * @type {UpstreamFastHTTPSettings}
+     * @memberof Upstream
+     */
+    fasthttpSettings?: UpstreamFastHTTPSettings;
     /**
      * 
      * @type {string}
@@ -81,6 +94,7 @@ export function UpstreamFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     }
     return {
         
+        'fasthttpSettings': json['fasthttp_settings'] == null ? undefined : UpstreamFastHTTPSettingsFromJSON(json['fasthttp_settings']),
         'host': json['host'] == null ? undefined : json['host'],
         'path': json['path'] == null ? undefined : json['path'],
         'port': json['port'] == null ? undefined : json['port'],
@@ -97,6 +111,7 @@ export function UpstreamToJSON(value?: Upstream | null): any {
     }
     return {
         
+        'fasthttp_settings': UpstreamFastHTTPSettingsToJSON(value['fasthttpSettings']),
         'host': value['host'],
         'path': value['path'],
         'port': value['port'],

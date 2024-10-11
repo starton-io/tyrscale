@@ -195,14 +195,21 @@ func (i *ProxyInitializer) Initialize(ctx context.Context) error {
 				}
 
 				logger.Infof("Adding Upstream: %s", *upstream.Uuid)
+				var fasthttpSettings *upstreamPb.UpstreamFastHTTPSettings
+				if upstream.FasthttpSettings != nil {
+					fasthttpSettings = &upstreamPb.UpstreamFastHTTPSettings{
+						ProxyHost: *upstream.FasthttpSettings.ProxyHost,
+					}
+				}
 				upstreamModel := &upstreamPb.UpstreamPublishUpsertModel{
-					Uuid:      upstream.GetUuid(),
-					RouteHost: currentRoute.Host,
-					Scheme:    upstream.GetScheme(),
-					Host:      upstream.GetHost(),
-					Path:      upstream.GetPath(),
-					Port:      upstream.GetPort(),
-					Weight:    float64(upstream.Weight),
+					Uuid:             upstream.GetUuid(),
+					RouteHost:        currentRoute.Host,
+					Scheme:           upstream.GetScheme(),
+					Host:             upstream.GetHost(),
+					Path:             upstream.GetPath(),
+					Port:             upstream.GetPort(),
+					Weight:           float64(upstream.Weight),
+					FasthttpSettings: fasthttpSettings,
 				}
 				proxyController.AddUpstream(upstreamModel)
 			}

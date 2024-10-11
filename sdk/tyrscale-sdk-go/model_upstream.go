@@ -22,6 +22,7 @@ var _ MappedNullable = &Upstream{}
 
 // Upstream struct for Upstream
 type Upstream struct {
+	FasthttpSettings *UpstreamFastHTTPSettings `json:"fasthttp_settings,omitempty"`
 	Host *string `json:"host,omitempty"`
 	Path *string `json:"path,omitempty"`
 	Port *int32 `json:"port,omitempty"`
@@ -49,6 +50,38 @@ func NewUpstream(weight float32) *Upstream {
 func NewUpstreamWithDefaults() *Upstream {
 	this := Upstream{}
 	return &this
+}
+
+// GetFasthttpSettings returns the FasthttpSettings field value if set, zero value otherwise.
+func (o *Upstream) GetFasthttpSettings() UpstreamFastHTTPSettings {
+	if o == nil || IsNil(o.FasthttpSettings) {
+		var ret UpstreamFastHTTPSettings
+		return ret
+	}
+	return *o.FasthttpSettings
+}
+
+// GetFasthttpSettingsOk returns a tuple with the FasthttpSettings field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Upstream) GetFasthttpSettingsOk() (*UpstreamFastHTTPSettings, bool) {
+	if o == nil || IsNil(o.FasthttpSettings) {
+		return nil, false
+	}
+	return o.FasthttpSettings, true
+}
+
+// HasFasthttpSettings returns a boolean if a field has been set.
+func (o *Upstream) HasFasthttpSettings() bool {
+	if o != nil && !IsNil(o.FasthttpSettings) {
+		return true
+	}
+
+	return false
+}
+
+// SetFasthttpSettings gets a reference to the given UpstreamFastHTTPSettings and assigns it to the FasthttpSettings field.
+func (o *Upstream) SetFasthttpSettings(v UpstreamFastHTTPSettings) {
+	o.FasthttpSettings = &v
 }
 
 // GetHost returns the Host field value if set, zero value otherwise.
@@ -277,6 +310,9 @@ func (o Upstream) MarshalJSON() ([]byte, error) {
 
 func (o Upstream) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !IsNil(o.FasthttpSettings) {
+		toSerialize["fasthttp_settings"] = o.FasthttpSettings
+	}
 	if !IsNil(o.Host) {
 		toSerialize["host"] = o.Host
 	}

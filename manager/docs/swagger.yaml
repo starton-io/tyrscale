@@ -188,6 +188,8 @@ definitions:
     type: object
   Upstream:
     properties:
+      fasthttp_settings:
+        $ref: '#/definitions/UpstreamFastHTTPSettings'
       host:
         type: string
       path:
@@ -208,6 +210,11 @@ definitions:
         type: number
     required:
     - weight
+    type: object
+  UpstreamFastHTTPSettings:
+    properties:
+      proxy_host:
+        type: string
     type: object
   UpstreamUpsertRes:
     properties:
