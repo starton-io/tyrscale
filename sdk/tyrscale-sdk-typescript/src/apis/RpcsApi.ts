@@ -17,6 +17,7 @@ import * as runtime from '../runtime';
 import type {
   CreateRpcReq,
   ResponsesBadRequestResponse,
+  ResponsesConflictResponseCreateRpcCtx,
   ResponsesCreatedSuccessResponseCreateRpcRes,
   ResponsesDefaultSuccessResponseListRpcRes,
   ResponsesDefaultSuccessResponseWithoutData,
@@ -29,6 +30,8 @@ import {
     CreateRpcReqToJSON,
     ResponsesBadRequestResponseFromJSON,
     ResponsesBadRequestResponseToJSON,
+    ResponsesConflictResponseCreateRpcCtxFromJSON,
+    ResponsesConflictResponseCreateRpcCtxToJSON,
     ResponsesCreatedSuccessResponseCreateRpcResFromJSON,
     ResponsesCreatedSuccessResponseCreateRpcResToJSON,
     ResponsesDefaultSuccessResponseListRpcResFromJSON,

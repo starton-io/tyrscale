@@ -18,6 +18,7 @@ docs/CreateRecommendationReq.md
 docs/CreateRecommendationRes.md
 docs/CreateRouteReq.md
 docs/CreateRouteRes.md
+docs/CreateRpcCtx.md
 docs/CreateRpcReq.md
 docs/CreateRpcRes.md
 docs/DeleteNetworkRes.md
@@ -42,7 +43,8 @@ docs/RPCType.md
 docs/Recommendation.md
 docs/RecommendationsAPI.md
 docs/ResponsesBadRequestResponse.md
-docs/ResponsesConflictResponse.md
+docs/ResponsesConflictResponseCreateRpcCtx.md
+docs/ResponsesConflictResponseWithoutContext.md
 docs/ResponsesCreatedSuccessResponseCreateNetworkRes.md
 docs/ResponsesCreatedSuccessResponseCreateRecommendationRes.md
 docs/ResponsesCreatedSuccessResponseCreateRouteRes.md
@@ -82,6 +84,7 @@ model_create_recommendation_req.go
 model_create_recommendation_res.go
 model_create_route_req.go
 model_create_route_res.go
+model_create_rpc_ctx.go
 model_create_rpc_req.go
 model_create_rpc_res.go
 model_delete_network_res.go
@@ -102,7 +105,8 @@ model_plugin_plugin_type.go
 model_plugins.go
 model_recommendation.go
 model_responses_bad_request_response.go
-model_responses_conflict_response.go
+model_responses_conflict_response_create_rpc_ctx.go
+model_responses_conflict_response_without_context.go
 model_responses_created_success_response_create_network_res.go
 model_responses_created_success_response_create_recommendation_res.go
 model_responses_created_success_response_create_route_res.go

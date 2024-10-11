@@ -17,26 +17,47 @@ type IRPCService struct {
 }
 
 // Create provides a mock function with given fields: ctx, _a1
-func (_m *IRPCService) Create(ctx context.Context, _a1 *dto.CreateRpcReq) error {
+func (_m *IRPCService) Create(ctx context.Context, _a1 *dto.CreateRpcReq) (*dto.CreateRpcRes, *dto.CreateRpcCtx, error) {
 	ret := _m.Called(ctx, _a1)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Create")
 	}
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *dto.CreateRpcReq) error); ok {
+	var r0 *dto.CreateRpcRes
+	var r1 *dto.CreateRpcCtx
+	var r2 error
+	if rf, ok := ret.Get(0).(func(context.Context, *dto.CreateRpcReq) (*dto.CreateRpcRes, *dto.CreateRpcCtx, error)); ok {
+		return rf(ctx, _a1)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, *dto.CreateRpcReq) *dto.CreateRpcRes); ok {
 		r0 = rf(ctx, _a1)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*dto.CreateRpcRes)
+		}
 	}
 
-	return r0
+	if rf, ok := ret.Get(1).(func(context.Context, *dto.CreateRpcReq) *dto.CreateRpcCtx); ok {
+		r1 = rf(ctx, _a1)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*dto.CreateRpcCtx)
+		}
+	}
+
+	if rf, ok := ret.Get(2).(func(context.Context, *dto.CreateRpcReq) error); ok {
+		r2 = rf(ctx, _a1)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
-// Delete provides a mock function with given fields: ctx, _a1
-func (_m *IRPCService) Delete(ctx context.Context, _a1 *dto.DeleteRpcReq) error {
-	ret := _m.Called(ctx, _a1)
+// Delete provides a mock function with given fields: ctx, req
+func (_m *IRPCService) Delete(ctx context.Context, req *dto.DeleteRpcReq) error {
+	ret := _m.Called(ctx, req)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Delete")
@@ -44,7 +65,7 @@ func (_m *IRPCService) Delete(ctx context.Context, _a1 *dto.DeleteRpcReq) error 
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, *dto.DeleteRpcReq) error); ok {
-		r0 = rf(ctx, _a1)
+		r0 = rf(ctx, req)
 	} else {
 		r0 = ret.Error(0)
 	}

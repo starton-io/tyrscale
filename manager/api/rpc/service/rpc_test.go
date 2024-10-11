@@ -70,11 +70,17 @@ func (suite *RPCServiceTestSuite) TestCreateRPC() {
 	suite.mocksNet.On("List", mock.Anything, &dtoNet.ListNetworkReq{
 		Name: "test-network",
 	}).Return(netRes, nil)
+	suite.mocks.On("List", mock.Anything, &dto.ListReq{
+		ListFilterReq: dto.ListFilterReq{
+			URL: rpc.URL,
+		},
+	}).Return([]*pb.RpcModel{}, nil)
 
 	suite.mocks.On("Create", mock.Anything, &rpcModel).Return(nil)
 	suite.mocksPubSub.On("Publish", mock.Anything, "rpc_created", mock.Anything).Return(nil)
-	err := suite.service.Create(ctx, rpc)
+	res, _, err := suite.service.Create(ctx, rpc)
 	suite.Nil(err)
+	suite.Equal(rpc.UUID, res.UUID)
 }
 
 func (suite *RPCServiceTestSuite) TestDeleteRPC() {

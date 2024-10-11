@@ -71,10 +71,11 @@ func (s *RouteService) Create(ctx context.Context, req *dto.CreateRouteReq) (*dt
 
 	if req.CircuitBreaker != nil {
 		route.CircuitBreaker = &pb.CircuitBreaker{
-			Enabled:     req.CircuitBreaker.Enabled,
-			MaxRequests: req.CircuitBreaker.MaxRequests,
-			Interval:    req.CircuitBreaker.Interval,
-			Timeout:     req.CircuitBreaker.Timeout,
+			Enabled:                req.CircuitBreaker.Enabled,
+			MaxRequests:            req.CircuitBreaker.MaxRequests,
+			MaxConsecutiveFailures: req.CircuitBreaker.MaxConsecutiveFailures,
+			Interval:               req.CircuitBreaker.Interval,
+			Timeout:                req.CircuitBreaker.Timeout,
 		}
 	}
 

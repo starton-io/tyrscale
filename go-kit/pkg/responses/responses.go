@@ -3,6 +3,7 @@ package responses
 import (
 	"encoding/json"
 	"net/http"
+	"reflect"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -15,6 +16,7 @@ type General[T any] struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 	Data    T      `json:"data,omitempty"` // Data is now of generic type T
+	Context T      `json:"context,omitempty"`
 }
 
 type Body[T any] struct {
@@ -67,19 +69,38 @@ func BindingGeneral[T any](data T) General[T] {
 	return response
 }
 
-func HandleServiceError(c *fiber.Ctx, err error) error {
+type Option func(*General[any])
+
+func WithContext(context any) Option {
+	return func(g *General[any]) {
+		if context != nil && !isNil(context) {
+			g.Context = context
+		}
+	}
+}
+
+// Helper function to check if an interface is nil
+func isNil(i interface{}) bool {
+	return i == nil || (reflect.ValueOf(i).Kind() == reflect.Ptr && reflect.ValueOf(i).IsNil())
+}
+
+func HandleServiceError(c *fiber.Ctx, err error, opts ...Option) error {
+	var resp General[any]
 	switch {
 	case strings.Contains(err.Error(), "already") || strings.Contains(err.Error(), "associated") || strings.Contains(err.Error(), "conflict"):
-		resp := ConflictResp.ToGeneral()
-		return resp.WithError(c, err).JSON(c)
+		resp = ConflictResp.ToGeneral()
 	case strings.Contains(err.Error(), "not found"):
-		resp := NotFoundResp.ToGeneral()
-		return resp.WithError(c, err).JSON(c)
+		resp = NotFoundResp.ToGeneral()
 	case strings.Contains(err.Error(), "invalid"):
-		resp := BadRequestResp.ToGeneral()
-		return resp.WithError(c, err).JSON(c)
+		resp = BadRequestResp.ToGeneral()
 	default:
-		resp := InternalServerErrorResp.ToGeneral()
-		return resp.WithError(c, err).JSON(c)
+		resp = InternalServerErrorResp.ToGeneral()
 	}
+
+	// Apply options
+	for _, opt := range opts {
+		opt(&resp)
+	}
+
+	return resp.WithError(c, err).JSON(c)
 }

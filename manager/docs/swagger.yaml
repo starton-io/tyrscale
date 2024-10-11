@@ -286,6 +286,11 @@ definitions:
     - schedule
     - strategy
     type: object
+  CreateRpcCtx:
+    properties:
+      uuid:
+        type: string
+    type: object
   CreateRpcReq:
     properties:
       collectors:
@@ -430,7 +435,21 @@ definitions:
         example: 400
         type: integer
     type: object
-  responses.ConflictResponse:
+  responses.ConflictResponse-CreateRpcCtx:
+    properties:
+      code:
+        example: 5
+        type: integer
+      context:
+        $ref: '#/definitions/CreateRpcCtx'
+      message:
+        example: Conflict
+        type: string
+      status:
+        example: 409
+        type: integer
+    type: object
+  responses.ConflictResponseWithoutContext:
     properties:
       code:
         example: 5
@@ -925,7 +944,7 @@ paths:
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/responses.ConflictResponse'
+            $ref: '#/definitions/responses.ConflictResponseWithoutContext'
         "500":
           description: Internal Server Error
           schema:
@@ -1343,6 +1362,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/responses.BadRequestResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responses.ConflictResponse-CreateRpcCtx'
         "500":
           description: Internal Server Error
           schema:

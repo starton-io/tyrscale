@@ -97,10 +97,10 @@ func (h *RecommendationHandler) ListRecommendation(c *fiber.Ctx) error {
 //	@Produce		json
 //	@Param			route_uuid	path		string	true	"Route UUID"
 //	@Success		200			{object}	responses.DefaultSuccessResponseWithoutData
-//	@Failure		400			{object}	responses.BadRequestResponse			"Bad Request"
-//	@Failure		404			{object}	responses.NotFoundResponse				"Not Found"
-//	@Failure		409			{object}	responses.ConflictResponse				"Conflict"
-//	@Failure		500			{object}	responses.InternalServerErrorResponse	"Internal Server Error"
+//	@Failure		400			{object}	responses.BadRequestResponse				"Bad Request"
+//	@Failure		404			{object}	responses.NotFoundResponse					"Not Found"
+//	@Failure		409			{object}	responses.ConflictResponseWithoutContext	"Conflict"
+//	@Failure		500			{object}	responses.InternalServerErrorResponse		"Internal Server Error"
 //	@Router			/recommendations/{route_uuid} [delete]
 func (h *RecommendationHandler) DeleteRecommendation(c *fiber.Ctx) error {
 	req := new(dto.DeleteRecommendationReq)

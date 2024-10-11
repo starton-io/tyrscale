@@ -18,6 +18,7 @@ src/models/CreateRecommendationReq.ts
 src/models/CreateRecommendationRes.ts
 src/models/CreateRouteReq.ts
 src/models/CreateRouteRes.ts
+src/models/CreateRpcCtx.ts
 src/models/CreateRpcReq.ts
 src/models/CreateRpcRes.ts
 src/models/DeleteNetworkRes.ts
@@ -39,7 +40,8 @@ src/models/Plugins.ts
 src/models/RPCType.ts
 src/models/Recommendation.ts
 src/models/ResponsesBadRequestResponse.ts
-src/models/ResponsesConflictResponse.ts
+src/models/ResponsesConflictResponseCreateRpcCtx.ts
+src/models/ResponsesConflictResponseWithoutContext.ts
 src/models/ResponsesCreatedSuccessResponseCreateNetworkRes.ts
 src/models/ResponsesCreatedSuccessResponseCreateRecommendationRes.ts
 src/models/ResponsesCreatedSuccessResponseCreateRouteRes.ts

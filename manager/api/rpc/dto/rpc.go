@@ -43,6 +43,10 @@ type CreateRpcRes struct {
 	UUID string `json:"uuid"`
 }
 
+type CreateRpcCtx struct {
+	UUID string `json:"uuid"`
+}
+
 type ListReq struct {
 	ListFilterReq
 	*ListSortReq
@@ -54,6 +58,7 @@ type ListFilterReq struct {
 	Type        string `query:"type" validate:"omitempty"`
 	Provider    string `query:"provider" validate:"omitempty,regexp=^[a-zA-Z0-9_-]+$"`
 	NetworkName string `query:"network_name" validate:"omitempty,regexp=^[a-zA-Z0-9_-]+$"`
+	URL         string `query:"url" validate:"omitempty"`
 }
 
 type ListSortReq struct {

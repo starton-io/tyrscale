@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/google/uuid"
@@ -26,7 +27,7 @@ import (
 
 //go:generate mockery --name=IRPCService --output=./mocks
 type IRPCService interface {
-	Create(ctx context.Context, rpc *dto.CreateRpcReq) error
+	Create(ctx context.Context, rpc *dto.CreateRpcReq) (*dto.CreateRpcRes, *dto.CreateRpcCtx, error)
 	Update(ctx context.Context, rpc *dto.UpdateRpcReq) error
 	List(ctx context.Context, filterParams *dto.ListReq) ([]*pb.RpcModel, error)
 	Delete(ctx context.Context, req *dto.DeleteRpcReq) error
@@ -48,11 +49,11 @@ func NewRPCService(repo repository.IRPCRepository, netRepo networkRepo.INetworkR
 	}
 }
 
-func (s *RPCService) Create(ctx context.Context, req *dto.CreateRpcReq) error {
+func (s *RPCService) Create(ctx context.Context, req *dto.CreateRpcReq) (*dto.CreateRpcRes, *dto.CreateRpcCtx, error) {
 	//validate request
 	err := req.Type.Validate()
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 
 	// check if uuid is empty and generate new one
@@ -68,24 +69,42 @@ func (s *RPCService) Create(ctx context.Context, req *dto.CreateRpcReq) error {
 	//check if network exists by Name
 	netRes, err := s.netRepo.List(ctx, &networkDto.ListNetworkReq{Name: req.NetworkName})
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 	if len(netRes) == 0 {
-		return fmt.Errorf("network with name %s not found", req.NetworkName)
+		return nil, nil, fmt.Errorf("network with name %s not found", req.NetworkName)
+	}
+
+	// check if rpc with same uuid already exists
+	existingRpc, err := s.repo.List(ctx, &dto.ListReq{ListFilterReq: dto.ListFilterReq{URL: req.URL}})
+	if err != nil {
+		return nil, nil, err
+	}
+	if len(existingRpc) > 0 {
+		// transform url to dns
+		parsedURL, err := url.Parse(req.URL)
+		if err != nil {
+			logger.Errorf("error parsing url %s", err)
+		}
+		return nil, &dto.CreateRpcCtx{UUID: existingRpc[0].Uuid}, fmt.Errorf("rpc with url %s already exists", parsedURL.Host)
 	}
 
 	utils.Copy(&rpc, req)
 	rpc.ChainId = netRes[0].ChainId
 	err = s.repo.Create(ctx, &rpc)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 	rpcBytes, err := proto.Marshal(&rpc)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 	msg := message.NewMessage(uuid.New().String(), rpcBytes)
-	return s.pub.Publish(ctx, "rpc_created", msg)
+	err = s.pub.Publish(ctx, "rpc_created", msg)
+	if err != nil {
+		return nil, nil, err
+	}
+	return &dto.CreateRpcRes{UUID: req.UUID}, nil, nil
 }
 
 func (s *RPCService) List(ctx context.Context, listReq *dto.ListReq) ([]*pb.RpcModel, error) {

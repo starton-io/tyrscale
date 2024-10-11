@@ -108,6 +108,13 @@ type ConflictResponse[T any] struct {
 	Status  int    `json:"status" example:"409"`
 	Code    int    `json:"code" example:"5"`
 	Message string `json:"message" example:"Conflict"`
+	Context T      `json:"context,omitempty"`
+}
+
+type ConflictResponseWithoutContext struct {
+	Status  int    `json:"status" example:"409"`
+	Code    int    `json:"code" example:"5"`
+	Message string `json:"message" example:"Conflict"`
 }
 
 func (resp *ConflictResponse[T]) ToGeneral() General[T] {
@@ -115,6 +122,15 @@ func (resp *ConflictResponse[T]) ToGeneral() General[T] {
 		Status:  resp.Status,
 		Code:    resp.Code,
 		Message: resp.Message,
+	}
+}
+
+func (resp *ConflictResponse[T]) ToGeneralWithContext(context T) General[T] {
+	return General[T]{
+		Status:  resp.Status,
+		Code:    resp.Code,
+		Message: resp.Message,
+		Context: context,
 	}
 }
 

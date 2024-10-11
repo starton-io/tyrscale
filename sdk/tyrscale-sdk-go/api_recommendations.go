@@ -327,7 +327,7 @@ func (a *RecommendationsAPIService) DeleteRecommendationExecute(r ApiDeleteRecom
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 409 {
-			var v ResponsesConflictResponse
+			var v ResponsesConflictResponseWithoutContext
 			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
 			if err != nil {
 				newErr.error = err.Error()

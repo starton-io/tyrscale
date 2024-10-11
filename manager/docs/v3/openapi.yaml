@@ -279,7 +279,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/responses.ConflictResponse'
+                $ref: '#/components/schemas/responses.ConflictResponseWithoutContext'
           description: Conflict
         "500":
           content:
@@ -751,6 +751,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/responses.BadRequestResponse'
           description: Bad Request
+        "409":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/responses.ConflictResponse-CreateRpcCtx'
+          description: Conflict
         "500":
           content:
             application/json:
@@ -1365,6 +1371,13 @@ components:
       - schedule
       - strategy
       type: object
+    CreateRpcCtx:
+      example:
+        uuid: uuid
+      properties:
+        uuid:
+          type: string
+      type: object
     CreateRpcReq:
       example:
         collectors:
@@ -1582,7 +1595,27 @@ components:
           example: 400
           type: integer
       type: object
-    responses.ConflictResponse:
+    responses.ConflictResponse-CreateRpcCtx:
+      example:
+        code: 5
+        context:
+          uuid: uuid
+        message: Conflict
+        status: 409
+      properties:
+        code:
+          example: 5
+          type: integer
+        context:
+          $ref: '#/components/schemas/CreateRpcCtx'
+        message:
+          example: Conflict
+          type: string
+        status:
+          example: 409
+          type: integer
+      type: object
+    responses.ConflictResponseWithoutContext:
       example:
         code: 5
         message: Conflict

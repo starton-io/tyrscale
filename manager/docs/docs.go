@@ -379,7 +379,7 @@ const docTemplate = `{
                     "409": {
                         "description": "Conflict",
                         "schema": {
-                            "$ref": "#/definitions/responses.ConflictResponse"
+                            "$ref": "#/definitions/responses.ConflictResponseWithoutContext"
                         }
                     },
                     "500": {
@@ -1052,6 +1052,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/responses.BadRequestResponse"
                         }
                     },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ConflictResponse-CreateRpcCtx"
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -1530,6 +1536,14 @@ const docTemplate = `{
                 }
             }
         },
+        "CreateRpcCtx": {
+            "type": "object",
+            "properties": {
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
         "CreateRpcReq": {
             "type": "object",
             "required": [
@@ -1739,7 +1753,27 @@ const docTemplate = `{
                 }
             }
         },
-        "responses.ConflictResponse": {
+        "responses.ConflictResponse-CreateRpcCtx": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "context": {
+                    "$ref": "#/definitions/CreateRpcCtx"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Conflict"
+                },
+                "status": {
+                    "type": "integer",
+                    "example": 409
+                }
+            }
+        },
+        "responses.ConflictResponseWithoutContext": {
             "type": "object",
             "properties": {
                 "code": {

@@ -33,6 +33,7 @@ func NewRPCHandler(service service.IRPCService, validator validation.Validation)
 //	@Param			rpc	body		dto.CreateRpcReq	true	"Rpc request"
 //	@Success		201	{object}	responses.CreatedSuccessResponse[dto.CreateRpcRes]
 //	@Failure		400	{object}	responses.BadRequestResponse
+//	@Failure		409	{object}	responses.ConflictResponse[dto.CreateRpcCtx]
 //	@Failure		500	{object}	responses.InternalServerErrorResponse
 //	@Router			/rpcs [post]
 func (h *RPCHandler) CreateRPC(c *fiber.Ctx) error {
@@ -45,12 +46,11 @@ func (h *RPCHandler) CreateRPC(c *fiber.Ctx) error {
 		resp := responses.BadRequestResp.ToGeneral()
 		return resp.WithError(c, err).JSON(c)
 	}
-	err := h.service.Create(c.UserContext(), req)
+	res, ctxErr, err := h.service.Create(c.UserContext(), req)
 	if err != nil {
-		return responses.HandleServiceError(c, err)
+		return responses.HandleServiceError(c, err, responses.WithContext(ctxErr))
 	}
-	var rpcResp = &dto.CreateRpcRes{UUID: req.UUID}
-	resp := responses.CreatedSuccessResp.ToGeneral(rpcResp)
+	resp := responses.CreatedSuccessResp.ToGeneral(res)
 	return resp.JSON(c)
 }
 
