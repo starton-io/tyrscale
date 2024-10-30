@@ -22,7 +22,7 @@ type Upstream struct {
 	Path             string                    `json:"path" validate:"required_without=RpcUuid,omitempty"`
 	Scheme           string                    `json:"scheme" validate:"required_without=RpcUuid"`
 	Weight           float64                   `json:"weight" validate:"required,gte=0,lte=100"`
-	FastHTTPSettings *UpstreamFastHTTPSettings `json:"fasthttp_settings"`
+	FastHTTPSettings *UpstreamFastHTTPSettings `json:"fasthttp_settings,omitempty" validate:"omitempty"`
 }
 
 type UpstreamFastHTTPSettings struct {

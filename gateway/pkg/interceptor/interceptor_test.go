@@ -7,8 +7,10 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/starton-io/tyrscale/go-kit/pkg/logger"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/starton-io/tyrscale/gateway/pkg/normalizer"
+	"github.com/starton-io/tyrscale/go-kit/pkg/logger"
 	"github.com/valyala/fasthttp"
 )
 
@@ -35,7 +37,40 @@ func TestInterceptorResponseChain(t *testing.T) {
 	_ = logger.InitLogger()
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
+		// Create a valid JSON-RPC response
+		response := &normalizer.RPCResponse{
+			JsonrpcVersion: "2.0",
+			Result:         "OK", // or nil if you want to simulate an error
+			Error:          nil,  // or provide an error struct if simulating an error
+			ID:             1,
+		}
+
+		// Marshal the response to JSON
+		responseBody, err := normalizer.SonicCfg.Marshal(response)
+		if err != nil {
+			http.Error(w, "Failed to marshal response", http.StatusInternalServerError)
+			return
+		}
+
+		// Check if the request should return a gzip response
+		if r.Header.Get("Accept-Encoding") == "gzip" {
+			// encode response body with gzip
+			gzipResponseBody, err := gZipData(responseBody)
+			if err != nil {
+				http.Error(w, "Failed to gzip response", http.StatusInternalServerError)
+				return
+			}
+			// Set response headers for gzip
+			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Content-Encoding", "gzip")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write(gzipResponseBody)
+		} else {
+			// Set response headers for plain JSON
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write(responseBody)
+		}
 	}))
 	defer server.Close()
 
@@ -89,6 +124,16 @@ func TestInterceptorResponseChain(t *testing.T) {
 	assert.NoError(t, err)
 
 	// make request
+	err = fasthttp.Do(req, resp)
+	assert.NoError(t, err)
+
+	err = chainResp.Intercept(resp)
+	assert.NoError(t, err)
+	assert.True(t, firstInterceptor.called)
+	assert.True(t, lastInterceptor.called)
+
+	// make request with gzip
+	req.Header.Set("Accept-Encoding", "gzip")
 	err = fasthttp.Do(req, resp)
 	assert.NoError(t, err)
 

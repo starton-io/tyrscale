@@ -97,31 +97,35 @@ func (h *CustomHealthCheck) CheckHealth() error {
 	for _, client := range clients {
 		wg.Add(1)
 
-		// no limit on goroutines because we want to check the syncing status for all clients at the same time
 		go func(client *proxy.UpstreamClient) {
 			defer wg.Done()
 			var (
-				statusCode interface{}
+				statusCode int
 				err        error
 			)
+
 			if h.CircuitBreaker != nil {
-				cb := h.CircuitBreaker.Get(client.Client.Name)
-				statusCode, err = cb.Execute(func() (interface{}, error) {
-					return CustomRequest(client, h.request, h.timeout)
-				})
+				cb := h.CircuitBreaker.GetTwoStep(client.Client.Name)
+				done, err := cb.Allow()
+				if err != nil {
+					client.Healthy = false
+					return
+				}
+				statusCode, err = CustomRequest(client, h.request, h.timeout)
+				if err != nil {
+					done(false) // Report failure to the circuit breaker
+					return
+				}
+				done(true) // Report success to the circuit breaker
 			} else {
 				statusCode, err = CustomRequest(client, h.request, h.timeout)
+				if err != nil {
+					client.Healthy = false
+					return
+				}
 			}
-			if err != nil {
-				client.Healthy = false
-				return
-			}
-			statusCodeInt, ok := statusCode.(int)
-			if !ok {
-				client.Healthy = false
-				return
-			}
-			client.Healthy = statusCodeInt == int(h.request.StatusCode)
+
+			client.Healthy = statusCode == int(h.request.StatusCode)
 		}(client)
 	}
 

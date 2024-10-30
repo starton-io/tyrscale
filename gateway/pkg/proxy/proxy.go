@@ -20,6 +20,7 @@ type UpstreamClient struct {
 	RequestInterceptor  interceptor.InterceptorRequestChain
 	ResponseInterceptor interceptor.InterceptorResponseChain
 	Healthy             bool
+	IgnoreMethods       map[string]bool
 }
 
 // ClientManager manages a map of UpstreamClients.
@@ -60,6 +61,32 @@ func (m *DefaultClientManager) GetClient(uuid string) (*UpstreamClient, bool) {
 	client, ok := m.MapClient[uuid]
 	return client, ok
 }
+
+func (u *UpstreamClient) AddIgnoreMethod(method string) {
+	u.IgnoreMethods[method] = true
+}
+
+func (u *UpstreamClient) IgnoreMethod(method string, res *fasthttp.Response) bool {
+	logger.Debugf("IgnoreMethod: %s", method)
+	if u.IgnoreMethods[method] {
+		res.SetStatusCode(fasthttp.StatusMethodNotAllowed)
+		res.Header.Set("Content-Type", "application/json")
+		res.SetBody([]byte(`{"jsonrpc": "2.0", "id": 1, "error": { "code": -32601, "message": "the method ` + method + ` does not exist/is not available" } }`))
+		return true
+	}
+	return false
+}
+
+//func (m *DefaultClientManager) GetUpstreamByMethod(method string) []string {
+//	m.mu.Lock()
+//	defer m.mu.Unlock()
+//	for _, client := range m.MapClient {
+//		if slices.Contains(client.IgnoreMethods, method) {
+//			return []string{client.Name}
+//		}
+//	}
+//	return []string{}
+//}
 
 func (m *DefaultClientManager) GetAllClients() map[string]*UpstreamClient {
 	m.mu.Lock()
@@ -149,11 +176,11 @@ func (m *ProxyController) AddUpstream(upstream *upstream.UpstreamPublishUpsertMo
 		Port:   upstream.Port,
 	}, "default")
 	chainRes := m.ResponsesInterceptors
-	chainRes.AddFirst(&interceptor.DefaultResponseInterceptor{}, "default")
-	//chainRes.AddLast(&interceptor.DefaultLastResponseInterceptor{})
+	chainRes.AddFirst(&interceptor.DefaultResponseInterceptor{}, "default-first")
+	chainRes.AddLast(&interceptor.DefaultLastResponseInterceptor{}, "default-last")
 
 	var fasthttpFuncDialer fasthttp.DialFunc
-	if upstream.FasthttpSettings != nil {
+	if upstream.FasthttpSettings != nil && upstream.FasthttpSettings.ProxyHost != "" {
 		fasthttpFuncDialer = fasthttpproxy.FasthttpHTTPDialerTimeout(upstream.FasthttpSettings.ProxyHost, time.Second*3)
 	}
 
@@ -174,6 +201,7 @@ func (m *ProxyController) AddUpstream(upstream *upstream.UpstreamPublishUpsertMo
 		},
 		RequestInterceptor:  chainReq,
 		ResponseInterceptor: chainRes,
+		IgnoreMethods:       make(map[string]bool),
 	}
 
 	m.ClientManager.AddClient(upstream.Uuid, proxy)
@@ -182,7 +210,7 @@ func (m *ProxyController) AddUpstream(upstream *upstream.UpstreamPublishUpsertMo
 		Weight: int(upstream.Weight),
 	})
 	if m.CircuitBreaker != nil {
-		m.CircuitBreaker.Add(upstream.Uuid)
+		m.CircuitBreaker.AddTwoStep(upstream.Uuid)
 	}
 }
 
@@ -197,7 +225,7 @@ func (m *ProxyController) RemoveUpstream(uuid string) {
 	m.ClientManager.RemoveClient(uuid)
 	_ = m.Balancer.RemoveServer(uuid)
 	if m.CircuitBreaker != nil {
-		m.CircuitBreaker.Remove(uuid)
+		m.CircuitBreaker.RemoveTwoStep(uuid)
 	}
 }
 

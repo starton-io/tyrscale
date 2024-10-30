@@ -3,7 +3,7 @@ package handler
 import (
 	"time"
 
-	"github.com/starton-io/tyrscale/gateway/pkg/metrics"
+	"github.com/starton-io/tyrscale/gateway/pkg/normalizer"
 	"github.com/starton-io/tyrscale/gateway/pkg/proxy"
 	"github.com/starton-io/tyrscale/go-kit/pkg/logger"
 	"github.com/valyala/fasthttp"
@@ -24,9 +24,18 @@ func NewDefaultHandler(proxyController *proxy.ProxyController) *DefaultHandler {
 func (h *DefaultHandler) Handle(ctx *fasthttp.RequestCtx) {
 	req := &ctx.Request
 	res := &ctx.Response
+	var lastErr error
+	var requestContext *RequestContext
 
 	routeUrl := string(req.URI().Host()) + string(req.URI().Path())
 	logger.Debugf("routeUrl: %s", routeUrl)
+	normalizedRequest := normalizer.NewNormalizedRequest(req.Body())
+	method, err := normalizedRequest.Method()
+	if err != nil {
+		logger.Errorf("Failed to get method: %v", err)
+		setErrorResponse(res, fasthttp.StatusBadRequest, "Invalid JSON-RPC request")
+		return
+	}
 
 	for retries := 0; retries < h.maxRetries; retries++ {
 		upstreamUuid, err := h.proxyController.Balancer.Balance()
@@ -40,66 +49,31 @@ func (h *DefaultHandler) Handle(ctx *fasthttp.RequestCtx) {
 			logger.Error("upstream not found...")
 			continue
 		}
-
 		upstreamClient, ok := h.proxyController.ClientManager.GetClient(upstreamUuid[0])
-		if !ok {
-			setErrorResponse(res, fasthttp.StatusNotFound, "upstream not found")
-			logger.Error("upstream client not found...")
+		if !ok || !upstreamClient.Healthy || upstreamClient.IgnoreMethod(method, res) {
+			logger.Infof("Skipping upstream %s", upstreamUuid)
 			continue
 		}
-		if !upstreamClient.Healthy {
-			setErrorResponse(res, fasthttp.StatusServiceUnavailable, "upstream not healthy")
-			logger.Error("upstream not healthy")
-			continue
-		} else {
-			logger.Debugf("upstream UUID: %s, healthy: %t", upstreamUuid[0], upstreamClient.Healthy)
-		}
-		err = upstreamClient.RequestInterceptor.Intercept(req)
-		if err != nil {
-			setErrorResponse(res, fasthttp.StatusInternalServerError, err.Error())
-			return
-		}
-		start := time.Now()
-		listLabelsValues := []string{h.proxyController.GetLabelValue("route_uuid"), routeUrl, upstreamUuid[0], upstreamClient.Client.Addr}
 
-		metrics.UpstreamTotalRequests.WithLabelValues(listLabelsValues...).Inc()
-
-		if h.proxyController.CircuitBreaker != nil {
-			cb := h.proxyController.CircuitBreaker.Get(upstreamUuid[0])
-			if cb != nil {
-				_, err = cb.Execute(func() (interface{}, error) {
-					err := upstreamClient.Client.Do(req, res)
-					if err != nil {
-						return nil, err
-					}
-					return nil, upstreamClient.ResponseInterceptor.Intercept(res)
-				})
-				if err == nil {
-					metrics.UpstreamSuccesses.WithLabelValues(listLabelsValues...).Inc()
-					metrics.UpstreamDuration.WithLabelValues(listLabelsValues...).Observe(time.Since(start).Seconds())
-					return // Successful execution
-				}
-				continue
-			}
+		listLabelsValues := []string{upstreamClient.Client.Addr, upstreamUuid[0], routeUrl, h.proxyController.GetLabelValue("route_uuid")}
+		requestContext = &RequestContext{
+			req:              req,
+			res:              res,
+			upstreamClient:   upstreamClient,
+			upstreamUuid:     upstreamUuid[0],
+			method:           method,
+			listLabelsValues: listLabelsValues,
+			startTime:        time.Now(),
 		}
-		if err := upstreamClient.Client.Do(req, res); err != nil {
-			handleClientError(res, err)
-			metrics.UpstreamFailures.WithLabelValues(listLabelsValues...).Inc()
+		logger.Debugf("circuitBreaker: %v", h.proxyController.CircuitBreaker)
+		if err := processRequest(requestContext, h.proxyController.CircuitBreaker); err != nil {
+			lastErr = err
 			continue
 		}
-		err = upstreamClient.ResponseInterceptor.Intercept(res)
-		if err != nil {
-			setErrorResponse(res, fasthttp.StatusInternalServerError, err.Error())
-			if res.StatusCode() == fasthttp.StatusTooManyRequests {
-				metrics.Status429Responses.WithLabelValues(listLabelsValues...).Inc()
-			}
-			metrics.UpstreamFailures.WithLabelValues(listLabelsValues...).Inc()
-			continue
-		}
-		metrics.UpstreamSuccesses.WithLabelValues(listLabelsValues...).Inc()
-		metrics.UpstreamDuration.WithLabelValues(listLabelsValues...).Observe(time.Since(start).Seconds())
 		return
 	}
-	logger.Error("all upstream nodes are unhealthy/dead after %d retries", h.maxRetries)
-	setErrorResponse(res, fasthttp.StatusServiceUnavailable, "upstream not healthy")
+	logger.Error("All upstream nodes are unhealthy/dead")
+	if lastErr != nil {
+		logger.Errorf("last listUpstream error: %v, body: %s", lastErr, res.Body())
+	}
 }

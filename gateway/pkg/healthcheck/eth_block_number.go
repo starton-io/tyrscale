@@ -124,16 +124,24 @@ func (h *EthBlockNumber) CheckHealth() error {
 				err         error
 			)
 			if h.CircuitBreaker != nil {
-				cb := h.CircuitBreaker.Get(client.Client.Name)
-				blockNumber, err = cb.Execute(func() (interface{}, error) {
-					return GetBlockNumber(client, h.timeout)
-				})
+				cb := h.CircuitBreaker.GetTwoStep(client.Client.Name)
+				done, err := cb.Allow()
+				if err != nil {
+					client.Healthy = false
+					return
+				}
+				blockNumber, err = GetBlockNumber(client, h.timeout)
+				if err != nil {
+					done(false)
+					return
+				}
+				done(true)
 			} else {
 				blockNumber, err = GetBlockNumber(client, h.timeout)
-			}
-			if err != nil {
-				client.Healthy = false
-				return
+				if err != nil {
+					client.Healthy = false
+					return
+				}
 			}
 			blockNumberUint, ok := blockNumber.(uint64)
 			if !ok {

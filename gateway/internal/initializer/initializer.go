@@ -107,7 +107,7 @@ func (i *ProxyInitializer) Initialize(ctx context.Context) error {
 
 		// Add circuit breaker if needed
 		if cb := currentRoute.CircuitBreaker; cb != nil && cb.GetEnabled() {
-			proxyController.CircuitBreaker = circuitbreaker.NewCircuitBreaker(circuitbreaker.Settings{
+			proxyController.CircuitBreaker = circuitbreaker.NewTwoStepCircuitBreaker(circuitbreaker.Settings{
 				Name:                   currentRoute.GetUuid(),
 				Interval:               uint32(cb.GetInterval()),
 				MaxConsecutiveFailures: uint32(cb.GetMaxConsecutiveFailures()),

@@ -115,18 +115,29 @@ func (h *EthSyncing) CheckHealth() error {
 				isSyncing interface{}
 				err       error
 			)
+
+			// process healthcheck with circuit breaker
 			if h.CircuitBreaker != nil {
-				cb := h.CircuitBreaker.Get(client.Client.Name)
-				isSyncing, err = cb.Execute(func() (interface{}, error) {
-					return GetSyncingStatus(client, h.timeout)
-				})
+				cb := h.CircuitBreaker.GetTwoStep(client.Client.Name)
+				done, err := cb.Allow()
+				if err != nil {
+					client.Healthy = false
+					return
+				}
+				isSyncing, err = GetSyncingStatus(client, h.timeout)
+				if err != nil {
+					done(false) // Report failure to the circuit breaker
+					return
+				}
+				done(true) // Report success to the circuit breaker
 			} else {
 				isSyncing, err = GetSyncingStatus(client, h.timeout)
+				if err != nil {
+					client.Healthy = false
+					return
+				}
 			}
-			if err != nil {
-				client.Healthy = false
-				return
-			}
+
 			isSyncingBool, ok := isSyncing.(bool)
 			if !ok {
 				client.Healthy = false
