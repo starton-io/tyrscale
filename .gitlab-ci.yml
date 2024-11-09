@@ -166,4 +166,4 @@ release:
       -v /var/run/docker.sock:/var/run/docker.sock \
       -e DOCKER_USERNAME -e DOCKER_PASSWORD -e DOCKER_REGISTRY  \
       -e GITLAB_TOKEN="$CI_JOB_TOKEN" -e CI_JOB_TOKEN="$CI_JOB_TOKEN" \
-      goreleaser/goreleaser release --clean
+      goreleaser/goreleaser:v2.3.0 release --clean
