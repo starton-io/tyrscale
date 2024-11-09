@@ -15,11 +15,12 @@ const (
 )
 
 type RPC struct {
-	UUID        string   `json:"uuid"`
-	ChainID     int      `json:"chain_id"`
-	NetworkName string   `json:"network_name"`
-	URL         string   `json:"url"`
-	Type        RPCType  `json:"type"`
-	Provider    string   `json:"provider"`
-	Collectors  []string `json:"collectors"`
+	UUID          string    `json:"uuid"`
+	ChainID       int       `json:"chain_id"`
+	NetworkName   string    `json:"network_name"`
+	URL           string    `json:"url"`
+	Type          RPCType   `json:"type"`
+	Provider      string    `json:"provider"`
+	Collectors    []string  `json:"collectors"`
+	IgnoreMethods []*string `json:"ignore_methods"`
 }

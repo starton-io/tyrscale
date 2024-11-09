@@ -17,16 +17,20 @@ type Settings struct {
 }
 
 type DefaultProxyCircuitBreaker struct {
-	mu             sync.Mutex
-	settings       *gobreaker.Settings
-	CircuitBreaker map[string]*gobreaker.CircuitBreaker
+	mu                    sync.Mutex
+	settings              *gobreaker.Settings
+	CircuitBreaker        map[string]*gobreaker.CircuitBreaker
+	TwoStepCircuitBreaker map[string]*gobreaker.TwoStepCircuitBreaker
 }
 
 //go:generate mockery --name=ProxyCircuitBreaker
 type ProxyCircuitBreaker interface {
 	Get(key string) *gobreaker.CircuitBreaker
+	GetTwoStep(key string) *gobreaker.TwoStepCircuitBreaker
 	Add(key string)
+	AddTwoStep(key string)
 	Remove(key string)
+	RemoveTwoStep(key string)
 	Clean()
 }
 
@@ -57,10 +61,43 @@ func NewCircuitBreaker(settings Settings) ProxyCircuitBreaker {
 	return &DefaultProxyCircuitBreaker{settings: &gobreakerSettings, CircuitBreaker: make(map[string]*gobreaker.CircuitBreaker)}
 }
 
+func NewTwoStepCircuitBreaker(settings Settings) ProxyCircuitBreaker {
+	// set default values if not set
+	if settings.MaxRequests == 0 {
+		settings.MaxRequests = 3
+	}
+	if settings.MaxConsecutiveFailures == 0 {
+		settings.MaxConsecutiveFailures = 3
+	}
+	if settings.Interval == 0 {
+		settings.Interval = 120000
+	}
+	if settings.Timeout == 0 {
+		settings.Timeout = 60000
+	}
+
+	gobreakerSettings := gobreaker.Settings{
+		Name:        settings.Name,
+		MaxRequests: settings.MaxRequests,
+		Interval:    time.Duration(settings.Interval) * time.Millisecond,
+		Timeout:     time.Duration(settings.Timeout) * time.Millisecond,
+		ReadyToTrip: func(counts gobreaker.Counts) bool {
+			return counts.ConsecutiveFailures >= settings.MaxConsecutiveFailures
+		},
+	}
+	return &DefaultProxyCircuitBreaker{settings: &gobreakerSettings, CircuitBreaker: make(map[string]*gobreaker.CircuitBreaker), TwoStepCircuitBreaker: make(map[string]*gobreaker.TwoStepCircuitBreaker)}
+}
+
 func (c *DefaultProxyCircuitBreaker) Add(key string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.CircuitBreaker[key] = gobreaker.NewCircuitBreaker(*c.settings)
+}
+
+func (c *DefaultProxyCircuitBreaker) AddTwoStep(key string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.TwoStepCircuitBreaker[key] = gobreaker.NewTwoStepCircuitBreaker(*c.settings)
 }
 
 func (c *DefaultProxyCircuitBreaker) Get(key string) *gobreaker.CircuitBreaker {
@@ -69,14 +106,25 @@ func (c *DefaultProxyCircuitBreaker) Get(key string) *gobreaker.CircuitBreaker {
 	return c.CircuitBreaker[key]
 }
 
+func (c *DefaultProxyCircuitBreaker) GetTwoStep(key string) *gobreaker.TwoStepCircuitBreaker {
+	return c.TwoStepCircuitBreaker[key]
+}
+
 func (c *DefaultProxyCircuitBreaker) Remove(key string) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	delete(c.CircuitBreaker, key)
 }
 
+func (c *DefaultProxyCircuitBreaker) RemoveTwoStep(key string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	delete(c.TwoStepCircuitBreaker, key)
+}
+
 func (c *DefaultProxyCircuitBreaker) Clean() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.CircuitBreaker = nil
+	c.TwoStepCircuitBreaker = nil
 }

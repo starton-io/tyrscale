@@ -96,11 +96,12 @@ func (s *UpstreamService) Upsert(ctx context.Context, routeUuid string, upstream
 		return nil, errors.New("route not found")
 	}
 	var fasthttpSettings *pb.UpstreamFastHTTPSettings
-	if upstream.FastHTTPSettings != nil {
+	if upstream.FastHTTPSettings != nil && upstream.FastHTTPSettings.ProxyHost != "" {
 		fasthttpSettings = &pb.UpstreamFastHTTPSettings{
 			ProxyHost: upstream.FastHTTPSettings.ProxyHost,
 		}
 	}
+
 	upstreamModel := &pb.UpstreamModel{
 		Uuid:             upstream.Uuid,
 		Weight:           &upstream.Weight,
@@ -135,15 +136,19 @@ func (s *UpstreamService) Upsert(ctx context.Context, routeUuid string, upstream
 		return nil, err
 	}
 	upstreamPublishModel := &pb.UpstreamPublishUpsertModel{
-		Uuid:             upstreamModel.Uuid,
-		RouteHost:        routes[0].Host,
-		RoutePath:        routes[0].Path,
-		Host:             upstreamModel.Host,
-		Port:             upstreamModel.Port,
-		Path:             upstreamModel.Path,
-		Scheme:           upstreamModel.Scheme,
-		Weight:           upstream.Weight,
-		FasthttpSettings: fasthttpSettings,
+		Uuid:      upstreamModel.Uuid,
+		RouteHost: routes[0].Host,
+		RoutePath: routes[0].Path,
+		Host:      upstreamModel.Host,
+		Port:      upstreamModel.Port,
+		Path:      upstreamModel.Path,
+		Scheme:    upstreamModel.Scheme,
+		Weight:    upstream.Weight,
+	}
+
+	if fasthttpSettings != nil && fasthttpSettings.ProxyHost != "" {
+		upstreamPublishModel.FasthttpSettings = fasthttpSettings
+		upstreamModel.FasthttpSettings = fasthttpSettings
 	}
 
 	upstreamBytes, err := proto.Marshal(upstreamPublishModel)

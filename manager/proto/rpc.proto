@@ -19,4 +19,6 @@ message RpcModel {
   int64 chain_id = 6;
   // @gotags: yaml:"type"
   string type = 7;
+  // @gotags: yaml:"ignore_methods"
+  repeated string ignore_methods = 8;
 }

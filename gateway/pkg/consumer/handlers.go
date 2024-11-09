@@ -44,7 +44,7 @@ func (h *RouteHandler) HandleRouteCreated(msg *message.Message) error {
 
 	if routeProxy.CircuitBreaker != nil && routeProxy.CircuitBreaker.Enabled {
 		logger.Infof("CircuitBreaker: %v", routeProxy.CircuitBreaker)
-		proxyController.CircuitBreaker = circuitbreaker.NewCircuitBreaker(circuitbreaker.Settings{
+		proxyController.CircuitBreaker = circuitbreaker.NewTwoStepCircuitBreaker(circuitbreaker.Settings{
 			Name:                   routeProxy.GetUuid(),
 			MaxConsecutiveFailures: routeProxy.CircuitBreaker.MaxConsecutiveFailures,
 			Interval:               routeProxy.CircuitBreaker.Interval,
@@ -102,7 +102,7 @@ func (h *RouteHandler) HandleRouteUpdated(msg *message.Message) error {
 	// update circuitbreaker if needed
 	if routeProxy.CircuitBreaker != nil && routeProxy.CircuitBreaker.Enabled {
 		logger.Infof("CircuitBreaker: %v", routeProxy.CircuitBreaker)
-		route.ProxyController.CircuitBreaker = circuitbreaker.NewCircuitBreaker(circuitbreaker.Settings{
+		route.ProxyController.CircuitBreaker = circuitbreaker.NewTwoStepCircuitBreaker(circuitbreaker.Settings{
 			Name:                   routeProxy.GetUuid(),
 			MaxConsecutiveFailures: routeProxy.CircuitBreaker.MaxConsecutiveFailures,
 			Interval:               routeProxy.CircuitBreaker.Interval,

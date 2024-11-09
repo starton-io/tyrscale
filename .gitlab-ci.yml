@@ -1,4 +1,5 @@
 stages:
+  - install
   - test
   - release
 
@@ -30,7 +31,16 @@ variables:
       - .go/pkg/mod/
     policy: pull-push
 
-
+install-deps:
+  stage: install
+  tags: ["starton-standard-v2"]
+  image: golang:1.21.6
+  extends: .go-cache
+  script:
+    - echo "Installing dependencies"
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" && $CI_COMMIT_TAG == null
+    - if: $CI_COMMIT_BRANCH == "master" && $CI_COMMIT_TAG == null
 
 
 test-lint:
@@ -42,8 +52,14 @@ test-lint:
     - make test-lint
   variables:
     ARTIFACTS_DIR: "artifacts"
-    KUBERNETES_CPU_REQUEST: "2"
-    KUBERNETES_CPU_LIMIT: "2"
+
+    KUBERNETES_CPU_REQUEST: "3"
+    KUBERNETES_CPU_LIMIT: "3"
+    KUBERNETES_MEMORY_REQUEST: "6Gi"
+    KUBERNETES_MEMORY_LIMIT: "6Gi"
+    KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "6Gi"
+    KUBERNETES_EPHEMERAL_STORAGE_LIMIT: "8Gi"
+ 
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" && $CI_COMMIT_TAG == null
     - if: $CI_COMMIT_BRANCH == "master" && $CI_COMMIT_TAG == null
@@ -56,6 +72,14 @@ test-unit:
   tags: ["starton-standard-v2"]
   image: golang:1.21.6
   extends: .go-cache
+  variables:
+    KUBERNETES_CPU_REQUEST: "3"
+    KUBERNETES_CPU_LIMIT: "3"
+    KUBERNETES_MEMORY_REQUEST: "6Gi"
+    KUBERNETES_MEMORY_LIMIT: "6Gi"
+    KUBERNETES_EPHEMERAL_STORAGE_REQUEST: "6Gi"
+    KUBERNETES_EPHEMERAL_STORAGE_LIMIT: "8Gi"
+ 
   script:
     - mkdir -p ${CI_PROJECT_DIR}/${ARTIFACTS_DIR}/${SERVICE}
     - ls -al
