@@ -61,7 +61,7 @@ func (h *DefaultHandler) Handle(ctx *fasthttp.RequestCtx) {
 			res:              res,
 			upstreamClient:   upstreamClient,
 			upstreamUuid:     upstreamUuid[0],
-			method:           method,
+			ethMethod:        method,
 			listLabelsValues: listLabelsValues,
 			startTime:        time.Now(),
 		}

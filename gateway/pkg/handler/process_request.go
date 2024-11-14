@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"strconv"
 	"time"
 
 	"github.com/sony/gobreaker"
@@ -17,9 +18,15 @@ type RequestContext struct {
 	res              *fasthttp.Response
 	upstreamClient   *proxy.UpstreamClient
 	upstreamUuid     string
-	method           string
+	ethMethod        string
 	listLabelsValues []string
 	startTime        time.Time
+}
+
+func (ctx *RequestContext) updateUpstreamMetrics() {
+	ctx.listLabelsValues = append([]string{ctx.ethMethod, strconv.Itoa(ctx.res.StatusCode())}, ctx.listLabelsValues...)
+	metrics.UpstreamTotalRequests.WithLabelValues(ctx.listLabelsValues...).Inc()
+	metrics.UpstreamDuration.WithLabelValues(ctx.listLabelsValues...).Observe(time.Since(ctx.startTime).Seconds())
 }
 
 func processRequest(ctx *RequestContext, circuitBreaker circuitbreaker.ProxyCircuitBreaker) error {
@@ -29,7 +36,6 @@ func processRequest(ctx *RequestContext, circuitBreaker circuitbreaker.ProxyCirc
 		setErrorResponse(ctx.res, fasthttp.StatusInternalServerError, "Interception error: "+err.Error())
 		return err
 	}
-
 	if circuitBreaker != nil {
 		cb := circuitBreaker.GetTwoStep(ctx.upstreamUuid)
 		if cb != nil {
@@ -46,7 +52,6 @@ func executeWithCircuitBreaker(ctx *RequestContext, cb *gobreaker.TwoStepCircuit
 		logger.Errorf("Circuit breaker is still open for %s", ctx.upstreamUuid)
 		return err
 	}
-
 	if err := ctx.upstreamClient.Client.Do(ctx.req, ctx.res); err != nil {
 		done(false)
 		logger.Errorf("Request failed for %s: %v", ctx.upstreamUuid, err)
@@ -57,7 +62,7 @@ func executeWithCircuitBreaker(ctx *RequestContext, cb *gobreaker.TwoStepCircuit
 	if err != nil {
 		done(false)
 		logger.Errorf("Response interception failed for %s: %v", ctx.upstreamUuid, err)
-		metrics.UpstreamFailures.WithLabelValues(ctx.listLabelsValues...).Inc()
+		ctx.updateUpstreamMetrics()
 		setErrorResponse(ctx.res, fasthttp.StatusInternalServerError, "Interception error: "+err.Error())
 		return err
 	}
@@ -67,35 +72,30 @@ func executeWithCircuitBreaker(ctx *RequestContext, cb *gobreaker.TwoStepCircuit
 	success := handleCircuitBreakerError(ctx)
 	if success {
 		done(true)
-		metrics.UpstreamDuration.WithLabelValues(ctx.listLabelsValues...).Observe(time.Since(ctx.startTime).Seconds())
-		metrics.UpstreamSuccesses.WithLabelValues(ctx.listLabelsValues...).Inc()
+		ctx.updateUpstreamMetrics()
 		return nil
 	}
 
 	done(false)
-	metrics.UpstreamFailures.WithLabelValues(ctx.listLabelsValues...).Inc()
+	ctx.updateUpstreamMetrics()
+
 	return errors.New("circuit breaker error")
 }
 
 func executeRequest(ctx *RequestContext) error {
 	if err := ctx.upstreamClient.Client.Do(ctx.req, ctx.res); err != nil {
 		handleClientError(ctx.res, err)
-		metrics.UpstreamFailures.WithLabelValues(ctx.listLabelsValues...).Inc()
+		ctx.updateUpstreamMetrics()
 		return err
 	}
 
 	err := ctx.upstreamClient.ResponseInterceptor.Intercept(ctx.res)
 	if err != nil {
 		logger.Errorf("Response interception failed for %s: %v", ctx.upstreamUuid, err)
-		if ctx.res.StatusCode() == fasthttp.StatusTooManyRequests {
-			metrics.Status429Responses.WithLabelValues(ctx.listLabelsValues...).Inc()
-		}
-		metrics.UpstreamFailures.WithLabelValues(ctx.listLabelsValues...).Inc()
+		ctx.updateUpstreamMetrics()
 		setErrorResponse(ctx.res, fasthttp.StatusInternalServerError, "Interception error: "+err.Error())
 		return err
 	}
-
-	metrics.UpstreamDuration.WithLabelValues(ctx.listLabelsValues...).Observe(time.Since(ctx.startTime).Seconds())
-	metrics.UpstreamSuccesses.WithLabelValues(ctx.listLabelsValues...).Inc()
+	ctx.updateUpstreamMetrics()
 	return nil
 }

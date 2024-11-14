@@ -28,8 +28,8 @@ func handleCircuitBreakerError(ctx *RequestContext) bool {
 			return true
 		},
 		fasthttp.StatusMethodNotAllowed: func() bool {
-			logger.Debugf("Status 405, ignoring method %s", ctx.method)
-			ctx.upstreamClient.AddIgnoreMethod(ctx.method)
+			logger.Debugf("Status 405, ignoring method %s", ctx.ethMethod)
+			ctx.upstreamClient.AddIgnoreMethod(ctx.ethMethod)
 			return true
 		},
 		fasthttp.StatusInternalServerError: func() bool {

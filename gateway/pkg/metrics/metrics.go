@@ -41,7 +41,7 @@ var (
 			Name: "upstream_total_requests",
 			Help: "Total number of responses",
 		},
-		[]string{"route_uuid", "route_url", "upstream_uuid", "upstream_url"},
+		[]string{"route_uuid", "route_url", "upstream_uuid", "upstream_url", "code", "eth_method"},
 	)
 )
 

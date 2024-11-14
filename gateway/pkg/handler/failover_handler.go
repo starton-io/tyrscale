@@ -69,7 +69,7 @@ func (h *FailoverHandler) Handle(ctx *fasthttp.RequestCtx) {
 			res:              res,
 			upstreamClient:   upstreamClient,
 			upstreamUuid:     upstreamUuid,
-			method:           method,
+			ethMethod:        method,
 			listLabelsValues: listLabelsValues,
 			startTime:        time.Now(),
 		}
